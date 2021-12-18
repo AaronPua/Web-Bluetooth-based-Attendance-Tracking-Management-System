@@ -14,7 +14,8 @@
     "@emotion/react": "^11.7.1",
     "meteor-node-stubs": "^1.1.0",
     "moment": "^2.29.1",
-    "prop-types": "^15.7.2"
+    "prop-types": "^15.7.2",
+    "simpl-schema": "^1.12.0"
   },
   "devDependencies": {
     "@types/meteor": "^1.4.81",
