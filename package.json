@@ -2,7 +2,7 @@
   "name": "COMP8047-Web",
   "private": true,
   "scripts": {
-    "start": "meteor run",
+    "start": "MONGO_URL='mongodb+srv://admin:root@comp8047.mh7cw.mongodb.net/comp8047?retryWrites=true&w=majority' meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer"
