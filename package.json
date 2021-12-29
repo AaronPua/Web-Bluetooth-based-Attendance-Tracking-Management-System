@@ -2,7 +2,8 @@
   "name": "COMP8047-Web",
   "private": true,
   "scripts": {
-    "start": "MONGO_URL='mongodb+srv://admin:root@comp8047.mh7cw.mongodb.net/comp8047?retryWrites=true&w=majority' meteor run",
+    "start": "meteor run",
+    "start-cluster": "MONGO_URL='mongodb+srv://admin:root@comp8047.mh7cw.mongodb.net/comp8047?retryWrites=true&w=majority' meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer"
@@ -23,6 +24,7 @@
     "@types/mocha": "^8.2.3",
     "@types/react": "^16.14.21",
     "@types/react-dom": "^16.9.14",
+    "@types/simpl-schema": "^1.12.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "typescript": "^4.1.6"

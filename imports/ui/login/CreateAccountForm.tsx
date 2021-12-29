@@ -8,21 +8,21 @@ import {
     EuiFormRow 
 } from '@elastic/eui';
 
-function LoginForm() {
-
-    const [username, setUsername] = useState('');
+function CreateAccountForm() {
+    
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const submitLogin = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        Meteor.loginWithPassword(username, password);
+        Meteor.loginWithPassword(email, password);
     }
 
     return (
         <EuiForm component="form">
-            <EuiFormRow label="Username">
-                <EuiFieldText name="username" onChange={(e) => setUsername(e.target.value)}/>
+            <EuiFormRow label="Email">
+                <EuiFieldText name="username" onChange={(e) => setEmail(e.target.value)}/>
             </EuiFormRow>
 
             <EuiFormRow label="Password">
@@ -34,4 +34,4 @@ function LoginForm() {
     );
 }
 
-export default LoginForm;
+export default CreateAccountForm;
