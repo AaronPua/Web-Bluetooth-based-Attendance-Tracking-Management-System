@@ -21,13 +21,17 @@ const userSchema = new SimpleSchema({
     'emails.$.verified': { 
         type: Boolean
     },
+    createdAt: { 
+        type: Date 
+    },
     services: { 
         type: Object,
         optional: true,
         blackbox: true 
     },
-    createdAt: { 
-        type: Date 
+    profile: {
+        type: Object,
+        blackbox: true
     },
 });
 

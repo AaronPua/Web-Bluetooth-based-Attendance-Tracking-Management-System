@@ -1,22 +1,17 @@
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
+import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import LoginForm from './login/LoginForm';
-import Layout from './Layout';
-import SideNav from './SideNav';
+import { useNavigate } from "react-router-dom";
+import LoginForm from './auth/LoginForm';
 
 export const App = () => {
 
   const user = useTracker(() => Meteor.user());
+  let navigate = useNavigate();
 
   return (
-    <div>
-      { user ? (
-        // <h1>Welcome to Meteor!</h1>
-        <Layout sideNav={<SideNav/>}/>
-      ) : (
-        <LoginForm/>
-      )}
-    </div>
+      <div>
+          { user ? () => navigate("/home") : <LoginForm />}
+      </div>
   );
 };

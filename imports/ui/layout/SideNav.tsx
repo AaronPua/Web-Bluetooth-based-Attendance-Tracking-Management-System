@@ -9,20 +9,18 @@ function SideNav() {
         setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);
     };
 
-    const id = htmlIdGenerator('testExample')();
-
     const sideNavItems = [{
         name: 'Root item',
-        id: id,
+        id: htmlIdGenerator('testExample0')(),
         items: [
             {
                 name: 'First Item with href',
-                id: id,
+                id: htmlIdGenerator('testExample1')(),
                 href: '/#',
             },
             {
                 name: 'Second Item with href',
-                id: id,
+                id: htmlIdGenerator('testExample2')(),
                 href: '/#',
             }
         ],

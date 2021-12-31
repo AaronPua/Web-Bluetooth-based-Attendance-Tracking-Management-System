@@ -9,7 +9,7 @@ import {
 } from '@elastic/eui';
 import Header from './Header';
 
-function Layout({ sideNav }: any){
+function FullPageLayout({ sideNav, content }: any){
     return (
         <Fragment>
             <Header />
@@ -20,7 +20,7 @@ function Layout({ sideNav }: any){
 
                 <EuiPageBody panelled>
                     <EuiPageHeader
-                        restrictWidth
+                        // restrictWidth
                         iconType="logoElastic"
                         pageTitle="Page title"
                         // rightSideItems={[button]}
@@ -33,7 +33,7 @@ function Layout({ sideNav }: any){
                         color="transparent"
                         borderRadius="none"
                     >
-                        <EuiPageContentBody restrictWidth>Test</EuiPageContentBody>
+                        <EuiPageContentBody /* restrictWidth */>{content}</EuiPageContentBody>
                     </EuiPageContent>
                 </EuiPageBody>
             </EuiPage>
@@ -41,4 +41,4 @@ function Layout({ sideNav }: any){
     );
 }
 
-export default Layout;
+export default FullPageLayout;
