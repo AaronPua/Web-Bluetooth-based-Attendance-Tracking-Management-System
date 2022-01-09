@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import FullPageLayout from './layout/FullPageLayout';
+import Header from './layout/Header';
 import SideNav from './layout/SideNav';
 
 function Home() {
 
     return (
-        <FullPageLayout 
-            sideNav={<SideNav />} 
-            content={
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-            }
-        />
+        <Fragment>
+            <Header />
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+        </Fragment>
     );
 }
 

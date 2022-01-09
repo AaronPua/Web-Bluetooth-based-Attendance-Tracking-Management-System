@@ -1,12 +1,12 @@
 import React from 'react';
+import { Outlet } from 'react-router';
 import {
   EuiPage,
   EuiPageContent,
-  EuiEmptyPrompt,
   EuiPageBody,
 } from '@elastic/eui';
 
-function CenteredBody({title, body, color, actions, footer}: any) {
+function CenteredBody() {
     return (
         <EuiPage paddingSize="none">
             <EuiPageBody paddingSize="l">
@@ -15,13 +15,7 @@ function CenteredBody({title, body, color, actions, footer}: any) {
                     horizontalPosition="center"
                     paddingSize="none"
                 >
-                <EuiEmptyPrompt
-                    title={title}
-                    body={body}
-                    color={color}
-                    actions={actions}
-                    footer={footer}
-                />
+                    <Outlet />
                 </EuiPageContent>
             </EuiPageBody>
         </EuiPage>

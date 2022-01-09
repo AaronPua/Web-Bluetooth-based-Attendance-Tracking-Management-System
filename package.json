@@ -9,7 +9,7 @@
     "visualize": "meteor --production --extra-packages bundle-visualizer"
   },
   "dependencies": {
-    "@babel/runtime": "^7.15.4",
+    "@babel/runtime": "^7.16.7",
     "@elastic/datemath": "^5.0.3",
     "@elastic/eui": "^43.1.1",
     "@emotion/react": "^11.7.1",
@@ -22,7 +22,8 @@
     "simpl-schema": "^1.12.0"
   },
   "devDependencies": {
-    "@types/meteor": "^1.4.86",
+    "@types/meteor": "^1.4.87",
+    "@types/meteor-mdg-validated-method": "^1.2.3",
     "@types/mocha": "^8.2.3",
     "@types/react": "^16.14.21",
     "@types/react-dom": "^16.9.14",
@@ -30,7 +31,7 @@
     "@types/simpl-schema": "^1.12.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "typescript": "^4.5.4"
+    "typescript": "^4.1.6"
   },
   "meteor": {
     "mainModule": {

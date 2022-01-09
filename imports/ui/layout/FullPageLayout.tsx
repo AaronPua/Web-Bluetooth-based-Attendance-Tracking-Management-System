@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { Outlet } from 'react-router';
 import {
   EuiPage,
   EuiPageContent,
@@ -8,14 +9,15 @@ import {
   EuiPageBody,
 } from '@elastic/eui';
 import Header from './Header';
+import SideNav from './SideNav';
 
-function FullPageLayout({ sideNav, content }: any){
+export default function FullPageLayout() {
     return (
         <Fragment>
             <Header />
             <EuiPage paddingSize="none">
                 <EuiPageSideBar paddingSize="l" sticky>
-                    {sideNav}
+                    <SideNav />
                 </EuiPageSideBar>
 
                 <EuiPageBody panelled>
@@ -24,21 +26,21 @@ function FullPageLayout({ sideNav, content }: any){
                         iconType="logoElastic"
                         pageTitle="Page title"
                         // rightSideItems={[button]}
-                        tabs={[{ label: 'Tab 1', isSelected: true }, { label: 'Tab 2' }]}
                     />
                     <EuiPageContent
                         hasBorder={false}
                         hasShadow={false}
                         paddingSize="none"
-                        color="transparent"
+                        color="plain"
                         borderRadius="none"
                     >
-                        <EuiPageContentBody /* restrictWidth */>{content}</EuiPageContentBody>
+                        {/* <EuiPageContentBody>{content}</EuiPageContentBody> */}
+                        <EuiPageContentBody>
+                            <Outlet />
+                        </EuiPageContentBody>
                     </EuiPageContent>
                 </EuiPageBody>
             </EuiPage>
         </Fragment>
     );
 }
-
-export default FullPageLayout;
