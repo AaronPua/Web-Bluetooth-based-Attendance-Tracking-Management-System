@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { 
     EuiButton, 
@@ -15,20 +15,10 @@ import { verifyLogin } from '/imports/api/AccountsMethods';
 export default function LoginForm() {
 
     let navigate = useNavigate();
-    let errorsMap = new Map();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showErrors, setShowErrors] = useState(false);
-    const [errors, setErrors] = useState({
-        email: '',
-        password: '',
-    });
-
-    const getErrorMessage = (name: string) => {
-        name === errorsMap.get(name)
-    }
-
 
     const loginWithPassword = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
@@ -51,10 +41,7 @@ export default function LoginForm() {
             err.details.forEach((error: Meteor.Error) => {
                 // console.log(error['message']);
                 // console.log(error.message);
-                // errors.push({"key": error.name, "message": error.message});
                 // console.log(error.name);
-                // var test = error.name;
-                errorsMap.set(error.name, error.message)
             });
         });
     }
