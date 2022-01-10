@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { 
     EuiButton, 
@@ -11,38 +11,40 @@ import {
     EuiLink
 } from '@elastic/eui';
 import { verifyLogin } from '/imports/api/AccountsMethods';
+import { check } from 'meteor/check';
 
 export default function LoginForm() {
 
     let navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [inputs, setInputs] = useState({
+        email: '',
+        password: ''
+    });
     const [showErrors, setShowErrors] = useState(false);
+    const [errors, setErrors] = useState(Array());
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputs({...inputs, [e.target.name]: e.target.value});
+    }
 
     const loginWithPassword = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
         verifyLogin.callPromise({
-            email: email,
-            password: password
+            email: inputs.email,
+            password: inputs.password
         }).then(([email, password]: [email: String, password: string]) => {
             Meteor.loginWithPassword(email, password);
             navigate('/home');
         }).catch((err: any) => {
             setShowErrors(true);
-            // console.log('Error: ' + err.error);
-            // console.log('Error Type: ' + err.errorType);
-            // console.log('Reason: ' + err.reason);
-            // console.log('Message: ' + err.message);
-            // console.log('Details: ' + err.details);
-            // console.log(err);
 
+            let tempErrors = Array();
             err.details.forEach((error: Meteor.Error) => {
-                // console.log(error['message']);
-                // console.log(error.message);
-                // console.log(error.name);
+                tempErrors.push(error.message);
             });
+            setErrors(tempErrors);
         });
     }
 
@@ -51,13 +53,13 @@ export default function LoginForm() {
             title={<h2>Sign In</h2>}
             color="plain"
             body={
-                <EuiForm component="form" isInvalid={showErrors}>
-                    <EuiFormRow label="Email" isInvalid={showErrors} error={showErrors}>
-                        <EuiFieldText name="email" onChange={(e) => setEmail(e.target.value)} isInvalid={showErrors} />
+                <EuiForm component="form" isInvalid={showErrors} error={errors}>
+                    <EuiFormRow label="Email" isInvalid={showErrors}>
+                        <EuiFieldText name="email" onChange={handleChange} isInvalid={showErrors} />
                     </EuiFormRow>
 
                     <EuiFormRow label="Password" isInvalid={showErrors}>
-                        <EuiFieldPassword name="password" type="dual" onChange={(e) => setPassword(e.target.value)} 
+                        <EuiFieldPassword name="password" type="dual" onChange={handleChange} 
                             isInvalid={showErrors}/>
                     </EuiFormRow>
                 </EuiForm>
