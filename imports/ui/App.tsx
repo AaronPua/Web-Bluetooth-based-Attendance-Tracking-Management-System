@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from './auth/Login';
+import LoginForm from './auth/LoginForm';
 import Home from './Home';
 import Registration from './auth/Registration';
 import UnknownRoute from './auth/UnknownRoute';
@@ -16,8 +17,8 @@ export const App = () => {
                     <Route path="/home" element={<RequireAuth><Home /></RequireAuth>} />
                 </Route>
                 <Route element={<CenteredBody />} >
-                    <Route path="/" element={<Login />} />
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<LoginForm />} />
+                    <Route path="/login" element={<LoginForm />} />
                     <Route path="/sign-up" element={<Registration />} />
 
                     {/* Using a "*" route (aka "splat route") to render a "not found" page when someone visits an unrecognized URL. */}
