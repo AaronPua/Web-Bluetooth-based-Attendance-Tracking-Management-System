@@ -19,7 +19,7 @@ export const userRegistrationSchema = new SimpleSchema({
     password: { type: String, min: 4 },
     firstName: { type: String },
     lastName: { type: String },
-    gender: { type: String }
+    gender: { type: String, allowedValues: ['male', 'female'] }
 });
 
 export const userLoginSchema = userRegistrationSchema.pick('email', 'password');

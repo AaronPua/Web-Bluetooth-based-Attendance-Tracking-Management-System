@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import '../imports/server/Email';
 import '../imports/api/AccountsMethods';
 import '../imports/schema/ValidationMessage';
 

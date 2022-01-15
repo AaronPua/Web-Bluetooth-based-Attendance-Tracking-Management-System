@@ -10,12 +10,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 import { useNavigate } from 'react-router';
 import { 
-    EuiButton, 
-    EuiEmptyPrompt, 
-    EuiFieldPassword, 
-    EuiFieldText, 
-    EuiForm, 
-    EuiFormRow,
+    EuiEmptyPrompt,
     EuiLink,
     EuiSpacer
 } from '@elastic/eui';
@@ -25,7 +20,7 @@ export default function LoginForm() {
     let navigate = useNavigate();
 
     const loginWithPassword = (model: any) => {
-        return new Promise((resolve, reject) =>{
+        return new Promise((resolve, reject) => {
             Meteor.loginWithPassword(model.email, model.password, error => {
                 error ? reject(error) : resolve(navigate('/home'));
             });

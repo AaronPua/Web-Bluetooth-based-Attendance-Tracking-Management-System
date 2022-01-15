@@ -7,7 +7,6 @@ function Home() {
 
     return (
         <Fragment>
-            <Header />
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
         </Fragment>
     );

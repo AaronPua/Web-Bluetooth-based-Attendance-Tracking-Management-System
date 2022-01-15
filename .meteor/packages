@@ -26,7 +26,7 @@ quave:collections
 mdg:validation-error
 mdg:validated-method
 didericis:callpromise-mixin
-email@2.2.0
+email
 rlivingston:simple-schema-mixin
 audit-argument-checks
 check
