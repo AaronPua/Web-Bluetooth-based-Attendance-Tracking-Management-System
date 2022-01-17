@@ -10,7 +10,7 @@ import {
     EuiFormRow,
     EuiLink
 } from '@elastic/eui';
-import { verifyLogin } from '/imports/api/AccountsMethods';
+import { verifyLogin } from '../../../api/users/UsersMethods';
 import { check } from 'meteor/check';
 
 export default function LoginForm() {

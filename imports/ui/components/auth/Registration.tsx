@@ -14,7 +14,7 @@ import {
     EuiSelect,
     EuiSpacer
 } from '@elastic/eui';
-import { registerUser } from '../../api/AccountsMethods';
+import { registerUser } from '../../../api/users/UsersMethods';
 
 export default function Registration() {
 
@@ -40,8 +40,8 @@ export default function Registration() {
             first_name: firstName,
             last_name: lastName,
             gender: gender
-        }).then((userId: string) => {  
-            Accounts.sendVerificationEmail(userId, email);
+        }).then(() => {  
+            // Accounts.sendVerificationEmail(userId, email);
             navigate('/verify-email'); 
         }).catch((err: Meteor.Error) => {
             console.log('Details: ' + err.details);

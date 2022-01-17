@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
-import FullPageLayout from './layout/FullPageLayout';
-import Header from './layout/Header';
-import SideNav from './layout/SideNav';
+import FullPageLayout from './layouts/FullPageLayout';
+import Header from './layouts/Header';
+import SideNav from './layouts/SideNav';
 
 function Home() {
 

@@ -37,14 +37,31 @@ export const resendVerificationEmail = new ValidatedMethod({
     mixins: [CallPromiseMixin],
     validate: null,
     applyOptions: { noRetry: true },
-    run() {
-        Accounts.onEmailVerificationLink((token: string, done: Function) => {
-            Accounts.verifyEmail(token, (error: any) => {
-                if(error) {
-                    // handle error
-                }
-                done();
-            })
-        }); 
+    run({model}: any) {
+        if(Meteor.isServer) {
+            var user = Accounts.findUserByEmail(model.email);
+
+            if(user)
+                Accounts.sendVerificationEmail(user._id);
+            else
+                throw new Meteor.Error("User not found", "User not found according to this email address.");   
+        }
+    }
+});
+
+export const sendPasswordResetEmail = new ValidatedMethod({
+    name: 'users.sendPasswordResetEmail',
+    mixins: [CallPromiseMixin],
+    validate: null,
+    applyOptions: { noRetry: true },
+    run({model}: any) {
+        if(Meteor.isServer) {
+            var user = Accounts.findUserByEmail(model.email);
+
+            if(user)
+                Accounts.sendResetPasswordEmail(user._id);
+            else
+                throw new Meteor.Error("User not found", "User not found according to this email address.");   
+        }
     }
 });

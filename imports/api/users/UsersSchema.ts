@@ -23,8 +23,3 @@ export const userRegistrationSchema = new SimpleSchema({
 });
 
 export const userLoginSchema = userRegistrationSchema.pick('email', 'password');
-
-export const userVerificationEmailSchema = new SimpleSchema({
-    _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-    email: { type: String, regEx: SimpleSchema.RegEx.Email }
-});

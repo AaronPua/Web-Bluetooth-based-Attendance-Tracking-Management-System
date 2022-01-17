@@ -1,6 +1,6 @@
 import React from 'react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { userLoginSchema } from '/imports/schema/UsersSchema';
+import { userLoginSchema } from '/imports/api/users/UsersSchema';
 import {
   AutoForm,
   AutoFields,
