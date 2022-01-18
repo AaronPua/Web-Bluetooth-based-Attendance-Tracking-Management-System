@@ -9,6 +9,7 @@ import CenteredBody from './layouts/CenteredBody';
 import RequireAuth from '../startup/client/routes/RequireAuth';
 import VerifyEmail from './components/auth/VerifyEmail';
 import VerifiedEmail from './components/auth/VerifiedEmail';
+import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
 
 export const App = () => {
@@ -24,7 +25,8 @@ export const App = () => {
                     <Route path="/sign-up" element={<RegistrationForm />} />
                     <Route path="/verify-email" element={<VerifyEmail />} />
                     <Route path="/verify-email/:token" element={<VerifiedEmail />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password/:token" element={<ResetPassword />} />
 
                     {/* Using a "*" route (aka "splat route") to render a "not found" page when someone visits an unrecognized URL. */}
                     <Route path="*" element={<UnknownRoute />} />
