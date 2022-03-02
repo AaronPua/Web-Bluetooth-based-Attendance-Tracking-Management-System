@@ -65,3 +65,14 @@ export const sendPasswordResetEmail = new ValidatedMethod({
         }
     }
 });
+
+export const updateAttendance = new ValidatedMethod({
+    name: 'users.updateAttendance',
+    mixins: [CallPromiseMixin],
+    validate: null,
+    applyOptions: { noRetry: true },
+    run({model}: any) {
+        // If a beacon is reported as seen by the mobile app,
+        // run this method to update Student's attendance
+    }
+});
