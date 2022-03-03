@@ -14,4 +14,4 @@ export const courseSchema = new SimpleSchema({
     'lessons.$': { type: String, regEx: SimpleSchema.RegEx.Id }
 });
 
-Courses.attach(courseSchema);
+// Courses.attach(courseSchema);

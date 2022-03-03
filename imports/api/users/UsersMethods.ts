@@ -3,6 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import SimpleSchema from 'simpl-schema';
+import { Roles } from 'meteor/alanning:roles';
+import { userRegistrationSchema } from './UsersSchema';
 
 SimpleSchema.defineValidationErrorTransform(error => {
     const ddpError = new Meteor.Error(error.message);
@@ -14,7 +16,7 @@ SimpleSchema.defineValidationErrorTransform(error => {
 export const registerUser = new ValidatedMethod({
     name: 'users.registerUser',
     mixins: [CallPromiseMixin],
-    validate: null,
+    validate: userRegistrationSchema.validator(),
     applyOptions: { noRetry: true },
     run({model}: any) {
         const userId = Accounts.createUser({
@@ -27,8 +29,11 @@ export const registerUser = new ValidatedMethod({
             }
         });
 
-        if(userId)
+        if(userId) {
+            Roles.addUsersToRoles(userId, 'instructor')
             Accounts.sendVerificationEmail(userId);
+        }
+        return userId;
     }
 });
 
@@ -66,13 +71,12 @@ export const sendPasswordResetEmail = new ValidatedMethod({
     }
 });
 
-export const updateAttendance = new ValidatedMethod({
-    name: 'users.updateAttendance',
+export const updatePassword = new ValidatedMethod({
+    name: 'users.updatePassword',
     mixins: [CallPromiseMixin],
     validate: null,
     applyOptions: { noRetry: true },
     run({model}: any) {
-        // If a beacon is reported as seen by the mobile app,
-        // run this method to update Student's attendance
+        
     }
 });

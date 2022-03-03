@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router';
 import {
   EuiPage,
@@ -7,40 +7,25 @@ import {
   EuiPageHeader,
   EuiPageSideBar,
   EuiPageBody,
+  EuiFlexGroup,
 } from '@elastic/eui';
 import Header from './Header';
 import SideNav from './SideNav';
+import { EuiFlexItem } from '@elastic/eui/src/components/flex/flex_item';
 
 export default function FullPageLayout() {
     return (
-        <Fragment>
+        <>
             <Header />
-            <EuiPage paddingSize="none">
+            <EuiPage paddingSize="none" grow={true} style={{ minHeight: '100vh' }}>
                 <EuiPageSideBar paddingSize="l" sticky>
                     <SideNav />
                 </EuiPageSideBar>
 
                 <EuiPageBody panelled>
-                    <EuiPageHeader
-                        // restrictWidth
-                        iconType="logoElastic"
-                        pageTitle="Page title"
-                        // rightSideItems={[button]}
-                    />
-                    <EuiPageContent
-                        hasBorder={false}
-                        hasShadow={false}
-                        paddingSize="none"
-                        color="plain"
-                        borderRadius="none"
-                    >
-                        {/* <EuiPageContentBody>{content}</EuiPageContentBody> */}
-                        <EuiPageContentBody>
-                            <Outlet />
-                        </EuiPageContentBody>
-                    </EuiPageContent>
+                    <Outlet/>
                 </EuiPageBody>
             </EuiPage>
-        </Fragment>
+        </>
     );
 }

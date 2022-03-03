@@ -37,11 +37,11 @@ export default function Registration() {
         registerUser.callPromise({
             email: email,
             password: password,
-            first_name: firstName,
-            last_name: lastName,
+            firstName: firstName,
+            lastName: lastName,
             gender: gender
-        }).then(() => {  
-            // Accounts.sendVerificationEmail(userId, email);
+        }).then((userId: string) => {  
+            Accounts.sendVerificationEmail(userId, email);
             navigate('/verify-email'); 
         }).catch((err: Meteor.Error) => {
             console.log('Details: ' + err.details);

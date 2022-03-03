@@ -1,18 +1,16 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-const Lessons:any = new Mongo.Collection('lesson');
+const Lessons:any = new Mongo.Collection('lessons');
 
 export const lessonSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String },
-    start_time: { type: Date },
-    end_time: { type: Date },
+    startTime: { type: Date },
+    endTime: { type: Date },
     createdAt: { type: Date },
     course: { type: Array },
-    'course.$': { type: String, regEx: SimpleSchema.RegEx.Id },
-    lessons: { type: Array },
-    'lessons.$': { type: String, regEx: SimpleSchema.RegEx.Id }
+    'course.$': { type: Object, blackbox: true},
 });
 
-Lessons.attach(lessonSchema);
+// Lessons.attach(lessonSchema);

@@ -22,6 +22,7 @@ ddp-client@2.5.0
 ddp-common@1.4.0
 ddp-rate-limiter@1.1.0
 ddp-server@2.5.0
+dev-error-overlay@0.1.1
 didericis:callpromise-mixin@0.0.1
 diff-sequence@1.1.1
 dynamic-import@0.7.2

@@ -3,22 +3,19 @@ import SimpleSchema from 'simpl-schema';
 
 export const userSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-    first_name: { type: String },
-    last_name: { type: String },
-    school_id: { type: String },
-    gender: { type: String, allowedValues: ['male', 'female'] },
     emails: { type: Array },
     'emails.$': { type: Object },
     'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
     'emails.$.verified': { type: Boolean },
-    createdAt: { type: Date },
+    profile: { type: Object, blackbox: true },
+    'profile.first_name': { type: String },
+    'profile.last_name': { type: String },
+    'profile.gender': { type: String, allowedValues: ['male', 'female'] },
     services: { type: Object, optional: true, blackbox: true },
+    createdAt: { type: Date },
+    roles: { type: Object, blackbox: true },
     courses: { type: Array },
-    'courses.$': { type: String, regEx: SimpleSchema.RegEx.Id }
-    // profile: { type: Object, blackbox: true },
-    // 'profile.first_name': { type: String },
-    // 'profile.last_name': { type: String },
-    // 'profile.gender': { type: String, allowedValues: ['male', 'female'] },
+    'courses.$': { type: String, regEx: SimpleSchema.RegEx.Id },
 });
 
 (<any>Meteor.users).attachSchema(userSchema);

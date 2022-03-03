@@ -14,6 +14,7 @@ import {
     EuiLink,
     EuiSpacer
 } from '@elastic/eui';
+import { Roles } from 'meteor/alanning:roles';
 
 export default function LoginForm() {
     const bridge = new SimpleSchema2Bridge(userLoginSchema);
@@ -22,6 +23,10 @@ export default function LoginForm() {
     const loginWithPassword = (model: any) => {
         return new Promise((resolve, reject) => {
             Meteor.loginWithPassword(model.email, model.password, error => {
+                const userId = Meteor.users.findOne(model.email);
+                if(Roles.userIsInRole(userId, 'student')) {
+                    throw new Meteor.Error('Students Not Allowed', 'You do not have access to this platform.')
+                }
                 error ? reject(error) : resolve(navigate('/home'));
             });
         });
