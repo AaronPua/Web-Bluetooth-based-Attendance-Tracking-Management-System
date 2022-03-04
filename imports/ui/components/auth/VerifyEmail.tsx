@@ -8,7 +8,7 @@ import {
   SubmitField,
 } from 'uniforms-semantic';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { userRegistrationSchema } from '/imports/api/users/UsersSchema';
+import { userRegistrationSchema } from '/imports/api/users/UsersCollection';
 import { resendVerificationEmail } from '/imports/api/users/UsersMethods';
 
 function VerifyEmail() {

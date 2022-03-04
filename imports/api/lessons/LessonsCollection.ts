@@ -1,9 +1,7 @@
-import { Mongo } from 'meteor/mongo';
+import { createCollection } from 'meteor/quave:collections';
 import SimpleSchema from 'simpl-schema';
 
-const Lessons:any = new Mongo.Collection('lessons');
-
-export const lessonSchema = new SimpleSchema({
+const lessonSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String },
     startTime: { type: Date },
@@ -13,4 +11,7 @@ export const lessonSchema = new SimpleSchema({
     'course.$': { type: Object, blackbox: true},
 });
 
-// Lessons.attach(lessonSchema);
+export const LessonsCollection = createCollection({
+    name: 'lessons',
+    schema: lessonSchema
+});

@@ -12,7 +12,7 @@ import {
     EuiSpacer
 } from '@elastic/eui';
 import { registerUser } from '../../../api/users/UsersMethods';
-import { userRegistrationSchema } from '../../../api/users/UsersSchema';
+import { userRegistrationSchema } from '../../../api/users/UsersCollection';
 
 export default function RegistrationForm() {
     const bridge = new SimpleSchema2Bridge(userRegistrationSchema);

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import SimpleSchema from 'simpl-schema';
+import { createCollection } from 'meteor/quave:collections';
 
 export const userSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
@@ -13,9 +14,10 @@ export const userSchema = new SimpleSchema({
     'profile.gender': { type: String, allowedValues: ['male', 'female'] },
     services: { type: Object, optional: true, blackbox: true },
     createdAt: { type: Date },
-    roles: { type: Object, blackbox: true },
+    roles: { type: Array },
+    'roles.$': { type: String },
     courses: { type: Array },
-    'courses.$': { type: String, regEx: SimpleSchema.RegEx.Id },
+    'courses.$': { type: String },
 });
 
 (<any>Meteor.users).attachSchema(userSchema);
@@ -29,3 +31,8 @@ export const userRegistrationSchema = new SimpleSchema({
 });
 
 export const userLoginSchema = userRegistrationSchema.pick('email', 'password');
+
+export const UsersCollection = createCollection({
+    instance: Meteor.users,
+    schema: userSchema
+})

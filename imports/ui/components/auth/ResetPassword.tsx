@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { userRegistrationSchema } from '/imports/api/users/UsersSchema';
+import { userRegistrationSchema } from '/imports/api/users/UsersCollection';
 import {
   AutoForm,
   AutoFields,
