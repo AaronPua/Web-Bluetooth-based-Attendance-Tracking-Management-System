@@ -6,7 +6,7 @@ seeder(Meteor.users, {
     seedIfExistingData: true,
     environments: ['development', 'staging'],
     data: {
-        dynamic: [{
+        dynamic: {
             count: 5,
             seed(iteration: any, faker: any) {
                 return {
@@ -20,6 +20,6 @@ seeder(Meteor.users, {
                     roles: ['instructor']
                 };
             }
-        }]
+        }
     }
 });

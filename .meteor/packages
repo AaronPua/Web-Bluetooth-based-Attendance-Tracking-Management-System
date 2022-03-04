@@ -34,3 +34,4 @@ alanning:roles
 dev-error-overlay
 dburles:collection-helpers
 dburles:mongo-collection-instances
+lai:collection-extensions

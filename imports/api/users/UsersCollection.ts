@@ -20,8 +20,6 @@ export const userSchema = new SimpleSchema({
     'courses.$': { type: String },
 });
 
-(<any>Meteor.users).attachSchema(userSchema);
-
 export const userRegistrationSchema = new SimpleSchema({
     email: { type: String, regEx: SimpleSchema.RegEx.Email },
     password: { type: String, min: 4 },

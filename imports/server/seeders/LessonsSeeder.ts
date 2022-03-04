@@ -6,7 +6,7 @@ export const seedLessons = () => seeder(Meteor.lessons, {
     seedIfExistingData: true,  
     environments: ['development', 'staging'],
     data: {
-        dynamic: [{
+        dynamic: {
             count: 5,
             seed(iteration: any, faker: any) {
                 return {
@@ -21,6 +21,6 @@ export const seedLessons = () => seeder(Meteor.lessons, {
                     roles: ['instructor']
                 };
             }
-        }]
+        }
     }
 });
