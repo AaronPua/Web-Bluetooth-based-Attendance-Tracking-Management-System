@@ -1,9 +1,9 @@
 import seeder from '@cleverbeagle/seeder';
 import { Meteor } from 'meteor/meteor';
 
-seeder(Meteor.users, {
-    resetCollection: true,
-    seedIfExistingData: true,
+export const UserSeeder = (resetCollection: boolean, seedIfExistingData: boolean) => seeder(Meteor.users, {
+    resetCollection: resetCollection,
+    seedIfExistingData: seedIfExistingData,
     environments: ['development', 'staging'],
     data: {
         dynamic: {
@@ -15,7 +15,7 @@ seeder(Meteor.users, {
                     profile: {
                         firstName: faker.name.firstName(),
                         lastName: faker.name.lastName(),
-                        gender: faker.name.gender(true)
+                        gender: 'male'
                     },
                     roles: ['instructor']
                 };

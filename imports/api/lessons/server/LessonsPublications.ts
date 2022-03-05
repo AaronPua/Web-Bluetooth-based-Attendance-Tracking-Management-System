@@ -1,8 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { createPublicationFactory } from 'meteor/leaonline:publication-factory';
 
-const Lessons = new Mongo.Collection('lessons')
+const createPublication = createPublicationFactory();
 
 Meteor.publish('lessons.all', function getAllLessons() {
-    return Lessons.find({});
+    return Meteor.lessons.find({});
+});
+
+const getAllLessons = createPublication({
+    name: 'lessons.all',
+    validate: null,
+    run: () => {
+        return Meteor.lessons.find({})
+    }
 })

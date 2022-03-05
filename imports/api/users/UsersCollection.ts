@@ -9,15 +9,15 @@ export const userSchema = new SimpleSchema({
     'emails.$.address': { type: String, regEx: SimpleSchema.RegEx.Email },
     'emails.$.verified': { type: Boolean },
     profile: { type: Object, blackbox: true },
-    'profile.first_name': { type: String },
-    'profile.last_name': { type: String },
+    'profile.firstName': { type: String },
+    'profile.lastName': { type: String },
     'profile.gender': { type: String, allowedValues: ['male', 'female'] },
     services: { type: Object, optional: true, blackbox: true },
     createdAt: { type: Date },
-    roles: { type: Array },
-    'roles.$': { type: String },
-    courses: { type: Array },
-    'courses.$': { type: String },
+    // roles: { type: Object, optional: true },
+    // 'roles._id': { type: String, blackbox: true },
+    // courses: { type: Array },
+    // 'courses.$': { type: String },
 });
 
 export const userRegistrationSchema = new SimpleSchema({
