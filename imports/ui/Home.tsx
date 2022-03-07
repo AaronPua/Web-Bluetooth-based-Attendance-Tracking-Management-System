@@ -1,18 +1,20 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { useTracker, useFind } from 'meteor/react-meteor-data';
+import { useTracker, useSubscribe, useFind } from 'meteor/react-meteor-data';
 import { EuiPageHeader, EuiPageContent, EuiPageContentBody } from '@elastic/eui';
 
 function Home() {
 
     const user = useTracker(() => Meteor.user());
-    // const allUsers = useFind(() => Meteor.users.find());
+
+    const isLoading = useSubscribe('users.all');
+    const allUsers = useFind(() => Meteor.users.find({}));
 
     return (
         <>
             <EuiPageHeader
                 // restrictWidth
-                iconType="logoElastic"
+                // iconType="logoElastic"
                 pageTitle="Dashboard"
                 // rightSideItems={[button]}
             />
@@ -24,11 +26,16 @@ function Home() {
                 borderRadius="none"
                 grow={true}
             >
-                {/* <EuiPageContentBody>{content}</EuiPageContentBody> */}
                 <EuiPageContentBody>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <ul>
-                        { user.profile.firstName }
+                    {/* <p>{ user?.profile.firstName }</p> */}
+                    { isLoading() && <div className="loading">loading...</div> }
+                    <ul className="tasks">
+                        {allUsers.map(user => (
+                            <li key={user._id}>
+                                <span>{user.profile.firstName}</span>
+                            </li>
+                        ))}
                     </ul>
                 </EuiPageContentBody>
             </EuiPageContent>

@@ -80,3 +80,15 @@ export const updatePassword = new ValidatedMethod({
         
     }
 });
+
+export const addUserToRoles = new ValidatedMethod({
+    name: 'users.addUserToRoles',
+    mixins: [CallPromiseMixin],
+    validate: new SimpleSchema({
+        userId: { type: String },
+        roleName: { type: String },
+    }).validator(),
+    run({userId, roleName}: any) {
+        Roles.addUsersToRoles(userId, roleName);
+    }
+});

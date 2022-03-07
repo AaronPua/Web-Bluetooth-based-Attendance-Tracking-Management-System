@@ -10,13 +10,13 @@ function SideNav() {
     };
 
     const sideNavItems = [{
-        name: 'Root item',
+        name: 'Navigation',
         id: htmlIdGenerator('testExample0')(),
         items: [
             {
-                name: 'First Item with href',
-                id: htmlIdGenerator('testExample1')(),
-                href: '/#',
+                name: 'Users',
+                id: htmlIdGenerator('usersTab')(),
+                href: '/users',
             },
             {
                 name: 'Second Item with href',
@@ -28,8 +28,8 @@ function SideNav() {
 
     return (
         <EuiSideNav
-            aria-label="Basic example"
-            mobileTitle="Basic example"
+            aria-label="Navigation"
+            mobileTitle="Navigation"
             toggleOpenOnMobile={() => toggleOpenOnMobile()}
             isOpenOnMobile={isSideNavOpenOnMobile}
             items={sideNavItems}

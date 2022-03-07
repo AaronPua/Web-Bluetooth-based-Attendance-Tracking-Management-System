@@ -21,7 +21,7 @@ export default function Header() {
     return (
         <EuiHeader position="static">
             <EuiHeaderSectionItem border="right">
-                <EuiHeaderLogo>Elastic</EuiHeaderLogo>
+                <h6>COMP8047</h6>
             </EuiHeaderSectionItem>
 
             <EuiHeaderSectionItem>

@@ -11,6 +11,7 @@ import VerifyEmail from './components/auth/VerifyEmail';
 import VerifiedEmail from './components/auth/VerifiedEmail';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
+import Users from './Users';
 
 export const App = () => {
     return (
@@ -18,6 +19,7 @@ export const App = () => {
             <Routes>
                 <Route element={<FullPageLayout />} >
                     <Route path="/home" element={<RequireAuth><Home /></RequireAuth>} />
+                    <Route path="/users" element={<Users />} />
                 </Route>
                 <Route element={<CenteredBody />} >
                     <Route path="/" element={<LoginForm />} />
