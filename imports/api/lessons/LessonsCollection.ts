@@ -4,15 +4,15 @@ import SimpleSchema from 'simpl-schema';
 
 const lessonSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
+    courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String },
     startTime: { type: Date },
     endTime: { type: Date },
-    day: { type: String },
+    date: { type: Date },
     createdAt: { type: Date },
-    course: { type: Array, optional: true },
-    'course.$': { type: Object, blackbox: true, optional: true },
-    'course.$._id': { type: String, regEx: SimpleSchema.RegEx.Id },
 });
+
+export const lessonCreateSchema = lessonSchema.pick('courseId', 'name', 'startTime', 'endTime', 'date');
 
 export const LessonsCollection = createCollection({
     name: 'lessons',

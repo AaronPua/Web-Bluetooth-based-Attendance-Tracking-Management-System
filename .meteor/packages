@@ -38,3 +38,5 @@ leaonline:publication-factory
 reywood:publish-composite
 tunguska:reactive-aggregate
 sakulstra:aggregate
+tunifight:loggedin-mixin
+peerlibrary:subscription-scope

@@ -1,17 +1,19 @@
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
-import { createPublicationFactory } from 'meteor/leaonline:publication-factory';
+import { LessonsCollection } from '../LessonsCollection';
 
-const createPublication = createPublicationFactory();
-
-Meteor.publish('lessons.all', function getAllLessons() {
-    return Meteor.lessons.find({});
+Meteor.publish('lessons.all', function() {
+    return LessonsCollection.find({});
 });
 
-const getAllLessons = createPublication({
-    name: 'lessons.all',
-    validate: null,
-    run: () => {
-        return Meteor.lessons.find({})
-    }
-})
+Meteor.publish('lessons.specific', function(lessonId) {
+    this.enableScope();
+    check(lessonId, String);
+    return LessonsCollection.find({ _id: lessonId });
+});
+
+Meteor.publish('lessons.forOneCourse', function(courseId) {
+    this.enableScope();
+    check(courseId, String);
+    return LessonsCollection.find({ courseId: courseId });
+});

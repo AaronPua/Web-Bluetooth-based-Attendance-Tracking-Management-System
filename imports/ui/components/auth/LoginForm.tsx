@@ -24,6 +24,7 @@ export default function LoginForm() {
         return new Promise((resolve, reject) => {
             Meteor.loginWithPassword(model.email, model.password, error => {
                 const userId = Meteor.users.findOne(model.email);
+                console.log('getRolesForUser', Roles.getRolesForUser(userId));
                 if(Roles.userIsInRole(userId, 'student')) {
                     throw new Meteor.Error('Students Not Allowed', 'You do not have access to this platform.')
                 }

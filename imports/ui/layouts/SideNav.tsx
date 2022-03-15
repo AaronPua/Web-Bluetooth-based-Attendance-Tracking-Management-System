@@ -11,17 +11,17 @@ function SideNav() {
 
     const sideNavItems = [{
         name: 'Navigation',
-        id: htmlIdGenerator('testExample0')(),
+        id: htmlIdGenerator('navigation')(),
         items: [
             {
                 name: 'Users',
-                id: htmlIdGenerator('usersTab')(),
+                id: htmlIdGenerator('usersPage')(),
                 href: '/users',
             },
             {
-                name: 'Second Item with href',
-                id: htmlIdGenerator('testExample2')(),
-                href: '/#',
+                name: 'Courses',
+                id: htmlIdGenerator('coursesPage')(),
+                href: '/courses',
             }
         ],
     }];

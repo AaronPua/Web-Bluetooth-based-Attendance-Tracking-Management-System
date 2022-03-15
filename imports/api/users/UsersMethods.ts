@@ -30,7 +30,7 @@ export const registerUser = new ValidatedMethod({
         });
 
         if(userId) {
-            Roles.addUsersToRoles(userId, 'instructor')
+            Roles.addUsersToRoles(userId, 'instructor');
             Accounts.sendVerificationEmail(userId);
         }
         return userId;

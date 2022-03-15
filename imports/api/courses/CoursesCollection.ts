@@ -7,15 +7,11 @@ export const courseSchema = new SimpleSchema({
     name: { type: String },
     credits: { type: Number },
     createdAt: { type: Date },
-    users: { type: Array, optional: true, blackbox: true },
-    'users.$': { type: Object },
-    'users.$._id': { type: String, regEx: SimpleSchema.RegEx.Id },
-    lessons: { type: Array, optional: true },
-    'lessons.$': { type: Object, optional: true, blackbox: true  },
-    'lessons.$._id': { type: String, regEx: SimpleSchema.RegEx.Id },
 });
 
-const CoursesCollection = createCollection({
+export const courseCreateSchema = courseSchema.pick('name', 'credits');
+
+export const CoursesCollection = createCollection({
     name: 'courses',
     schema: courseSchema
 });

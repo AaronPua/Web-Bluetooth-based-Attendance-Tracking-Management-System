@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import '../imports/startup/server/index';
 import { Roles } from 'meteor/alanning:roles';
-import { UserSeeder } from '/imports/server/seeders/UsersSeeder';
+import { UserSeeder, InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { LessonSeeder } from '/imports/server/seeders/LessonsSeeder';
 import { CourseSeeder } from '/imports/server/seeders/CoursesSeeder';
 
@@ -12,7 +12,12 @@ Meteor.startup(() => {
         Roles.createRole('student');
     }
     // Meteor.roleAssignment.remove({});
-    // UserSeeder(false, false);
-    // LessonSeeder(false, false);
+    // UserSeeder(false, true);
+    // LessonSeeder(true, false);
     // CourseSeeder(true, false);
+
+    // Meteor.roleAssignment.remove({});
+    // Meteor.users.remove({});
+    // InstructorsSeeder();
+    // StudentsSeeder();
 });

@@ -14,10 +14,8 @@ export const userSchema = new SimpleSchema({
     'profile.gender': { type: String, allowedValues: ['male', 'female'] },
     services: { type: Object, optional: true, blackbox: true },
     createdAt: { type: Date },
-    // roles: { type: Object, optional: true },
-    // 'roles._id': { type: String, blackbox: true },
-    // courses: { type: Array },
-    // 'courses.$': { type: String },
+    courses: { type: Array, optional: true, blackbox: true },
+    'courses.$': { type: String },
 });
 
 export const userRegistrationSchema = new SimpleSchema({

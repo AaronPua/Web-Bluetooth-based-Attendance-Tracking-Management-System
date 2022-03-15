@@ -5,9 +5,9 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 
 export default function Users() {
 
-    const isLoading = useSubscribe('users.all.withRoles');
+    const isLoading = useSubscribe('users.all');
     const allUsers = useFind(() => Meteor.users.find());
-    console.log(allUsers);
+    // console.log(allUsers);
 
     const columns: TableColumn<Meteor.User>[] = [
         {
@@ -31,10 +31,6 @@ export default function Users() {
             name: 'Gender',
             selector: row => row.profile.gender,
         },
-        // {
-        //     name: 'Roles',
-        //     selector: row => row.userRoles.role._id,
-        // }
     ];
 
     return (

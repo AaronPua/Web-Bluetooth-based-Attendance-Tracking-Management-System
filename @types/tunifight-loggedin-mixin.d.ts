@@ -1,0 +1,1 @@
+declare module 'meteor/tunifight:loggedin-mixin';
