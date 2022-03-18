@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { createCollection } from 'meteor/quave:collections';
 import SimpleSchema from 'simpl-schema';
 
@@ -10,6 +9,9 @@ const lessonSchema = new SimpleSchema({
     endTime: { type: Date },
     date: { type: Date },
     createdAt: { type: Date },
+    studentAttendance: { type: Array, optional: true },
+    "studentAttendance.$": { type: Object },
+    "studentAttendance.$._id": { type: String },
 });
 
 export const lessonCreateSchema = lessonSchema.pick('courseId', 'name', 'startTime', 'endTime', 'date');
@@ -18,7 +20,3 @@ export const LessonsCollection = createCollection({
     name: 'lessons',
     schema: lessonSchema
 });
-
-if(!Meteor.lessons) {
-    Meteor.lessons = LessonsCollection;
-}

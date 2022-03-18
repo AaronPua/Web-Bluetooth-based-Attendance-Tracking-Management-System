@@ -67,3 +67,29 @@ export const updateLesson = new ValidatedMethod({
         });
     }
 });
+
+export const updateAttendance = new ValidatedMethod({
+    name: 'lesson.updateAttendance',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: "You need to be logged in before updating a student's attendance.",
+    },
+    validate: new SimpleSchema({
+        lessonId: { type: String },
+        studentId: { type: String },
+        action: { type: String, allowedValues: ['add', 'remove'] }
+    }).validator(),
+    run({lessonId, studentId, action}: { lessonId: string, studentId: string, action: string }) {
+        if(action === 'add') {
+            LessonsCollection.update({ _id: lessonId }, {
+                $addToSet: { studentAttendance: { _id: studentId } }
+            });
+        }
+        if(action === 'remove') {
+            LessonsCollection.update({ _id: lessonId }, {
+                $pull: { studentAttendance: { _id: studentId } }
+            });
+        }
+    }
+});

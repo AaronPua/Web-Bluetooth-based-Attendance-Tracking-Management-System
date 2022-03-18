@@ -7,6 +7,8 @@ export const courseSchema = new SimpleSchema({
     name: { type: String },
     credits: { type: Number },
     createdAt: { type: Date },
+    instructors: { type: Array, optional: true },
+    'instructors.$': { type: String },
 });
 
 export const courseCreateSchema = courseSchema.pick('name', 'credits');
@@ -15,7 +17,3 @@ export const CoursesCollection = createCollection({
     name: 'courses',
     schema: courseSchema
 });
-
-if(!Meteor.courses) {
-    Meteor.courses = CoursesCollection;
-}

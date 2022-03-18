@@ -73,7 +73,7 @@ export const addStudentToCourse = new ValidatedMethod({
     }).validator(),
     run({ courseId, studentId }: any) {
         Meteor.users.update({ _id: studentId }, {
-            $addToSet: { "courses": courseId }
+            $addToSet: { courses: { _id: courseId } }
         });
     }
 });

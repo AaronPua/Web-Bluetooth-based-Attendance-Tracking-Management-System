@@ -4,9 +4,10 @@ import moment, { Moment } from 'moment';
 import { useParams } from 'react-router';
 import { useTracker } from 'meteor/react-meteor-data';
 import { LessonsCollection } from '../api/lessons/LessonsCollection';
-import { updateLesson } from '../api/lessons/LessonsMethods';
+import { updateLesson, updateAttendance } from '../api/lessons/LessonsMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiDatePicker, EuiTitle, EuiText } from '@elastic/eui';
+import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiDatePicker, EuiTitle } from '@elastic/eui';
+import _ from 'underscore';
 
 export default function Lesson() {
 
@@ -20,6 +21,14 @@ export default function Lesson() {
     const [showLessonSuccess, setShowLessonSuccess] = useState(false);
     const [showLessonError, setShowLessonError] = useState(false);
     const [lessonError, setLessonError] = useState('');
+
+    const [showAddAttendanceSuccess, setShowAddAttendanceSuccess] = useState(false);
+    const [showAddAttendanceError, setShowAddAttendanceError] = useState(false);
+    const [addAttendanceError, setAddAttendanceError] = useState('');
+
+    const [showRemoveAttendanceSuccess, setShowRemoveAttendanceSuccess] = useState(false);
+    const [showRemoveAttendanceError, setShowRemoveAttendanceError] = useState(false);
+    const [removeAttendanceError, setRemoveAttendanceError] = useState('');
 
     const updateThisLesson = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -42,19 +51,50 @@ export default function Lesson() {
         });
     };
 
-    const { lesson, isLoadingLesson, students, isLoadingStudents } = useTracker(() => {
-        const lessonHandler = Meteor.subscribe('lessons.specific', lessonId);
-        const isLoadingLesson = !lessonHandler.ready();
+    const updateStudentAttendance = (e: { preventDefault: () => void; }, lessonId: string | undefined, studentId: string, action: string) => {
+        e.preventDefault();
+
+        updateAttendance.callPromise({
+            lessonId: lessonId,
+            studentId: studentId,
+            action: action
+        }).then(() => {
+            action === 'add' ? setShowAddAttendanceSuccess(true) : setShowRemoveAttendanceSuccess(true);
+        }).catch((error: any) => {
+            action === 'add' ? setShowAddAttendanceError(false) : setShowRemoveAttendanceError(false);
+            const reason = error.reason != null ? error.reason : error.message;
+            action === 'add' ? setAddAttendanceError(reason) : setRemoveAttendanceError(reason);
+            console.log('Message: ' + error.message);
+            console.log('Error Type: ' + error.error);
+            console.log('Reason: ' + error.reason);
+        });
+    };
+
+    const { lesson,  isLoadingLesson, presentStudents, isLoadingPresentStudents, absentStudents, isLoadingAbsentStudents } = useTracker(() => {
+        const lessonSub = Meteor.subscribe('lessons.specific', lessonId);
+        const isLoadingLesson = !lessonSub.ready();
         const lesson = LessonsCollection.findOne(lessonId);
 
-        const studentsHandler = Meteor.subscribe('users.students');
-        const isLoadingStudents = !studentsHandler.ready();
-        const students = Meteor.users.find().fetch();
+        const presentStudentsSub = Meteor.subscribe('lesson.attendance.present', courseId, lessonId);
+        const isLoadingPresentStudents = !presentStudentsSub.ready();
 
-        return { lesson, isLoadingLesson, students, isLoadingStudents };
+        const absentStudentsSub = Meteor.subscribe('lesson.attendance.absent', courseId, lessonId);
+        const isLoadingAbsentStudents = !absentStudentsSub.ready();
+
+        const courseStudentsSub = Meteor.subscribe('users.students.inSpecificCourse', courseId);
+        const courseStudents = Meteor.users.find(courseStudentsSub.scopeQuery()).fetch();
+        const courseStudentIds = _.pluck(courseStudents, '_id');
+
+        const attendedIds = _.pluck(_.get(lesson, 'studentAttendance'), '_id');
+        const absentIds = _.difference(courseStudentIds, attendedIds);
+
+        const presentStudents = Meteor.users.find({ _id: { $in: attendedIds }, "courses._id": { $eq: courseId } }).fetch();
+        const absentStudents = Meteor.users.find({ _id: { $in: absentIds }, "courses._id": { $eq: courseId } }).fetch();
+
+        return { lesson, isLoadingLesson, presentStudents, isLoadingPresentStudents, absentStudents, isLoadingAbsentStudents };
     }, []);
 
-    const columns: TableColumn<Meteor.User>[] = [
+    const presentStudentColumns: TableColumn<Meteor.User>[] = [
         {
             name: 'First Name',
             selector: row => row.profile.firstName,
@@ -64,7 +104,30 @@ export default function Lesson() {
             name: 'Last Name',
             selector: row => row.profile.lastName,
             sortable: true,
-        }
+        },
+        {
+            name: 'Attendance',
+            cell: row => <EuiButton size="s" color="text" id={row._id} 
+                    onClick={(e: any) => updateStudentAttendance(e, lessonId, row._id, 'remove') }>Mark Absent</EuiButton>,
+        },
+    ];
+
+    const absentStudentColumns: TableColumn<Meteor.User>[] = [
+        {
+            name: 'First Name',
+            selector: row => row.profile.firstName,
+            sortable: true,
+        },
+        {
+            name: 'Last Name',
+            selector: row => row.profile.lastName,
+            sortable: true,
+        },
+        {
+            name: 'Attendance',
+            cell: row => <EuiButton size="s" color="primary" id={row._id} 
+                    onClick={(e: any) => updateStudentAttendance(e, lessonId, row._id, 'add') }>Mark Present</EuiButton>,
+        },
     ];
 
     useEffect(() => {
@@ -74,7 +137,7 @@ export default function Lesson() {
             setLessonEndTime(moment(lesson.endTime));
             setLessonDate(moment(lesson.date));
         }
-    }, [lesson]);
+    }, [lesson, presentStudents, absentStudents]);
 
     return (
         <>
@@ -165,12 +228,48 @@ export default function Lesson() {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiTitle size="s">
-                                    <h3>Students</h3>
+                                    <h3>Present Students</h3>
                                 </EuiTitle>
+                                { showRemoveAttendanceError && 
+                                    <EuiCallOut title="An error has occured" color="danger">
+                                        <p>{removeAttendanceError}</p>
+                                    </EuiCallOut> 
+                                }
+                                { showRemoveAttendanceSuccess && 
+                                    <EuiCallOut title="Success!" color="success">
+                                        <p>Student attendance sucessfully marked as absent.</p>
+                                    </EuiCallOut> 
+                                }
                                 <DataTable
-                                    columns={columns}
-                                    data={students}
-                                    progressPending={isLoadingStudents}
+                                    columns={presentStudentColumns}
+                                    data={presentStudents}
+                                    progressPending={isLoadingPresentStudents}
+                                    pagination
+                                    striped
+                                    responsive
+                                    defaultSortFieldId={1}
+                                />
+                            </EuiPanel>
+                        </EuiFlexItem>
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <EuiTitle size="s">
+                                    <h3>Absent Students</h3>
+                                </EuiTitle>
+                                { showAddAttendanceError && 
+                                    <EuiCallOut title="An error has occured" color="danger">
+                                        <p>{addAttendanceError}</p>
+                                    </EuiCallOut> 
+                                }
+                                { showAddAttendanceSuccess && 
+                                    <EuiCallOut title="Success!" color="success">
+                                        <p>Student attendance sucessfully marked as present.</p>
+                                    </EuiCallOut> 
+                                }
+                                <DataTable
+                                    columns={absentStudentColumns}
+                                    data={absentStudents}
+                                    progressPending={isLoadingAbsentStudents}
                                     pagination
                                     striped
                                     responsive

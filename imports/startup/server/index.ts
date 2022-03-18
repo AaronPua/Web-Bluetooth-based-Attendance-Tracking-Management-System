@@ -8,5 +8,3 @@ import '/imports/api/courses/server/CoursesPublications';
 import '/imports/api/lessons/LessonsCollection';
 import '/imports/api/lessons/LessonsMethods';
 import '/imports/api/lessons/server/LessonsPublications';
-import '../../api/collections/Collections';
-// import '/imports/api/roles/RolesCollection';

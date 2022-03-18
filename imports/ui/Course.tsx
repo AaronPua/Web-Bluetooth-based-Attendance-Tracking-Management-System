@@ -192,7 +192,7 @@ export default function Course() {
                 }
                 setStudentId(studentSelectMap[0].value);
             }
-        }, 2000);
+        }, 1000);
 
         return () => clearTimeout(timer);
         
@@ -348,7 +348,7 @@ export default function Course() {
                             <EuiFlexItem>
                                 <EuiPanel>
                                     <EuiTitle>
-                                        <h2>Students</h2>
+                                        <h2>Enrolled Students</h2>
                                     </EuiTitle>
                                     <DataTable
                                         columns={studentColumns}
