@@ -6,10 +6,10 @@ import moment, { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate, useParams } from "react-router-dom";
-import { CoursesCollection } from '../api/courses/CoursesCollection';
-import { updateCourse, addStudentToCourse } from '../api/courses/CoursesMethods';
-import { LessonsCollection } from '../api/lessons/LessonsCollection';
-import { createLesson } from '../api/lessons/LessonsMethods';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
+import { updateCourse, addStudentToCourse } from '../../../api/courses/CoursesMethods';
+import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
+import { createLesson } from '../../../api/lessons/LessonsMethods';
 
 export default function Course() {
     const [courseName, setCourseName] = useState('');

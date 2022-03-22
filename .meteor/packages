@@ -40,3 +40,8 @@ tunguska:reactive-aggregate
 sakulstra:aggregate
 tunifight:loggedin-mixin
 peerlibrary:subscription-scope
+quave:testing
+meteortesting:mocha
+dburles:factory
+johanbrook:publication-collector
+xolvio:cleaner

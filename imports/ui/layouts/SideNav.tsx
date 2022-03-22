@@ -17,6 +17,19 @@ function SideNav() {
                 name: 'Users',
                 id: htmlIdGenerator('usersPage')(),
                 href: '/users',
+                forceOpen: true,
+                items: [
+                    {
+                        name: 'Instructors',
+                        id: htmlIdGenerator('instructorsPage')(),
+                        href: '/users',
+                    },
+                    {
+                        name: 'Students',
+                        id: htmlIdGenerator('studentsPage')(),
+                        href: '/users',
+                    }
+                ]
             },
             {
                 name: 'Courses',

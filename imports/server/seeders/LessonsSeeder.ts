@@ -2,6 +2,7 @@ import seeder from '@cleverbeagle/seeder';
 import { Meteor } from 'meteor/meteor';
 import ObjectID from 'bson-objectid';
 import moment from 'moment';
+import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
 
 export const LessonSeeder = (resetCollection: boolean, seedIfExistingData: boolean) => seeder(Meteor.lessons, {
     resetCollection: resetCollection,
@@ -24,3 +25,18 @@ export const LessonSeeder = (resetCollection: boolean, seedIfExistingData: boole
         }
     }
 });
+
+export const LessonsSeeder = (iteration: any, courseId: string, studentAttendance: any) => {
+    for(let i = 0; i < iteration; i++) {
+        LessonsCollection.insert({
+            courseId: courseId,
+            name: `Lesson ${iteration + 1}`,
+            startTime: moment().hours(1).minutes(0).toDate(),
+            endTime: moment().hours(3).minutes(0).toDate(),
+            date: new Date().setDate(new Date().getDate() + 1),
+            createdAt: new Date(),
+            studentAttendance: { studentAttendance } 
+        });
+    }
+    
+}

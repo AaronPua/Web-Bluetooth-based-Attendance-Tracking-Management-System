@@ -11,10 +11,10 @@ import VerifyEmail from './components/auth/VerifyEmail';
 import VerifiedEmail from './components/auth/VerifiedEmail';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
-import Users from './Users';
-import Courses from './Courses';
-import Course from './Course';
-import Lesson from './Lesson';
+import Users from './components/users/Users';
+import Courses from './components/courses/Courses';
+import Course from './components/courses/Course';
+import Lesson from './components/courses/Lesson';
 
 export const App = () => {
     return (

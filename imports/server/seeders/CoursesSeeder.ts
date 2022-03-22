@@ -1,6 +1,8 @@
 import seeder from '@cleverbeagle/seeder';
 import { Meteor } from 'meteor/meteor';
 import ObjectID from 'bson-objectid';
+import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { faker } from '@faker-js/faker';
 
 export const CourseSeeder = (resetCollection: boolean, seedIfExistingData: boolean) => seeder(Meteor.courses, {
     resetCollection: resetCollection,
@@ -12,7 +14,7 @@ export const CourseSeeder = (resetCollection: boolean, seedIfExistingData: boole
             seed(iteration: any, faker: any) {
                 return {
                     _id: ObjectID().str,
-                    name: `course-${iteration + 1}`,
+                    name: `Course ${iteration + 1}`,
                     credits: faker.datatype.number({ min: 1, max: 6 }),
                     createdAt: faker.date.recent(),
                 };
@@ -20,3 +22,13 @@ export const CourseSeeder = (resetCollection: boolean, seedIfExistingData: boole
         }
     }
 });
+
+export const CoursesSeeder = (iteration: any) => {
+    for(let i = 0; i < iteration; i++) {
+        CoursesCollection.insert({
+            name: `Course ${iteration + 1}`,
+            credits: faker.datatype.number({ min: 1, max: 6 }),
+            createdAt: faker.date.recent(),
+        });
+    }
+}

@@ -7,7 +7,7 @@ Meteor.publish('users.all', function() {
 });
 
 Meteor.publish('users.instructors', function() {
-    const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' });
+    const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
 
     return Meteor.users.find({ _id: { $in: instructorIds }});
