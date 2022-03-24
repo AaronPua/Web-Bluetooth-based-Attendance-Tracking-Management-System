@@ -26,7 +26,7 @@ export const LessonSeeder = (resetCollection: boolean, seedIfExistingData: boole
     }
 });
 
-export const LessonsSeeder = (iteration: any, courseId: string, studentAttendance: any) => {
+export const LessonsSeeder = (iteration: any, courseId: string) => {
     for(let i = 0; i < iteration; i++) {
         LessonsCollection.insert({
             courseId: courseId,
@@ -35,8 +35,6 @@ export const LessonsSeeder = (iteration: any, courseId: string, studentAttendanc
             endTime: moment().hours(3).minutes(0).toDate(),
             date: new Date().setDate(new Date().getDate() + 1),
             createdAt: new Date(),
-            studentAttendance: { studentAttendance } 
         });
     }
-    
 }

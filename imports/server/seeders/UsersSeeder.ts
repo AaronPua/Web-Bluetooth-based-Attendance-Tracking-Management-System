@@ -59,12 +59,11 @@ export const InstructorsSeeder = (iteration: any) => {
 
     for(let i = 0; i < iteration; i++) {
         const userId = Accounts.createUser({
-            // email: `instructor-${iteration + 1}@test.com`,
             email: faker.internet.email(), 
             password: 'test', 
             profile: { 
-                firstName: 'Instructor', 
-                lastName: `${iteration + 1}`, 
+                firstName: faker.name.firstName("male"), 
+                lastName: faker.name.lastName("male"),
                 gender: 'male' 
             }
         });
@@ -81,12 +80,11 @@ export const StudentsSeeder = (iteration: any) => {
 
     for(let i = 0; i < iteration; i++) {
         const userId = Accounts.createUser({
-            // email: `student-${iteration + 1}@test.com`,
             email: faker.internet.email(), 
             password: 'test', 
             profile: { 
-                firstName: 'Student', 
-                lastName: `${iteration + 1}`, 
+                firstName: faker.name.firstName("male"), 
+                lastName: faker.name.lastName("male"), 
                 gender: 'male' 
             }
         });

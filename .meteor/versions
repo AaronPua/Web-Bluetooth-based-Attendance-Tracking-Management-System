@@ -79,7 +79,6 @@ peerlibrary:subscription-scope@0.5.0
 promise@0.12.0
 quave:collections@1.0.2
 quave:settings@1.0.0
-quave:testing@1.0.1
 raix:eventemitter@1.0.0
 random@1.2.0
 rate-limit@1.0.9

@@ -77,3 +77,21 @@ export const addStudentToCourse = new ValidatedMethod({
         });
     }
 });
+
+export const removeStudentFromCourse = new ValidatedMethod({
+    name: 'course.removeStudentFromCourse',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before removing students from a course.',
+    },
+    validate: new SimpleSchema({
+        courseId: { type: String },
+        studentId: { type: String },
+    }).validator(),
+    run({ courseId, studentId }: any) {
+        Meteor.users.update({ _id: studentId }, {
+            $pull: { courses: { _id: courseId } }
+        });
+    }
+});

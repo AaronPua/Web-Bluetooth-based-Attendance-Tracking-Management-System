@@ -4,16 +4,19 @@ import { assert } from 'chai';
 import { InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
 import { LessonsSeeder } from '/imports/server/seeders/LessonsSeeder';
-import './UsersPublications';
+import './LessonsPublications';
 import { CoursesCollection } from '../../courses/CoursesCollection';
+import { LessonsCollection } from '../../lessons/LessonsCollection';
 import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
+import { Roles } from 'meteor/alanning:roles';
 import { Random } from 'meteor/random';
 import { addStudentToCourse } from '../../courses/CoursesMethods';
+import { updateAttendance } from '../LessonsMethods';
 
-describe('UsersPublications', function() {
+describe('LessonsPublications', function() {
  
-    let courseId: string, students, studentIds, studentId;
+    let courseId: string, students, studentIds, studentId, lessonId: string;
 
     before(function() {
         resetDatabase();
@@ -33,43 +36,49 @@ describe('UsersPublications', function() {
         studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
         studentId = Meteor.users.findOne({ _id: studentIds[0] })?._id;
 
-        addStudentToCourse._execute({ userId: Random.id() }, { courseId: courseId, studentId: studentId });
-
+        _.each(studentIds, (studentId) => {
+            addStudentToCourse._execute({ userId: Random.id() }, { courseId: courseId, studentId: studentId })
+        });
+        
         LessonsSeeder(1, courseId);
+        LessonsSeeder(1, courseId);
+
+        lessonId = LessonsCollection.find().fetch()[0]._id;
+        updateAttendance._execute({ userId: Random.id() }, { lessonId: lessonId, studentId: studentId, action: 'add' });
     });
 
-    it('publish all users', async function() {
+    it('publish all lessons', async function() {
         const collector = new PublicationCollector();
         
-        const collections = await collector.collect('users.all');
-        assert.equal(collections.users.length, 10);
+        const collections = await collector.collect('lessons.all');
+        assert.equal(collections.lessons.length, 2);
     });
 
-    it('publish all instructors', async function() {
+    it('publish specific lessons', async function() {
         const collector = new PublicationCollector();
-
-        const collections = await collector.collect('users.instructors');
-        assert.equal(collections.users.length, 5);
+        
+        const collections = await collector.collect('lessons.specific', lessonId);
+        assert.equal(collections.lessons.length, 1);
     });
 
-    it('publish all students', async function() {
+    it('publish specific lessons for a specific course', async function() {
         const collector = new PublicationCollector();
-
-        const collections = await collector.collect('users.students');
-        assert.equal(collections.users.length, 5);
+        
+        const collections = await collector.collect('lessons.forOneCourse', courseId);
+        assert.equal(collections.lessons.length, 2);
     });
 
-    it('publish all students in a specific course', async function() {
+    it('publish students who have attended a lesson', async function() {
         const collector = new PublicationCollector();
-
-        const collections = await collector.collect('users.students.inSpecificCourse', courseId);
+        
+        const collections = await collector.collect('lesson.attendance.present', courseId, lessonId);
         assert.equal(collections.users.length, 1);
     });
 
-    it('publish all students not in a specific course', async function() {
+    it('publish students who are absent for a lesson', async function() {
         const collector = new PublicationCollector();
-
-        const collections = await collector.collect('users.students.notInSpecificCourse', courseId);
+        
+        const collections = await collector.collect('lesson.attendance.absent', courseId, lessonId);
         assert.equal(collections.users.length, 4);
     });
 
