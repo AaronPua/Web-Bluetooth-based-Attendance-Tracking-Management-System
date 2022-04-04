@@ -95,3 +95,39 @@ export const removeStudentFromCourse = new ValidatedMethod({
         });
     }
 });
+
+export const addInstructorToCourse = new ValidatedMethod({
+    name: 'course.addInstructorToCourse',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before adding instructors to a course.',
+    },
+    validate: new SimpleSchema({
+        courseId: { type: String },
+        instructorId: { type: String },
+    }).validator(),
+    run({ courseId, instructorId }: any) {
+        CoursesCollection.update({ _id: courseId }, {
+            $addToSet: { instructors: { _id: instructorId } }
+        });
+    }
+});
+
+export const removeInstructorFromCourse = new ValidatedMethod({
+    name: 'course.removeInstructorFromCourse',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before removing instructors from a course.',
+    },
+    validate: new SimpleSchema({
+        courseId: { type: String },
+        instructorId: { type: String },
+    }).validator(),
+    run({ courseId, instructorId }: any) {
+        CoursesCollection.update({ _id: courseId }, {
+            $pull: { instructors: { _id: instructorId } }
+        });
+    }
+});

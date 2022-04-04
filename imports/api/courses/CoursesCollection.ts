@@ -8,7 +8,11 @@ export const courseSchema = new SimpleSchema({
     credits: { type: Number },
     createdAt: { type: Date },
     instructors: { type: Array, optional: true },
-    'instructors.$': { type: String },
+    'instructors.$': { type: Object },
+    "instructors.$._id": { type: String },
+    beacons: { type: Array, optional: true },
+    "beacons.$": { type: Object },
+    "beacons.$._id": { type: String },
 });
 
 export const courseCreateSchema = courseSchema.pick('name', 'credits');

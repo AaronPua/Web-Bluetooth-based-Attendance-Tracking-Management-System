@@ -8,3 +8,6 @@ import '/imports/api/courses/server/CoursesPublications';
 import '/imports/api/lessons/LessonsCollection';
 import '/imports/api/lessons/LessonsMethods';
 import '/imports/api/lessons/server/LessonsPublications';
+import '/imports/api/beacons/BeaconsCollection';
+import '/imports/api/beacons/BeaconsMethods';
+import '/imports/api/beacons/server/BeaconsPublications';

@@ -4,7 +4,7 @@ import ObjectID from 'bson-objectid';
 import moment from 'moment';
 import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
 
-export const LessonSeeder = (resetCollection: boolean, seedIfExistingData: boolean) => seeder(Meteor.lessons, {
+export const LessonSeeder = (resetCollection: boolean, seedIfExistingData: boolean) => seeder(LessonsCollection, {
     resetCollection: resetCollection,
     seedIfExistingData: seedIfExistingData,  
     environments: ['development', 'staging'],
