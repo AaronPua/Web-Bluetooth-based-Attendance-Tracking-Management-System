@@ -14,7 +14,8 @@ import ResetPassword from './components/auth/ResetPassword';
 import Users from './components/users/Users';
 import Courses from './components/courses/Courses';
 import Course from './components/courses/Course';
-import Lesson from './components/courses/Lesson';
+import Lesson from './components/lessons/Lesson';
+import Lessons from './components/lessons/Lessons';
 
 export const App = () => {
     return (
@@ -26,7 +27,10 @@ export const App = () => {
                     <Route path="courses" element={<Outlet />} >
                         <Route index element={<Courses />} />
                         <Route path=":courseId" element={<Course />} />
-                        <Route path=":courseId/lesson/:lessonId" element={<Lesson />} />
+                        <Route path=":courseId/lessons/" element={<Lessons />} />
+                        <Route path=":courseId/lessons/:lessonId" element={<Lesson />} />
+                        {/* <Route path=":courseId/beacons/" element={<Lesson />} /> */}
+                        {/* <Route path=":courseId/beacons/:beaconId" element={<Lesson />} /> */}
                     </Route>
                 </Route>
                 <Route element={<CenteredBody />} >
