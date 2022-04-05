@@ -16,6 +16,7 @@ import Courses from './components/courses/Courses';
 import Course from './components/courses/Course';
 import Lesson from './components/lessons/Lesson';
 import Lessons from './components/lessons/Lessons';
+import Students from './components/users/Students';
 
 export const App = () => {
     return (
@@ -29,6 +30,7 @@ export const App = () => {
                         <Route path=":courseId" element={<Course />} />
                         <Route path=":courseId/lessons/" element={<Lessons />} />
                         <Route path=":courseId/lessons/:lessonId" element={<Lesson />} />
+                        <Route path=":courseId/students/" element={<Students />} />
                         {/* <Route path=":courseId/beacons/" element={<Lesson />} /> */}
                         {/* <Route path=":courseId/beacons/:beaconId" element={<Lesson />} /> */}
                     </Route>
