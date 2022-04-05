@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
 import { useNavigate, useParams } from 'react-router';
-import { useFind, useSubscribe } from 'meteor/react-meteor-data';
+import { useFind, useSubscribe, useTracker } from 'meteor/react-meteor-data';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import { createLesson } from '../../../api/lessons/LessonsMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -10,21 +10,37 @@ import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm,
 import _ from 'underscore';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { Meteor } from 'meteor/meteor';
 
 export default function Lessons() {
 
-    const { courseId, lessonId } = useParams();
+    const { courseId } = useParams();
+
+    const [courseName, setCourseName] = useState('');
 
     const [showLessonSuccess, setShowLessonSuccess] = useState(false);
     const [showLessonError, setShowLessonError] = useState(false);
     const [lessonError, setLessonError] = useState('');
 
-    const isLoading = useSubscribe('lessons.all');
+    const isLoadingLessons = useSubscribe('lessons.all');
     const allLessons = useFind(() => LessonsCollection.find());
+
+    const course = useTracker(() => { 
+        Meteor.subscribe('courses.specific', courseId);
+        return CoursesCollection.findOne(courseId) ;
+    }, []);
 
     let navigate = useNavigate();
     const goToLesson = (lessonId: string) => {
         navigate(`/courses/${courseId}/lessons/${lessonId}`);
+    }
+
+    type FormInputs = {
+        name: string,
+        startTime: Moment,
+        endTime: Moment,
+        date: Moment
     }
 
     const createLessonForm = useFormik({
@@ -41,17 +57,17 @@ export default function Lessons() {
             date: yup.date().required('Date is required'),
         }),
         onSubmit: (values) => {
-            createNewLesson(courseId, values.name, values.startTime, values.endTime, values.date);
+            createNewLesson(courseId, values);
         }
     });
 
-    const createNewLesson = (courseId: string | undefined, name: string, startTime: Moment, endTime: Moment, date: Moment) => {
+    const createNewLesson = (courseId: string | undefined, values: FormInputs) => {
         createLesson.callPromise({
             courseId: courseId,
-            name: name,
-            startTime: startTime.toDate(),
-            endTime: endTime.toDate(),
-            date: date.toDate(),
+            name: values.name,
+            startTime: values.startTime.toDate(),
+            endTime: values.endTime.toDate(),
+            date: values.date.toDate(),
         }).then(() => {
             setShowLessonSuccess(true);
         }).catch((error: any) => {
@@ -60,6 +76,12 @@ export default function Lessons() {
             setLessonError(reason);
         });
     };
+
+    useEffect(() => {
+        if(course) {
+            setCourseName(course.name);
+        }
+    }, [course]);
 
     type DataRow = {
         _id: string;
@@ -101,7 +123,7 @@ export default function Lessons() {
 
     return (
         <>
-            <EuiPageHeader pageTitle="Lessons" />
+            <EuiPageHeader pageTitle={`${courseName}: Lessons`} />
             <EuiPageContent
                 hasBorder={false}
                 hasShadow={false}
@@ -114,6 +136,10 @@ export default function Lessons() {
                     <EuiFlexGroup>
                        <EuiFlexItem>
                             <EuiPanel color="plain">
+                                <EuiTitle size="s">
+                                    <h4>Create Lesson</h4>
+                                </EuiTitle>
+                                <EuiSpacer />
                                 { showLessonError && 
                                     <EuiCallOut title="An error has occured" color="danger">
                                         <p>{lessonError}</p>
@@ -155,7 +181,7 @@ export default function Lessons() {
                                                     showTimeSelect
                                                     showTimeSelectOnly
                                                     showIcon={false}
-                                                    selected={createLessonForm.values.startTime}
+                                                    selected={createLessonForm.values.endTime}
                                                     onChange={(date: Moment) => createLessonForm.setFieldValue('endTime', date)}
                                                     dateFormat="HH:mm"
                                                     timeFormat="HH:mm"
@@ -170,7 +196,7 @@ export default function Lessons() {
                                                 <EuiDatePicker
                                                     showIcon={false}
                                                     dateFormat="DD-MM-YYYY"
-                                                    selected={createLessonForm.values.startTime}
+                                                    selected={createLessonForm.values.date}
                                                     onChange={(date: Moment) => createLessonForm.setFieldValue('date', date)}
                                                     isInvalid={!!createLessonForm.errors.date}
                                                 />
@@ -179,7 +205,7 @@ export default function Lessons() {
 
                                          <EuiFlexItem>
                                             <EuiFormRow hasEmptyLabelSpace>
-                                                <EuiButton fill color="primary" type="submit">Create Lesson</EuiButton>
+                                                <EuiButton fill color="primary" type="submit">Create</EuiButton>
                                             </EuiFormRow>
                                         </EuiFlexItem>
                                     </EuiFlexGroup>
@@ -194,14 +220,11 @@ export default function Lessons() {
                     <EuiFlexGroup>
                         <EuiFlexItem>
                                 <EuiPanel color="plain">
-                                    {/* <EuiTitle>
-                                        <h2>Lessons</h2>
-                                    </EuiTitle> */}
                                     <DataTable
                                         title="Current Lessons"
                                         columns={columns}
                                         data={allLessons}
-                                        progressPending={isLoading()}
+                                        progressPending={isLoadingLessons()}
                                         pagination
                                         striped
                                         responsive

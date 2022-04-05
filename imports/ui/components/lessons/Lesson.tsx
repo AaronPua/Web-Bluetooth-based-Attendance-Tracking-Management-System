@@ -6,8 +6,11 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import { updateLesson, updateAttendance } from '../../../api/lessons/LessonsMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiDatePicker, EuiTitle } from '@elastic/eui';
+import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm, EuiFlexGroup, 
+    EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiDatePicker, EuiTitle, EuiSpacer } from '@elastic/eui';
 import _ from 'underscore';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 export default function Lesson() {
 
@@ -29,46 +32,6 @@ export default function Lesson() {
     const [showRemoveAttendanceSuccess, setShowRemoveAttendanceSuccess] = useState(false);
     const [showRemoveAttendanceError, setShowRemoveAttendanceError] = useState(false);
     const [removeAttendanceError, setRemoveAttendanceError] = useState('');
-
-    const updateThisLesson = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-
-        updateLesson.callPromise({
-            lessonId: lessonId,
-            name: lessonName,
-            startTime: lessonStartTime.toDate(),
-            endTime: lessonEndTime.toDate(),
-            date: lessonDate.toDate(),
-        }).then(() => {
-            setShowLessonSuccess(true);
-        }).catch((error: any) => {
-            setShowLessonError(true);
-            const reason = error.reason != null ? error.reason : error.message;
-            setLessonError(reason);
-            console.log('Message: ' + error.message);
-            console.log('Error Type: ' + error.error);
-            console.log('Reason: ' + error.reason);
-        });
-    };
-
-    const updateStudentAttendance = (e: { preventDefault: () => void; }, lessonId: string | undefined, studentId: string, action: string) => {
-        e.preventDefault();
-
-        updateAttendance.callPromise({
-            lessonId: lessonId,
-            studentId: studentId,
-            action: action
-        }).then(() => {
-            action === 'add' ? setShowAddAttendanceSuccess(true) : setShowRemoveAttendanceSuccess(true);
-        }).catch((error: any) => {
-            action === 'add' ? setShowAddAttendanceError(false) : setShowRemoveAttendanceError(false);
-            const reason = error.reason != null ? error.reason : error.message;
-            action === 'add' ? setAddAttendanceError(reason) : setRemoveAttendanceError(reason);
-            console.log('Message: ' + error.message);
-            console.log('Error Type: ' + error.error);
-            console.log('Reason: ' + error.reason);
-        });
-    };
 
     const { lesson,  isLoadingLesson, presentStudents, isLoadingPresentStudents, absentStudents, isLoadingAbsentStudents } = useTracker(() => {
         const lessonSub = Meteor.subscribe('lessons.specific', lessonId);
@@ -93,6 +56,73 @@ export default function Lesson() {
 
         return { lesson, isLoadingLesson, presentStudents, isLoadingPresentStudents, absentStudents, isLoadingAbsentStudents };
     }, []);
+
+    useEffect(() => {
+        if(lesson) {
+            setLessonName(lesson.name);
+            setLessonStartTime(moment(lesson.startTime));
+            setLessonEndTime(moment(lesson.endTime));
+            setLessonDate(moment(lesson.date));
+        }
+    }, [lesson, presentStudents, absentStudents]);
+
+    type FormInputs = {
+        name: string,
+        startTime: Moment,
+        endTime: Moment,
+        date: Moment
+    }
+
+    const updateLessonForm = useFormik({
+        initialValues: {
+            name: lessonName,
+            startTime: lessonStartTime,
+            endTime: lessonEndTime,
+            date: lessonDate
+        },
+        enableReinitialize: true,
+        validationSchema: yup.object().shape({
+            name: yup.string().required('Lesson Name is required'),
+            startTime: yup.date().required('Start Time is required'),
+            endTime: yup.date().required('End Time is required'),
+            date: yup.date().required('Date is required'),
+        }),
+        onSubmit: (values) => {
+            updateThisLesson(lessonId, values);
+        }
+    });
+
+    const updateThisLesson = (lessonId: string | undefined, values: FormInputs) => {
+        updateLesson.callPromise({
+            lessonId: lessonId,
+            name: values.name,
+            startTime: values.startTime.toDate(),
+            endTime: values.endTime.toDate(),
+            date: values.date.toDate(),
+        }).then(() => {
+            setShowLessonSuccess(true);
+        }).catch((error: any) => {
+            setShowLessonError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setLessonError(reason);
+        });
+    };
+
+    const updateStudentAttendance = (e: { preventDefault: () => void; }, lessonId: string | undefined, studentId: string, action: string) => {
+        e.preventDefault();
+
+        updateAttendance.callPromise({
+            lessonId: lessonId,
+            studentId: studentId,
+            action: action
+        }).then(() => {
+            action === 'add' ? setShowAddAttendanceSuccess(true) : setShowRemoveAttendanceSuccess(true);
+        }).catch((error: any) => {
+            action === 'add' ? setShowAddAttendanceError(false) : setShowRemoveAttendanceError(false);
+            const reason = error.reason != null ? error.reason : error.message;
+            action === 'add' ? setAddAttendanceError(reason) : setRemoveAttendanceError(reason);
+        });
+    };
 
     const presentStudentColumns: TableColumn<Meteor.User>[] = [
         {
@@ -130,18 +160,9 @@ export default function Lesson() {
         },
     ];
 
-    useEffect(() => {
-        if(lesson) {
-            setLessonName(lesson.name);
-            setLessonStartTime(moment(lesson.startTime));
-            setLessonEndTime(moment(lesson.endTime));
-            setLessonDate(moment(lesson.date));
-        }
-    }, [lesson, presentStudents, absentStudents]);
-
     return (
         <>
-            <EuiPageHeader pageTitle="Edit Lesson" />
+            <EuiPageHeader pageTitle={lessonName} />
             <EuiPageContent
                 hasBorder={false}
                 hasShadow={false}
@@ -154,6 +175,10 @@ export default function Lesson() {
                     <EuiFlexGroup>
                         <EuiFlexItem>
                             <EuiPanel>
+                                <EuiTitle size="s">
+                                    <h4>Edit Lesson</h4>
+                                </EuiTitle>
+                                <EuiSpacer />
                                 { showLessonError && 
                                     <EuiCallOut title="An error has occured" color="danger">
                                         <p>{lessonError}</p>
@@ -165,59 +190,65 @@ export default function Lesson() {
                                     </EuiCallOut> 
                                 }
                                 { !isLoadingLesson &&
-                                    <EuiForm component="form">
+                                    <EuiForm component="form" onSubmit={updateLessonForm.handleSubmit}>
                                         <EuiFlexGroup>
                                             <EuiFlexItem>
-                                                <EuiFormRow label="Lesson Name">
-                                                    <EuiFieldText name="lessonName" value={lessonName} onChange={(e) => setLessonName(e.target.value)}/>
+                                                <EuiFormRow label="Lesson Name" error={updateLessonForm.errors.name} isInvalid={!!updateLessonForm.errors.name}>
+                                                    <EuiFieldText {...updateLessonForm.getFieldProps('name')} isInvalid={!!updateLessonForm.errors.name}/>
                                                 </EuiFormRow>
                                             </EuiFlexItem>
+
                                             <EuiFlexItem>
-                                                <EuiFormRow label="Start Time">
+                                                <EuiFormRow label="Start Time" error={updateLessonForm.errors.startTime} 
+                                                    isInvalid={!!updateLessonForm.errors.startTime}>
                                                     <EuiDatePicker
                                                         showTimeSelect
                                                         showTimeSelectOnly
                                                         showIcon={false}
-                                                        selected={lessonStartTime}
-                                                        onChange={(date: Moment) => setLessonStartTime(date)}
+                                                        selected={updateLessonForm.values.startTime}
+                                                        onChange={(date: Moment) => updateLessonForm.setFieldValue('startTime', date)}
                                                         dateFormat="HH:mm"
                                                         timeFormat="HH:mm"
+                                                        isInvalid={!!updateLessonForm.errors.startTime}
                                                     />
                                                 </EuiFormRow>
                                             </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                        
-                                        <EuiFlexGroup>
+
                                             <EuiFlexItem>
-                                                <EuiFormRow label="Date (DD-MM-YYYY)">
+                                                <EuiFormRow label="End Time" error={updateLessonForm.errors.endTime} 
+                                                    isInvalid={!!updateLessonForm.errors.endTime}>
+                                                    <EuiDatePicker
+                                                        showTimeSelect
+                                                        showTimeSelectOnly
+                                                        showIcon={false}
+                                                        selected={updateLessonForm.values.endTime}
+                                                        onChange={(date: Moment) => updateLessonForm.setFieldValue('endTime', date)}
+                                                        dateFormat="HH:mm"
+                                                        timeFormat="HH:mm"
+                                                        isInvalid={!!updateLessonForm.errors.endTime}
+                                                    />
+                                                </EuiFormRow>
+                                            </EuiFlexItem>
+
+                                            <EuiFlexItem>
+                                                <EuiFormRow label="Date (DD-MM-YYYY)" error={updateLessonForm.errors.date} 
+                                                    isInvalid={!!updateLessonForm.errors.date}>
                                                     <EuiDatePicker
                                                         showIcon={false}
-                                                        selected={lessonDate}
-                                                        onChange={(date: Moment) => setLessonDate(date)}
                                                         dateFormat="DD-MM-YYYY"
+                                                        selected={updateLessonForm.values.date}
+                                                        onChange={(date: Moment) => updateLessonForm.setFieldValue('date', date)}
+                                                        isInvalid={!!updateLessonForm.errors.date}
                                                     />
                                                 </EuiFormRow>
                                             </EuiFlexItem>
+
                                             <EuiFlexItem>
-                                                <EuiFormRow label="End Time">
-                                                    <EuiDatePicker
-                                                        showTimeSelect
-                                                        showTimeSelectOnly
-                                                        showIcon={false}
-                                                        selected={lessonEndTime}
-                                                        onChange={(date: Moment) => setLessonEndTime(date)}
-                                                        dateFormat="HH:mm"
-                                                        timeFormat="HH:mm"
-                                                    />
+                                                <EuiFormRow hasEmptyLabelSpace>
+                                                    <EuiButton fill color="primary" type="submit">Update</EuiButton>
                                                 </EuiFormRow>
                                             </EuiFlexItem>
                                         </EuiFlexGroup>
-                                        
-                                        <EuiFlexItem grow={false}>
-                                            <EuiFormRow hasEmptyLabelSpace>
-                                                <EuiButton fill color="primary" type="submit" onClick={(e: any) => updateThisLesson(e)}>Update Lesson</EuiButton>
-                                            </EuiFormRow>
-                                        </EuiFlexItem>
                                     </EuiForm>
                                 }
                             </EuiPanel>
@@ -227,9 +258,6 @@ export default function Lesson() {
                     <EuiFlexGroup>
                         <EuiFlexItem>
                             <EuiPanel>
-                                <EuiTitle size="s">
-                                    <h3>Present Students</h3>
-                                </EuiTitle>
                                 { showRemoveAttendanceError && 
                                     <EuiCallOut title="An error has occured" color="danger">
                                         <p>{removeAttendanceError}</p>
@@ -241,6 +269,7 @@ export default function Lesson() {
                                     </EuiCallOut> 
                                 }
                                 <DataTable
+                                    title="Present Students"
                                     columns={presentStudentColumns}
                                     data={presentStudents}
                                     progressPending={isLoadingPresentStudents}
@@ -253,9 +282,6 @@ export default function Lesson() {
                         </EuiFlexItem>
                         <EuiFlexItem>
                             <EuiPanel>
-                                <EuiTitle size="s">
-                                    <h3>Absent Students</h3>
-                                </EuiTitle>
                                 { showAddAttendanceError && 
                                     <EuiCallOut title="An error has occured" color="danger">
                                         <p>{addAttendanceError}</p>
@@ -267,6 +293,7 @@ export default function Lesson() {
                                     </EuiCallOut> 
                                 }
                                 <DataTable
+                                    title="Absent Students"
                                     columns={absentStudentColumns}
                                     data={absentStudents}
                                     progressPending={isLoadingAbsentStudents}

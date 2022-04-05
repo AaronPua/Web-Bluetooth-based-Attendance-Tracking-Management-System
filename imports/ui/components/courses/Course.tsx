@@ -50,9 +50,6 @@ export default function Course() {
             setShowCourseError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setCourseError(reason);
-            console.log('Message: ' + error.message);
-            console.log('Error Type: ' + error.error);
-            console.log('Reason: ' + error.reason);
         });
     };
 
@@ -68,9 +65,6 @@ export default function Course() {
             setShowAddStudentError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setAddStudentError(reason);
-            console.log('Message: ' + error.message);
-            console.log('Error Type: ' + error.error);
-            console.log('Reason: ' + error.reason);
         });
     };
 
@@ -361,7 +355,7 @@ export default function Course() {
                                     />
                                 </EuiPanel>
                             </EuiFlexItem>
-                            <EuiFlexItem>
+                            {/* <EuiFlexItem>
                                 <EuiPanel>
                                     <EuiTitle>
                                         <h2>Lessons</h2>
@@ -376,7 +370,7 @@ export default function Course() {
                                         defaultSortFieldId={1}
                                     />
                                 </EuiPanel>
-                            </EuiFlexItem>
+                            </EuiFlexItem> */}
                         </EuiFlexGroup>
                     }
                 </EuiPageContentBody>
