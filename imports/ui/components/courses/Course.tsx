@@ -10,6 +10,7 @@ import { updateCourse } from '../../../api/courses/CoursesMethods';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 
 export default function Course() {
     const [courseName, setCourseName] = useState('');
@@ -68,18 +69,21 @@ export default function Course() {
         });
     };
 
-    const { course, isLoadingCourse, allLessons, studentsInCourse } = useTracker(() => {
+    const { course, isLoadingCourse, allLessons, studentsInCourse, beaconsInCourse } = useTracker(() => {
         const courseHandler = Meteor.subscribe('courses.specific', courseId);
         const isLoadingCourse = !courseHandler.ready();
         const course = CoursesCollection.findOne(courseId);
 
         const lessonHandler = Meteor.subscribe('lessons.forOneCourse', courseId);
-        const allLessons = LessonsCollection.find().fetch();
+        const allLessons = LessonsCollection.find(lessonHandler.scopeQuery()).fetch();
 
         const studentsInCourseHandler = Meteor.subscribe('users.students.inSpecificCourse', courseId);
         const studentsInCourse = Meteor.users.find(studentsInCourseHandler.scopeQuery()).fetch();
 
-        return { course, isLoadingCourse, allLessons, studentsInCourse };
+        const beaconsInCourseHandler = Meteor.subscribe('beacons.forOneCourse', courseId);
+        const beaconsInCourse = BeaconsCollection.find(beaconsInCourseHandler.scopeQuery()).fetch();
+
+        return { course, isLoadingCourse, allLessons, studentsInCourse, beaconsInCourse };
     }, []);
 
     useEffect(() => {
@@ -205,7 +209,7 @@ export default function Course() {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="accent">
                                         <EuiStat
-                                            title={"To Be Added"}
+                                            title={beaconsInCourse.length}
                                             description=""
                                             textAlign="center"
                                         />

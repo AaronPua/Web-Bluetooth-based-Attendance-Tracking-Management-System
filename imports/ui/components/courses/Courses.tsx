@@ -1,4 +1,4 @@
-import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer } from '@elastic/eui';
+import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiTitle } from '@elastic/eui';
 import React, { useState } from 'react';
 import { createCourse } from '../../../api/courses/CoursesMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -57,7 +57,7 @@ export default function Courses() {
 
     const columns: TableColumn<DataRow>[] = [
         {
-            name: 'Course Name',
+            name: 'Name',
             selector: row => row.name,
             sortable: true,
         },
@@ -85,6 +85,10 @@ export default function Courses() {
             >
                 <EuiPageContentBody>
                     <EuiPanel>
+                        <EuiTitle size="s">
+                            <h4>Create Course</h4>
+                        </EuiTitle>
+                        <EuiSpacer />
                         { showError &&
                             <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                 <p>{error}</p>
@@ -96,13 +100,13 @@ export default function Courses() {
                             </EuiCallOut>
                         }
                         <EuiForm component="form" onSubmit={createCourseForm.handleSubmit}>
-                            <EuiFlexGroup>
-                                <EuiFlexItem>
-                                    <EuiFormRow label="Course Name" error={createCourseForm.errors.name} isInvalid={!!createCourseForm.errors.name}>
+                            <EuiFlexGroup justifyContent='flexStart'>
+                                <EuiFlexItem grow={false}>
+                                    <EuiFormRow label="Name" error={createCourseForm.errors.name} isInvalid={!!createCourseForm.errors.name}>
                                         <EuiFieldText {...createCourseForm.getFieldProps('name')} isInvalid={!!createCourseForm.errors.name} />
                                     </EuiFormRow>
                                 </EuiFlexItem>
-                                <EuiFlexItem>
+                                <EuiFlexItem grow={false}>
                                     <EuiFormRow label="Credits" error={createCourseForm.errors.credits} isInvalid={!!createCourseForm.errors.credits}>
                                         <EuiFieldNumber {...createCourseForm.getFieldProps('credits')} isInvalid={!!createCourseForm.errors.credits}/>
                                     </EuiFormRow>
@@ -120,6 +124,7 @@ export default function Courses() {
 
                     <EuiPanel>
                         <DataTable
+                            title="Courses"
                             columns={columns}
                             data={allCourses}
                             progressPending={isLoading()}

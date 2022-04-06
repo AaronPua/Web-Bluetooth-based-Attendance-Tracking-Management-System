@@ -153,7 +153,7 @@ export default function Lessons() {
                                 <EuiForm component="form" onSubmit={createLessonForm.handleSubmit}>
                                     <EuiFlexGroup>
                                         <EuiFlexItem>
-                                            <EuiFormRow label="Lesson Name" error={createLessonForm.errors.name} isInvalid={!!createLessonForm.errors.name}>
+                                            <EuiFormRow label="Name" error={createLessonForm.errors.name} isInvalid={!!createLessonForm.errors.name}>
                                                 <EuiFieldText {...createLessonForm.getFieldProps('name')} isInvalid={!!createLessonForm.errors.name}/>
                                             </EuiFormRow>
                                         </EuiFlexItem>

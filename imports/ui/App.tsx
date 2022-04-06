@@ -17,6 +17,8 @@ import Course from './components/courses/Course';
 import Lesson from './components/lessons/Lesson';
 import Lessons from './components/lessons/Lessons';
 import Students from './components/users/Students';
+import Beacons from './components/beacons/Beacons';
+import Beacon from './components/beacons/Beacon';
 
 export const App = () => {
     return (
@@ -31,8 +33,8 @@ export const App = () => {
                         <Route path=":courseId/lessons/" element={<Lessons />} />
                         <Route path=":courseId/lessons/:lessonId" element={<Lesson />} />
                         <Route path=":courseId/students/" element={<Students />} />
-                        {/* <Route path=":courseId/beacons/" element={<Lesson />} /> */}
-                        {/* <Route path=":courseId/beacons/:beaconId" element={<Lesson />} /> */}
+                        <Route path=":courseId/beacons/" element={<Beacons />} />
+                        <Route path=":courseId/beacons/:beaconId" element={<Beacon />} />
                     </Route>
                 </Route>
                 <Route element={<CenteredBody />} >
