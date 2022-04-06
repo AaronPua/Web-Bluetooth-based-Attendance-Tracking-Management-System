@@ -4,13 +4,13 @@ import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Random } from 'meteor/random';
 import { CoursesCollection } from './CoursesCollection';
-import { createCourse, removeCourse, updateCourse, addStudentToCourse, removeStudentFromCourse } from './CoursesMethods';
-import { StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
+import { createCourse, removeCourse, updateCourse, addStudentToCourse, removeStudentFromCourse, addInstructorToCourse, removeInstructorFromCourse } from './CoursesMethods';
+import { InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { Roles } from 'meteor/alanning:roles';
 
 describe('CoursesMethods', function() {
 
-    let courseId: string, course: any, student: Meteor.User, studentId: string;
+    let courseId: string, course: any, student: Meteor.User, studentId: string, instructor: Meteor.User, instructorId: string;
 
     before(function() {
         resetDatabase();
@@ -28,6 +28,10 @@ describe('CoursesMethods', function() {
         StudentsSeeder(1);
         student = Meteor.users.find().fetch()[0];
         studentId = student._id;
+
+        InstructorsSeeder(1);
+        instructor = Meteor.users.find().fetch()[0];
+        instructorId = student._id;
     });
 
     describe('Create Course', function() {
@@ -105,6 +109,37 @@ describe('CoursesMethods', function() {
             assert.throws(() => {
                 removeStudentFromCourse._execute({}, { courseId: courseId, studentId: studentId });
             }, Meteor.Error, 'You need to be logged in before removing students from a course');
+        });
+    });
+
+    describe('Add Instructor To Course', function() {
+        it('success - add instructor to course', function() {
+            addInstructorToCourse._execute({ userId: Random.id() }, { courseId: courseId, instructorId: instructorId });
+            instructor = Meteor.users.find().fetch()[0];
+            const instructorCourseId = _.first(_.pluck(instructor.courses, '_id'));
+            assert.equal(instructorCourseId, courseId);
+        });
+
+        it('fail - add instructor to course without logging in', function() {
+            assert.throws(() => {
+                addInstructorToCourse._execute({}, { courseId: courseId, instructorId: instructorId });
+            }, Meteor.Error, 'You need to be logged in before adding instructors to a course');
+        });
+    });
+
+    describe('Remove Instructor From Course', function() {
+        it('success - remove instructor from course', function() {
+            addInstructorToCourse._execute({ userId: Random.id() }, { courseId: courseId, instructorId: instructorId });
+            removeInstructorFromCourse._execute({ userId: Random.id() }, { courseId: courseId, instructorId: instructorId });
+            instructor = Meteor.users.find().fetch()[0];
+            const instructorCourseId = _.first(_.pluck(instructor.courses, '_id'));
+            assert.equal(instructorCourseId, null);
+        });
+
+        it('fail - remove student from course without logging in', function() {
+            assert.throws(() => {
+                removeInstructorFromCourse._execute({}, { courseId: courseId, instructorId: instructorId });
+            }, Meteor.Error, 'You need to be logged in before removing instructors from a course');
         });
     });
     

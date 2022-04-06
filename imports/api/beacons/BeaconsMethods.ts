@@ -74,9 +74,7 @@ export const addBeaconToCourse = new ValidatedMethod({
         beaconId: { type: String, regEx: SimpleSchema.RegEx.Id },
     }).validator(),
     run({ courseId, beaconId }: { courseId: string, beaconId: string }) {
-        CoursesCollection.update({ _id: courseId }, {
-            $addToSet: { beacons: { _id: beaconId } }
-        });
+        BeaconsCollection.update({ _id: beaconId }, { $set: { courseId: courseId }});
     }
 });
 
@@ -92,8 +90,6 @@ export const removeBeaconFromCourse = new ValidatedMethod({
         beaconId: { type: String, regEx: SimpleSchema.RegEx.Id },
     }).validator(),
     run({ courseId, beaconId }: { courseId: string, beaconId: string }) {
-       CoursesCollection.update({ _id: courseId }, {
-            $pull: { beacons: { _id: beaconId } }
-        });
+       BeaconsCollection.update({ _id: beaconId }, { $unset: { courseId: courseId }});
     }
 });

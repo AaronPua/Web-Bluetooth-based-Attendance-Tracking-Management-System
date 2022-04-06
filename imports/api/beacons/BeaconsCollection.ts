@@ -3,7 +3,7 @@ import SimpleSchema from 'simpl-schema';
 
 export const beaconSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
-    courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    courseId: { type: String, regEx: SimpleSchema.RegEx.Id, optional: true },
     name: { type: String },
     uuid: { type: String },
     createdAt: { type: Date }
