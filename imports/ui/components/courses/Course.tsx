@@ -27,6 +27,10 @@ export default function Course() {
         navigate(`/courses/${courseId}/students`);
     }
 
+    const viewInstructors = () => {
+        navigate(`/courses/${courseId}/instructors`);
+    }
+
     const viewLessons = () => {
         navigate(`/courses/${courseId}/lessons`);
     }
@@ -69,7 +73,7 @@ export default function Course() {
         });
     };
 
-    const { course, isLoadingCourse, allLessons, studentsInCourse, beaconsInCourse } = useTracker(() => {
+    const { course, isLoadingCourse, allLessons, studentsInCourse, instructorsInCourse, beaconsInCourse } = useTracker(() => {
         const courseHandler = Meteor.subscribe('courses.specific', courseId);
         const isLoadingCourse = !courseHandler.ready();
         const course = CoursesCollection.findOne(courseId);
@@ -80,10 +84,13 @@ export default function Course() {
         const studentsInCourseHandler = Meteor.subscribe('users.students.inSpecificCourse', courseId);
         const studentsInCourse = Meteor.users.find(studentsInCourseHandler.scopeQuery()).fetch();
 
+        const instructorsInCourseHandler = Meteor.subscribe('users.instructors.inSpecificCourse', courseId);
+        const instructorsInCourse = Meteor.users.find(instructorsInCourseHandler.scopeQuery()).fetch();
+
         const beaconsInCourseHandler = Meteor.subscribe('beacons.forOneCourse', courseId);
         const beaconsInCourse = BeaconsCollection.find(beaconsInCourseHandler.scopeQuery()).fetch();
 
-        return { course, isLoadingCourse, allLessons, studentsInCourse, beaconsInCourse };
+        return { course, isLoadingCourse, allLessons, studentsInCourse, instructorsInCourse, beaconsInCourse };
     }, []);
 
     useEffect(() => {
@@ -193,6 +200,31 @@ export default function Course() {
                                         <EuiFlexGroup justifyContent="spaceAround">
                                             <EuiFlexItem grow={false}>
                                                 <EuiButton color="success" size="s" onClick={() => viewStudents()}>View Students</EuiButton>    
+                                            </EuiFlexItem>
+                                        </EuiFlexGroup>
+                                    </EuiSplitPanel.Inner>
+                                </EuiSplitPanel.Outer>
+                            </EuiPanel>
+                        </EuiFlexItem>
+
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <EuiTitle size="s">
+                                    <h4>Number of Instructors</h4>
+                                </EuiTitle>
+                                <EuiSpacer />
+                                <EuiSplitPanel.Outer hasShadow={false}>
+                                    <EuiSplitPanel.Inner color="warning">
+                                        <EuiStat
+                                            title={instructorsInCourse.length}
+                                            description=""
+                                            textAlign="center"
+                                        />
+                                    </EuiSplitPanel.Inner>
+                                    <EuiSplitPanel.Inner>
+                                        <EuiFlexGroup justifyContent="spaceAround">
+                                            <EuiFlexItem grow={false}>
+                                                <EuiButton color="warning" size="s" onClick={() => viewInstructors()}>View Instructors</EuiButton>    
                                             </EuiFlexItem>
                                         </EuiFlexGroup>
                                     </EuiSplitPanel.Inner>

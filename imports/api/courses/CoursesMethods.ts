@@ -108,8 +108,8 @@ export const addInstructorToCourse = new ValidatedMethod({
         instructorId: { type: String },
     }).validator(),
     run({ courseId, instructorId }: any) {
-        CoursesCollection.update({ _id: courseId }, {
-            $addToSet: { instructors: { _id: instructorId } }
+        Meteor.users.update({ _id: instructorId }, {
+            $addToSet: { courses: { _id: courseId } }
         });
     }
 });
@@ -126,8 +126,8 @@ export const removeInstructorFromCourse = new ValidatedMethod({
         instructorId: { type: String },
     }).validator(),
     run({ courseId, instructorId }: any) {
-        CoursesCollection.update({ _id: courseId }, {
-            $pull: { instructors: { _id: instructorId } }
+       Meteor.users.update({ _id: instructorId }, {
+            $pull: { courses: { _id: courseId } }
         });
     }
 });

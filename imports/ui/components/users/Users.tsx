@@ -1,14 +1,22 @@
 import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel } from '@elastic/eui';
+import { Meteor } from 'meteor/meteor';
 import { useSubscribe, useFind } from 'meteor/react-meteor-data';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
+import { useNavigate } from 'react-router';
 import _ from 'underscore';
 
 export default function Users() {
 
     const isLoading = useSubscribe('users.all');
     const allUsers = useFind(() => Meteor.users.find());
+
+    let navigate = useNavigate();
+
+    const goToUser = (userId: string) => {
+        navigate(`/user/${userId}`);
+    }
 
     const columns: TableColumn<Meteor.User>[] = [
         {
@@ -36,6 +44,11 @@ export default function Users() {
             selector: row => row.createdAt,
             format: row => moment(row.createdAt).format('YYYY-MM-DD'),
             sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => <EuiButton size="s" color="primary" id={row._id} 
+                    onClick={() => goToUser(row._id) }>Edit</EuiButton>,
         },
     ];
 
@@ -84,6 +97,7 @@ export default function Users() {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <DataTable
+                                    title="Users"
                                     columns={columns}
                                     data={filteredItems}
                                     progressPending={isLoading()}

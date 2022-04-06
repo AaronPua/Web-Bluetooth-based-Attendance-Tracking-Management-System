@@ -19,6 +19,8 @@ import Lessons from './components/lessons/Lessons';
 import Students from './components/users/Students';
 import Beacons from './components/beacons/Beacons';
 import Beacon from './components/beacons/Beacon';
+import User from './components/users/User';
+import Instructors from './components/users/Instructors';
 
 export const App = () => {
     return (
@@ -27,12 +29,14 @@ export const App = () => {
                 <Route element={<FullPageLayout />} >
                     <Route path="home" element={<RequireAuth><Home /></RequireAuth>} />
                     <Route path="users" element={<Users />} />
+                    <Route path="user/:userId" element={<User />} />
                     <Route path="courses" element={<Outlet />} >
                         <Route index element={<Courses />} />
                         <Route path=":courseId" element={<Course />} />
                         <Route path=":courseId/lessons/" element={<Lessons />} />
                         <Route path=":courseId/lessons/:lessonId" element={<Lesson />} />
                         <Route path=":courseId/students/" element={<Students />} />
+                        <Route path=":courseId/instructors/" element={<Instructors />} />
                         <Route path=":courseId/beacons/" element={<Beacons />} />
                         <Route path=":courseId/beacons/:beaconId" element={<Beacon />} />
                     </Route>

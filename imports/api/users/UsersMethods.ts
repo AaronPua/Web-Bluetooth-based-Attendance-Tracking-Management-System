@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
+import { LoggedInMixin } from 'meteor/tunifight:loggedin-mixin';
 import SimpleSchema from 'simpl-schema';
 import { Roles } from 'meteor/alanning:roles';
 import { userRegistrationSchema } from './UsersCollection';
@@ -90,5 +91,31 @@ export const addUserToRoles = new ValidatedMethod({
     }).validator(),
     run({userId, roleName}: any) {
         Roles.addUsersToRoles(userId, roleName);
+    }
+});
+
+export const updateUser = new ValidatedMethod({
+    name: 'users.updateUser',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before updating a user.',
+    },
+    validate: new SimpleSchema({
+        userId: { type: String },
+        email: { type: String },
+        firstName: { type: String },
+        lastName: { type: String },
+        gender: { type: String },
+    }).validator(),
+    run({userId, email, firstName, lastName, gender}: any) {
+        Meteor.users.update({ _id: userId }, {
+            $set: {
+                "emails.0.address": email,
+                "profile.firstName": firstName,
+                "profile.lastName": lastName,
+                "profile.gender": gender,
+            }
+        });
     }
 });
