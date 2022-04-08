@@ -5,6 +5,9 @@ import { CoursesCollection } from './CoursesCollection';
 import { courseCreateSchema } from './CoursesCollection';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
+import { LessonsCollection } from '../lessons/LessonsCollection';
+import _ from 'underscore';
+import { updateAttendance } from '../lessons/LessonsMethods';
 
 export const createCourse = new ValidatedMethod({
     name: 'course.create',
@@ -92,6 +95,17 @@ export const removeStudentFromCourse = new ValidatedMethod({
     run({ courseId, studentId }: any) {
         Meteor.users.update({ _id: studentId }, {
             $pull: { courses: { _id: courseId } }
+        });
+
+        const lessons = LessonsCollection.find({ courseId: courseId }).fetch();
+        const lessonIds = _.pluck(lessons, '_id');
+
+        _.each(lessonIds, (lessonId) => {
+            updateAttendance.callPromise({
+                lessonId: lessonId,
+                studentId: studentId,
+                action: 'remove'
+            });
         });
     }
 });
