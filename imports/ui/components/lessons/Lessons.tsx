@@ -238,8 +238,6 @@ export default function Lessons() {
                         </EuiFlexItem>
                     </EuiFlexGroup>
 
-                    <EuiSpacer />
-
                     <EuiFlexGroup>
                         <EuiFlexItem>
                             <EuiPanel color="plain">

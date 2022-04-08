@@ -1,12 +1,14 @@
-import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiTitle } from '@elastic/eui';
+import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
 import React, { useState } from 'react';
 import { createCourse } from '../../../api/courses/CoursesMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { useSubscribe, useFind } from 'meteor/react-meteor-data';
+import { useTracker } from 'meteor/react-meteor-data';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
 
 export default function Courses() {
     const [showSuccess, setShowSuccess] = useState(false);
@@ -46,8 +48,17 @@ export default function Courses() {
         navigate(`/courses/${courseId}`);
     }
 
-    const isLoading = useSubscribe('courses.all');
-    const allCourses = useFind(() => CoursesCollection.find());
+    const { isLoadingCourses, allCourses, isLoadingUserCourses, userCourses } = useTracker(() => {
+        const allCoursesSub = Meteor.subscribe('courses.all');
+        const isLoadingCourses = !allCoursesSub.ready();
+        const allCourses = CoursesCollection.find(allCoursesSub.scopeQuery()).fetch();
+
+        const currentUserCoursesSub = Meteor.subscribe('users.courses.currentUser');
+        const isLoadingUserCourses = !currentUserCoursesSub.ready();
+        const userCourses = CoursesCollection.find(currentUserCoursesSub.scopeQuery()).fetch();
+
+        return { isLoadingCourses, allCourses, isLoadingUserCourses, userCourses };
+    });
 
     type DataRow = {
         _id: string;
@@ -84,56 +95,73 @@ export default function Courses() {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    <EuiPanel>
-                        <EuiTitle size="s">
-                            <h4>Create Course</h4>
-                        </EuiTitle>
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') && <>
+                        <EuiPanel>
+                            <EuiTitle size="s">
+                                <h4>Create Course</h4>
+                            </EuiTitle>
+                            <EuiSpacer />
+                            { showError &&
+                                <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                                    <p>{error}</p>
+                                </EuiCallOut>}
+                            { showSuccess &&
+                                <EuiCallOut title="Success!" color="success">
+                                    <p>Course created sucessfully.</p>
+                                </EuiCallOut>}
+                            <EuiForm component="form" onSubmit={createCourseForm.handleSubmit}>
+                                <EuiFlexGroup justifyContent='flexStart'>
+                                    <EuiFlexItem grow={false}>
+                                        <EuiFormRow label="Name" error={createCourseForm.errors.name} isInvalid={!!createCourseForm.errors.name}>
+                                            <EuiFieldText {...createCourseForm.getFieldProps('name')} isInvalid={!!createCourseForm.errors.name} />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                    <EuiFlexItem grow={false}>
+                                        <EuiFormRow label="Credits" error={createCourseForm.errors.credits} isInvalid={!!createCourseForm.errors.credits}>
+                                            <EuiFieldNumber {...createCourseForm.getFieldProps('credits')} isInvalid={!!createCourseForm.errors.credits} />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                    <EuiFlexItem grow={false}>
+                                        <EuiFormRow hasEmptyLabelSpace>
+                                            <EuiButton fill color="primary" type="submit">Create Course</EuiButton>
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                </EuiFlexGroup>
+                            </EuiForm>
+                        </EuiPanel>
                         <EuiSpacer />
-                        { showError &&
-                            <EuiCallOut title="An error has occured" color="danger" iconType="alert">
-                                <p>{error}</p>
-                            </EuiCallOut>
-                        }
-                        { showSuccess &&
-                            <EuiCallOut title="Success!" color="success">
-                                <p>Course created sucessfully.</p>
-                            </EuiCallOut>
-                        }
-                        <EuiForm component="form" onSubmit={createCourseForm.handleSubmit}>
-                            <EuiFlexGroup justifyContent='flexStart'>
-                                <EuiFlexItem grow={false}>
-                                    <EuiFormRow label="Name" error={createCourseForm.errors.name} isInvalid={!!createCourseForm.errors.name}>
-                                        <EuiFieldText {...createCourseForm.getFieldProps('name')} isInvalid={!!createCourseForm.errors.name} />
-                                    </EuiFormRow>
-                                </EuiFlexItem>
-                                <EuiFlexItem grow={false}>
-                                    <EuiFormRow label="Credits" error={createCourseForm.errors.credits} isInvalid={!!createCourseForm.errors.credits}>
-                                        <EuiFieldNumber {...createCourseForm.getFieldProps('credits')} isInvalid={!!createCourseForm.errors.credits}/>
-                                    </EuiFormRow>
-                                </EuiFlexItem>
-                                <EuiFlexItem grow={false}>
-                                    <EuiFormRow hasEmptyLabelSpace>
-                                        <EuiButton fill color="primary" type="submit">Create Course</EuiButton>
-                                    </EuiFormRow>
-                                </EuiFlexItem>
-                            </EuiFlexGroup>
-                        </EuiForm>
-                    </EuiPanel>
-
-                    <EuiSpacer />
-
-                    <EuiPanel>
-                        <DataTable
-                            title="Courses"
-                            columns={columns}
-                            data={allCourses}
-                            progressPending={isLoading()}
-                            pagination
-                            striped
-                            responsive
-                            defaultSortFieldId={1}
-                        />
-                    </EuiPanel>
+                        </>
+                    }
+                    
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') ? 
+                        (
+                            <EuiPanel>
+                                <DataTable
+                                    title="Courses"
+                                    columns={columns}
+                                    data={allCourses}
+                                    progressPending={isLoadingCourses}
+                                    pagination
+                                    striped
+                                    responsive
+                                    defaultSortFieldId={1}
+                                />
+                            </EuiPanel>
+                        ) : (
+                            <EuiPanel>
+                                <DataTable
+                                    title="Courses"
+                                    columns={columns}
+                                    data={userCourses}
+                                    progressPending={isLoadingUserCourses}
+                                    pagination
+                                    striped
+                                    responsive
+                                    defaultSortFieldId={1}
+                                />
+                            </EuiPanel>
+                        )
+                    }
                 </EuiPageContentBody>
             </EuiPageContent>
         </>

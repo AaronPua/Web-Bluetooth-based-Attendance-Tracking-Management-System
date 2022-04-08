@@ -507,7 +507,7 @@ declare module "meteor/alanning:roles" {
          * @return {Boolean} true if user is in _any_ of the target roles
          */
         function userIsInRole(
-            user : string|string[]|Object|Object[],
+            user : string|string[]|Object|Object[]|null,
             roles : string|string[],
             group? : string
         ) : boolean;
@@ -517,4 +517,3 @@ declare module "meteor/alanning:roles" {
         }
     }
 }
-

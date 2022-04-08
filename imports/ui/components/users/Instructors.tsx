@@ -94,7 +94,7 @@ export default function Instructors() {
     ];
 
     useEffect(() => {
-        if(course) {
+        if(course && !isLoadingCourse) {
             setCourseName(course.name);
         }
         
@@ -125,7 +125,7 @@ export default function Instructors() {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { !isLoadingCourse && !isLoadingInstructorsNotInCourse &&
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') && !isLoadingInstructorsInCourse && !isLoadingInstructorsNotInCourse &&
                         <EuiFlexGroup >
                             <EuiFlexItem>
                                 <EuiPanel>
@@ -202,7 +202,7 @@ export default function Instructors() {
                             </EuiFlexItem>
                         </EuiFlexGroup>
                     }
-                    <EuiSpacer />
+
                     { !isLoadingInstructorsInCourse && 
                         <EuiFlexGroup gutterSize="l">
                             <EuiFlexItem>

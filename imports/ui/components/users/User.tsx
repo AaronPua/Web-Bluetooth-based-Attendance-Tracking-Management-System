@@ -74,7 +74,7 @@ export default function User() {
         const isLoadingUser = !userSub.ready();
         const user = Meteor.users.findOne(userId);
 
-        const coursesSub = Meteor.subscribe('users.courses', userId);
+        const coursesSub = Meteor.subscribe('users.courses.specificUser', userId);
         const isLoadingCourses = !coursesSub.ready();
         const courses = CoursesCollection.find(coursesSub.scopeQuery(), userId).fetch();
 

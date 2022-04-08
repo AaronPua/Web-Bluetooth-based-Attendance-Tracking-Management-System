@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import _ from 'underscore';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { addStudentToCourse, removeStudentFromCourse } from '../../../api/courses/CoursesMethods';
+import { Roles } from 'meteor/alanning:roles';
 
 export default function Students() {
     const [addStudentId, setAddStudentId] = useState('');
@@ -94,7 +95,7 @@ export default function Students() {
     ];
 
     useEffect(() => {
-        if(course) {
+        if(course && !isLoadingCourse) {
             setCourseName(course.name);
         }
         
@@ -125,7 +126,7 @@ export default function Students() {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { !isLoadingCourse && !isLoadingStudentsNotInCourse &&
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') && !isLoadingStudentsInCourse && !isLoadingStudentsNotInCourse &&
                         <EuiFlexGroup >
                             <EuiFlexItem>
                                 <EuiPanel>
@@ -202,7 +203,7 @@ export default function Students() {
                             </EuiFlexItem>
                         </EuiFlexGroup>
                     }
-                    <EuiSpacer />
+
                     { !isLoadingStudentsInCourse && 
                         <EuiFlexGroup gutterSize="l">
                             <EuiFlexItem>
