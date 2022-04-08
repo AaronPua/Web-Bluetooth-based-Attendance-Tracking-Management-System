@@ -29,7 +29,13 @@
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "types": ["node", "mocha"],
+    "types": ["node", "mocha",
+        "@types/meteor-collection-hooks",
+        "@types/meteor-dburles-collection-helpers",
+        "@types/meteor-mdg-validated-method",
+        "@types/meteor-roles",
+        "@types/meteor-mdg-validation-error"
+    ],
     "esModuleInterop": true,
     "preserveSymlinks": true
   },
