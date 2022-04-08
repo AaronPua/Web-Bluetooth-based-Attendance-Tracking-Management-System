@@ -12,6 +12,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 import { Meteor } from 'meteor/meteor';
+import { VictoryBar, VictoryChart, VictoryGroup, VictoryLabel, VictoryPie, VictoryLegend } from 'victory';
 
 export default function Lessons() {
 
@@ -23,13 +24,35 @@ export default function Lessons() {
     const [showLessonError, setShowLessonError] = useState(false);
     const [lessonError, setLessonError] = useState('');
 
-    const isLoadingLessons = useSubscribe('lessons.all');
-    const allLessons = useFind(() => LessonsCollection.find());
-
-    const course = useTracker(() => { 
+    const { course, isLoadinglessons, lessons, studentAttendance, studentsInCourse }  = useTracker(() => { 
         Meteor.subscribe('courses.specific', courseId);
-        return CoursesCollection.findOne(courseId) ;
+        const course = CoursesCollection.findOne(courseId);
+
+        const lessonsSub = Meteor.subscribe('lessons.forOneCourse', courseId);
+        const isLoadinglessons = !lessonsSub.ready();
+        const lessons = LessonsCollection.find(lessonsSub.scopeQuery(), courseId).fetch();
+
+        const studentAttendance = _.chain(lessons).pluck('studentAttendance').flatten(true).value();
+
+        const studentsInCourseHandler = Meteor.subscribe('users.students.inSpecificCourse', courseId);
+        const studentsInCourse = Meteor.users.find(studentsInCourseHandler.scopeQuery()).fetch();
+
+        return { course, isLoadinglessons, lessons, studentAttendance, studentsInCourse };
     }, []);
+
+    const totalAttendance = lessons.length * studentsInCourse.length;
+    const present = _.first(studentAttendance) != null ? studentAttendance.length : 0;
+    const absent = totalAttendance - present;
+
+    const pieChartData = [
+        { x: "Absent", y: absent },
+        { x: "Present", y: present },
+    ];
+
+    const barChartData = _.map(lessons, (lesson) => {
+        return { name: lesson.name, present: lesson.studentAttendance.length, absent: (studentsInCourse.length - lesson.studentAttendance.length) };
+    });
+    console.log('barChartData', barChartData);
 
     let navigate = useNavigate();
     const goToLesson = (lessonId: string) => {
@@ -219,19 +242,89 @@ export default function Lessons() {
 
                     <EuiFlexGroup>
                         <EuiFlexItem>
-                                <EuiPanel color="plain">
-                                    <DataTable
-                                        title="Current Lessons"
-                                        columns={columns}
-                                        data={allLessons}
-                                        progressPending={isLoadingLessons()}
-                                        pagination
-                                        striped
-                                        responsive
-                                        defaultSortFieldId={1}
+                            <EuiPanel color="plain">
+                                <DataTable
+                                    title="Current Lessons"
+                                    columns={columns}
+                                    data={lessons}
+                                    progressPending={isLoadinglessons}
+                                    pagination
+                                    striped
+                                    responsive
+                                    defaultSortFieldId={1}
+                                />
+                            </EuiPanel>
+                        </EuiFlexItem>
+
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <EuiTitle size="s">
+                                    <h4>Overall Attendance</h4>
+                                </EuiTitle>
+                                { totalAttendance != 0 &&
+                                    <VictoryPie
+                                        width={400}
+                                        height={200}
+                                        colorScale={["orange", "LightSkyBlue"]}
+                                        startAngle={90}
+                                        endAngle={-90}
+                                        data={pieChartData}
+                                        labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                                        labelComponent={
+                                            <VictoryLabel
+                                                textAnchor="middle"
+                                                verticalAnchor="end"
+                                                style={{ fontSize: 12 }}
+                                            />
+                                        }
                                     />
-                                </EuiPanel>
-                            </EuiFlexItem>
+                                }
+                            </EuiPanel>
+                        </EuiFlexItem>
+                    </EuiFlexGroup>
+
+                    <EuiFlexGroup>
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <EuiTitle size="s">
+                                    <h4>Attendance by Lesson</h4>
+                                </EuiTitle>
+                                <VictoryChart width={1000} height={350}>
+                                     <VictoryLegend x={150} y={-10}
+                                            // title="Legend"
+                                            // centerTitle
+                                            orientation="horizontal"
+                                            gutter={20}
+                                            // style={{ border: { stroke: "black" }, title: {fontSize: 20 } }}
+                                            data={[
+                                                { name: "Present", symbol: { fill: "LightSkyBlue" } },
+                                                { name: "Absent", symbol: { fill: "Orange" } },
+                                            ]}
+                                        />
+                                    <VictoryGroup offset={45} 
+                                        colorScale={"qualitative"}
+                                    >
+                                        <VictoryBar
+                                            data={barChartData}
+                                            x="name"
+                                            y="present"
+                                            style={{ data: { fill: "LightSkyBlue" } }}
+                                            labels={({ datum }) => `${datum.present}`}
+                                        />
+                                        <VictoryBar
+                                            data={barChartData}
+                                            x="name"
+                                            y="absent"
+                                            style={{ data: { fill: "Orange" } }}
+                                            labels={({ datum }) => `${datum.absent}`}
+                                        />
+                                    </VictoryGroup>
+                                </VictoryChart>
+                            </EuiPanel>
+                        </EuiFlexItem>
+                        {/* <EuiFlexItem>
+
+                        </EuiFlexItem> */}
                     </EuiFlexGroup>
                 </EuiPageContentBody>
             </EuiPageContent>
