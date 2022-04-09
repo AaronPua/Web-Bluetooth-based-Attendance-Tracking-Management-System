@@ -1,50 +1,46 @@
+import React, { useState } from 'react';
 import { Meteor } from 'meteor/meteor';
-import React, { MouseEvent, useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { 
-    EuiButton, 
-    EuiEmptyPrompt, 
-    EuiFieldPassword, 
-    EuiFieldText, 
-    EuiForm, 
-    EuiFormRow,
-    EuiLink
-} from '@elastic/eui';
-import { verifyLogin } from '../../../api/users/UsersMethods';
-import { check } from 'meteor/check';
+import { useNavigate } from 'react-router';
+import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, 
+    EuiForm, EuiFormRow, EuiLink, EuiSpacer } from '@elastic/eui';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 export default function LoginForm() {
-
     let navigate = useNavigate();
 
-    const [inputs, setInputs] = useState({
-        email: '',
-        password: ''
-    });
-    const [showErrors, setShowErrors] = useState(false);
-    const [errors, setErrors] = useState(Array());
+    const [error, setError] = useState('');
+    const [showError, setShowError] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputs({...inputs, [e.target.name]: e.target.value});
+    const userLoginForm = useFormik({
+        initialValues: {
+            email: '',
+            password: ''
+        },
+        validationSchema: yup.object().shape({
+            email: yup.string().email('Must be a valid email address').required('Email is required'),
+            password: yup.string().required('Password is required')
+        }),
+        onSubmit: (values) => {
+            login(values)
+            .catch((error: Meteor.Error) => {
+                setShowError(true);
+                const reason = error.reason != null ? error.reason : error.message;
+                setError(reason);
+            });
+        }
+    });
+
+    type FormInputs = {
+        email: string,
+        password: string
     }
 
-    const loginWithPassword = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-
-        verifyLogin.callPromise({
-            email: inputs.email,
-            password: inputs.password
-        }).then(([email, password]: [email: String, password: string]) => {
-            Meteor.loginWithPassword(email, password);
-            navigate('/home');
-        }).catch((err: any) => {
-            setShowErrors(true);
-
-            let tempErrors = Array();
-            err.details.forEach((error: Meteor.Error) => {
-                tempErrors.push(error.message);
+    const login = (values: FormInputs) => {
+        return new Promise((resolve, reject) => {
+            Meteor.loginWithPassword(values.email, values.password, error => {
+                error ? reject(error) : resolve(navigate('/home'));
             });
-            setErrors(tempErrors);
         });
     }
 
@@ -53,19 +49,26 @@ export default function LoginForm() {
             title={<h2>Sign In</h2>}
             color="plain"
             body={
-                <EuiForm component="form" isInvalid={showErrors} error={errors}>
-                    <EuiFormRow label="Email" isInvalid={showErrors}>
-                        <EuiFieldText name="email" onChange={handleChange} isInvalid={showErrors} />
-                    </EuiFormRow>
+                <>
+                    { showError && 
+                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                            <p>{error}</p>
+                        </EuiCallOut> 
+                    }
+                    <EuiForm component="form" onSubmit={userLoginForm.handleSubmit}>
+                        <EuiFormRow label="Email" error={userLoginForm.errors.email} isInvalid={!!userLoginForm.errors.email}>
+                            <EuiFieldText {...userLoginForm.getFieldProps('email')} isInvalid={!!userLoginForm.errors.email} />
+                        </EuiFormRow>
 
-                    <EuiFormRow label="Password" isInvalid={showErrors}>
-                        <EuiFieldPassword name="password" type="dual" onChange={handleChange} 
-                            isInvalid={showErrors}/>
-                    </EuiFormRow>
-                </EuiForm>
-            }
-            actions={
-                <EuiButton fullWidth fill color="primary" type="submit" onClick={(e: any) => loginWithPassword(e)}>Sign In</EuiButton>
+                        <EuiFormRow label="Password" error={userLoginForm.errors.password} isInvalid={!!userLoginForm.errors.password}>
+                            <EuiFieldPassword type="dual" {...userLoginForm.getFieldProps('password')} isInvalid={!!userLoginForm.errors.password}/>
+                        </EuiFormRow>
+
+                        <EuiSpacer />
+
+                        <EuiButton fullWidth fill color="primary" type="submit">Sign In</EuiButton>
+                    </EuiForm>
+                </>
             }
             footer={
                 <p>

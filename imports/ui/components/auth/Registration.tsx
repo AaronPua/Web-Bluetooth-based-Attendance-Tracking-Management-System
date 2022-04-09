@@ -1,95 +1,115 @@
-import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import React, { MouseEvent, useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { 
-    EuiButton,
-    EuiEmptyPrompt,
-    EuiFlexGroup,
-    EuiFlexItem,
-    EuiFieldPassword,
-    EuiFieldText,
-    EuiForm,
-    EuiFormRow,
-    EuiSelect,
-    EuiSpacer
-} from '@elastic/eui';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, EuiFlexGroup, EuiFlexItem,
+    EuiForm, EuiFormRow, EuiSelect, EuiSpacer } from '@elastic/eui';
 import { registerUser } from '../../../api/users/UsersMethods';
+import { } from '@elastic/eui';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
-export default function Registration() {
-
+export default function RegistrationForm() {
     let navigate = useNavigate();
+
+    const [error, setError] = useState('');
+    const [showError, setShowError] = useState(false);
 
     const genderOptions = [
         { value: 'male', text: 'Male'},
         { value: 'female', text: 'Female'}
     ];
-    
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [gender, setGender] = useState(genderOptions[0].value);
 
-    const createUser = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
+    const createUserForm = useFormik({
+        initialValues: {
+            firstName: '',
+            lastName: '',
+            gender: 'male',
+            email: '',
+            password: '',
+        },
+        validationSchema: yup.object().shape({
+            firstName: yup.string().required('First Name is required'),
+            lastName: yup.string().required('Last Name is required'),
+            gender: yup.string().oneOf(['male', 'female']).required('Gender is required'),
+            email: yup.string().email('Must be a valid email address').required('Email is required'),
+            password: yup.string().required('Password is required')
+        }),
+        onSubmit: (values) => {
+            createUser(values);
+        }
+    });
 
+    type FormInputs = {
+        firstName: string,
+        lastName: string,
+        gender: string,
+        email: string,
+        password: string
+    }
+
+    const createUser = (values: FormInputs) => {
         registerUser.callPromise({
-            email: email,
-            password: password,
-            firstName: firstName,
-            lastName: lastName,
-            gender: gender
-        }).then((userId: string) => {  
-            Accounts.sendVerificationEmail(userId, email);
-            navigate('/verify-email'); 
-        }).catch((err: Meteor.Error) => {
-            console.log('Details: ' + err.details);
-            console.log('Message: ' + err.message);
-            console.log('Error Type: ' + err.error);
+            firstName: values.firstName,
+            lastName: values.lastName,
+            gender: values.gender,
+            email: values.email,
+            password: values.password
+        })
+        .then(() => {
+            navigate('/verify-email');
+        })
+        .catch((error: Meteor.Error) => {
+            setShowError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setError(reason);
         });
     }
 
     return (
-        <EuiEmptyPrompt 
-            title={<h2>Sign Up</h2>}
+        <EuiEmptyPrompt
+            title={<h2>Register</h2>}
             color="plain"
             body={
-                <EuiForm component="form">
-                    <EuiFlexGroup>
-                        <EuiFlexItem>
-                            <EuiFormRow label="First Name">
-                                <EuiFieldText name="first_name" onChange={(e) => setFirstName(e.target.value)}/>
-                            </EuiFormRow>
-                        </EuiFlexItem>
-                        <EuiFlexItem>
-                            <EuiFormRow label="Last Name">
-                                <EuiFieldText name="last_name" onChange={(e) => setLastName(e.target.value)}/>
-                            </EuiFormRow>
-                        </EuiFlexItem>
-                    </EuiFlexGroup>
+                <>
+                    { showError && 
+                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                            <p>{error}</p>
+                        </EuiCallOut> 
+                    }
+                    <EuiForm component="form" onSubmit={createUserForm.handleSubmit}>
+                        <EuiFlexGroup>
+                            <EuiFlexItem>
+                                <EuiFormRow label="First Name" error={createUserForm.errors.firstName} isInvalid={!!createUserForm.errors.firstName}>
+                                    <EuiFieldText {...createUserForm.getFieldProps('firstName')} isInvalid={!!createUserForm.errors.firstName}/>
+                                </EuiFormRow>
+                            </EuiFlexItem>
+                            <EuiFlexItem>
+                                <EuiFormRow label="Last Name" error={createUserForm.errors.lastName} isInvalid={!!createUserForm.errors.lastName}>
+                                    <EuiFieldText {...createUserForm.getFieldProps('lastName')} isInvalid={!!createUserForm.errors.lastName}/>
+                                </EuiFormRow>
+                            </EuiFlexItem>
+                        </EuiFlexGroup>
 
-                    <EuiSpacer />
+                        <EuiSpacer />
 
-                    <EuiFormRow label="Gender" fullWidth>
-                        <EuiSelect fullWidth
-                            options={genderOptions}
-                            value={gender}
-                            onChange={(e) => setGender(e.target.value)}
-                        />
-                    </EuiFormRow>
+                        <EuiFormRow label="Gender" fullWidth error={createUserForm.errors.gender} isInvalid={!!createUserForm.errors.gender}>
+                            <EuiSelect fullWidth options={genderOptions} 
+                                    {...createUserForm.getFieldProps('gender')} isInvalid={!!createUserForm.errors.gender} />
+                        </EuiFormRow>
 
-                    <EuiFormRow label="Email" fullWidth>
-                        <EuiFieldText fullWidth name="email" onChange={(e) => setEmail(e.target.value)}/>
-                    </EuiFormRow>
+                        <EuiFormRow label="Email" fullWidth error={createUserForm.errors.email} isInvalid={!!createUserForm.errors.email}>
+                            <EuiFieldText fullWidth {...createUserForm.getFieldProps('email')} isInvalid={!!createUserForm.errors.email}/>
+                        </EuiFormRow>
 
-                    <EuiFormRow label="Password" fullWidth>
-                        <EuiFieldPassword fullWidth name="password" type="dual" onChange={(e) => setPassword(e.target.value)}/>
-                    </EuiFormRow>
-                </EuiForm>
-            }
-            actions={
-                <EuiButton fullWidth fill color="primary" type="submit" onClick={(e: any) => createUser(e)}>Register</EuiButton>
+                        <EuiFormRow label="Password" fullWidth error={createUserForm.errors.password} isInvalid={!!createUserForm.errors.password}>
+                            <EuiFieldPassword fullWidth type="dual" 
+                                    {...createUserForm.getFieldProps('password')} isInvalid={!!createUserForm.errors.password}/>
+                        </EuiFormRow>
+
+                        <EuiSpacer />
+
+                        <EuiButton fullWidth fill color="primary" type="submit">Register</EuiButton>
+                    </EuiForm>
+                </>
             }
         />
     );

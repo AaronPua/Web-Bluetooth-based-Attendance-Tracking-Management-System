@@ -1,23 +1,11 @@
-import React, { Fragment, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { userRegistrationSchema } from '/imports/api/users/UsersCollection';
-import {
-  AutoForm,
-  AutoFields,
-  ErrorsField,
-  SubmitField,
-} from 'uniforms-semantic';
-import {
-    EuiCallOut,
-    EuiEmptyPrompt,
-    EuiSpacer
-} from '@elastic/eui';
+import React, { useState } from 'react';
 import { Accounts } from 'meteor/accounts-base';
+import { useNavigate, useParams } from 'react-router';
+import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiForm, EuiFormRow, EuiLink, EuiSpacer } from '@elastic/eui';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 export default function ResetPassword() {
-    const bridge = new SimpleSchema2Bridge(userRegistrationSchema.pick('password'));
-
     const [error, setError] = useState('');
     const [showError, setShowError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -26,14 +14,32 @@ export default function ResetPassword() {
     let params = useParams();
     let token = params.token ?? '';
 
-    const resetPassword = (model: any) => {
-        Accounts.resetPassword(token, model.password, (error: any) => {
+    const resetPasswordForm = useFormik({
+        initialValues: {
+            password: ''
+        },
+        validationSchema: yup.object().shape({
+            password: yup.string().required('Password is required')
+        }),
+        onSubmit: (values) => {
+            resetPassword(token, values);
+        }
+    });
+
+    type FormInputs = {
+        password: string
+    }
+
+    const resetPassword = (token: string, values: FormInputs) => {
+        Accounts.resetPassword(token, values.password, (error: any) => {
             if(error) {
                 setShowError(true);
-                setError(error.reason);
+                const reason = error.reason != null ? error.reason : error.message;
+                setError(reason);
             }
-            else
+            else {
                 setShowSuccess(true);
+            }
         });
     }
 
@@ -42,7 +48,7 @@ export default function ResetPassword() {
             title={<h2>Reset Password</h2>}
             color="plain"
             body={
-                <Fragment>
+                <>
                     { showError && 
                         <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                             <p>{error}</p>
@@ -53,13 +59,21 @@ export default function ResetPassword() {
                             <p>Your password has been reset.</p>
                         </EuiCallOut>
                     }
-                    <AutoForm schema={bridge} onSubmit={(model: any) => resetPassword(model)}>
-                        <ErrorsField />
-                        <AutoFields />
+                    <EuiForm component="form" onSubmit={resetPasswordForm.handleSubmit}>
+                        <EuiFormRow label="Password" error={resetPasswordForm.errors.password} isInvalid={!!resetPasswordForm.errors.password}>
+                            <EuiFieldPassword type="dual" {...resetPasswordForm.getFieldProps('password')} isInvalid={!!resetPasswordForm.errors.password}/>
+                        </EuiFormRow>
+
                         <EuiSpacer />
-                        <SubmitField value="Reset Password"/>
-                    </AutoForm>
-                </Fragment>
+
+                        <EuiButton fullWidth fill color="primary" type="submit">Reset</EuiButton>
+                    </EuiForm>
+                </>
+            }
+            footer={
+                <p>
+                    Password has been reset? <EuiLink onClick={() => navigate('/')}>Sign In</EuiLink>
+                </p>
             }
         />
     );

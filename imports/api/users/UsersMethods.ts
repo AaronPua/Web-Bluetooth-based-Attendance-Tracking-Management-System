@@ -19,14 +19,15 @@ export const registerUser = new ValidatedMethod({
     mixins: [CallPromiseMixin],
     validate: userRegistrationSchema.validator(),
     applyOptions: { noRetry: true },
-    run({model}: any) {
+    run({email, password, firstName, lastName, gender}: {email: string, password: string, 
+        firstName: string, lastName: string, gender: string}) {
         const userId = Accounts.createUser({
-            email: model.email,
-            password: model.password,
+            email: email,
+            password: password,
             profile: {
-                firstName: model.firstName,
-                lastName: model.lastName,
-                gender: model.gender
+                firstName: firstName,
+                lastName: lastName,
+                gender: gender
             }
         });
 
@@ -38,19 +39,45 @@ export const registerUser = new ValidatedMethod({
     }
 });
 
+export const registerStudentUser = new ValidatedMethod({
+    name: 'users.registerStudentUser',
+    mixins: [CallPromiseMixin],
+    validate: userRegistrationSchema.validator(),
+    applyOptions: { noRetry: true },
+    run({email, password, firstName, lastName, gender}: {email: string, password: string, 
+        firstName: string, lastName: string, gender: string}) {
+        const userId = Accounts.createUser({
+            email: email,
+            password: password,
+            profile: {
+                firstName: firstName,
+                lastName: lastName,
+                gender: gender
+            }
+        });
+
+        if(userId) {
+            Roles.addUsersToRoles(userId, 'student');
+        }
+        return userId;
+    }
+});
+
 export const resendVerificationEmail = new ValidatedMethod({
     name: 'users.resendVerificationEmail',
     mixins: [CallPromiseMixin],
-    validate: null,
+    validate: new SimpleSchema({
+        email: { type: String, regEx: SimpleSchema.RegEx.Email }
+    }).validator(),
     applyOptions: { noRetry: true },
-    run({model}: any) {
+    run({email}: {email: string}) {
         if(Meteor.isServer) {
-            var user = Accounts.findUserByEmail(model.email);
+            const user = Accounts.findUserByEmail(email);
 
             if(user)
                 Accounts.sendVerificationEmail(user._id);
             else
-                throw new Meteor.Error("User not found", "User not found according to this email address.");   
+                throw new Meteor.Error("user-not-found", "User not found according to this email address.");
         }
     }
 });
@@ -58,27 +85,35 @@ export const resendVerificationEmail = new ValidatedMethod({
 export const sendPasswordResetEmail = new ValidatedMethod({
     name: 'users.sendPasswordResetEmail',
     mixins: [CallPromiseMixin],
-    validate: null,
+    validate: new SimpleSchema({
+        email: { type: String, regEx: SimpleSchema.RegEx.Email }
+    }).validator(),
     applyOptions: { noRetry: true },
-    run({model}: any) {
+    run({email}: {email: string}) {
         if(Meteor.isServer) {
-            var user = Accounts.findUserByEmail(model.email);
+            const user = Accounts.findUserByEmail(email);
 
             if(user)
                 Accounts.sendResetPasswordEmail(user._id);
             else
-                throw new Meteor.Error("User not found", "User not found according to this email address.");   
+                throw new Meteor.Error("user-not-found", "User not found according to this email address.");
         }
     }
 });
 
-export const updatePassword = new ValidatedMethod({
-    name: 'users.updatePassword',
+export const changePassword = new ValidatedMethod({
+    name: 'users.changePassword',
     mixins: [CallPromiseMixin],
-    validate: null,
+    validate: new SimpleSchema({
+        oldPassword: { type: String },
+        newPassword: { type: String },
+    }).validator(),
     applyOptions: { noRetry: true },
-    run({model}: any) {
-        
+    run({oldPassword, newPassword}: {oldPassword: string, newPassword: string}) {
+        if(!Meteor.userId) {
+            throw new Meteor.Error("not-logged-in", 'You need to be logged in before changing your password.')
+        }
+        Accounts.setPassword(oldPassword, newPassword);
     }
 });
 

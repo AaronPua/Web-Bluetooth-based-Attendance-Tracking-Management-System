@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { EuiButton, EuiCallOut, EuiEmptyPrompt } from '@elastic/eui';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import { useParams } from "react-router-dom";
 
 function VerifiedEmail() {
@@ -10,8 +9,6 @@ function VerifiedEmail() {
     let navigate = useNavigate();
     let params = useParams();
     let token = params.token ?? '';
-
-    const [body, setBody] = useState('');
 
     const [error, setError] = useState('');
     const [showError, setShowError] = useState(false);
@@ -29,8 +26,6 @@ function VerifiedEmail() {
             }
             else {
                 setShowSuccess(true);
-                setBody('Thank you for verifying your email. \n You may now log in.');
-                // navigate('/');
             }
         });
     }, []);
@@ -48,15 +43,15 @@ function VerifiedEmail() {
                     }
                     { showSuccess && 
                         <EuiCallOut title="Success!" color="success" iconType="user">
-                            <p>Your email has been verified.</p>
+                            <p>Thank you for verifying your email. You may now log in.</p>
                         </EuiCallOut> 
                     }
                 </Fragment>
                 
             }
-            // actions={
-            //     <EuiButton fill color="primary" type="submit" onClick={() => navigate('/')}>Home</EuiButton>
-            // }
+            footer={
+                <EuiButton fill color="primary" type="submit" onClick={() => navigate('/')}>Go To Login</EuiButton>
+            }
         />
     );
 }

@@ -1,56 +1,88 @@
 import React, { Fragment, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { EuiEmptyPrompt, EuiLink, EuiSpacer } from '@elastic/eui';
-import {
-  AutoForm,
-  AutoFields,
-  ErrorsField,
-  SubmitField,
-} from 'uniforms-semantic';
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { userRegistrationSchema } from '/imports/api/users/UsersCollection';
+import { EuiButton, EuiEmptyPrompt, EuiFieldText, EuiFlexGroup, EuiForm, EuiFormRow, EuiLink, EuiFlexItem, EuiCallOut } from '@elastic/eui';
 import { resendVerificationEmail } from '/imports/api/users/UsersMethods';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 function VerifyEmail() {
-    const bridge = new SimpleSchema2Bridge(userRegistrationSchema.pick('email'));
 
     const [showResend, setShowResend] = useState(false);
-    const [title, setTitle] = useState('Verify Your Email');
-    const [body, setBody] = useState('Please check your email inbox or spam folder for the verification email.');
 
-    const resendEmailVerification = (model: any) => {
-        resendVerificationEmail.callPromise({model})
-        .then(() => {
-            setTitle('Verification Email Resent');
+    const [error, setError] = useState('');
+    const [showError, setShowError] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    const resendEmailVerificationForm = useFormik({
+        initialValues: {
+            email: '',
+        },
+        validationSchema: yup.object().shape({
+            email: yup.string().email('Must be a valid email address').required('Email is required'),
+        }),
+        onSubmit: (values) => {
+            resendEmailVerification(values);
+        }
+    });
+
+    type FormInputs = {
+        email: string
+    }
+
+    const resendEmailVerification = (values: FormInputs) => {
+        resendVerificationEmail.callPromise({
+            email: values.email
         })
-        .catch((err: Meteor.Error) => {
-            setTitle('An Error Has Occured');
-            setBody(err.message);
+        .then(() => {
+            setShowSuccess(true);
+        })
+        .catch((error: Meteor.Error) => {
+            setShowError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setError(reason);
         });
     }
 
     return (
         <EuiEmptyPrompt
-            title={<h2>{title}</h2>}
+            title={<h2>Verify Your Email</h2>}
             color="plain"
             body={
-                <p>{body}</p>
+                <p>Please check your email inbox or spam folder for the verification email.</p>
             }
             footer={
-                // <EuiButton fill color="primary" type="submit" onClick={() => navigate('/')}>Home</EuiButton>
                 <Fragment>
                     <p>
                         Did not receive the verification email? <EuiLink color="primary" onClick={() => setShowResend(true)}>Click Here.</EuiLink>
                     </p>
-                    {
-                        showResend && 
-                        <AutoForm schema={bridge} onSubmit={(model: any) => resendEmailVerification(model)}>
-                            <EuiSpacer />
-                            <ErrorsField />
-                            <AutoFields />
-                            <EuiSpacer />
-                            <SubmitField value="Resend" />
-                        </AutoForm>
+
+                    { showResend && 
+                        <EuiForm component="form" onSubmit={resendEmailVerificationForm.handleSubmit}>
+                            { showError && 
+                                <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                                    <p>{error}</p>
+                                </EuiCallOut> 
+                            }
+                            { showSuccess && 
+                                <EuiCallOut title="Success!" color="success" iconType="user">
+                                    <p>Password reset email has been sent.</p>
+                                </EuiCallOut> 
+                            }
+                            <EuiFlexGroup>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Email" error={resendEmailVerificationForm.errors.email} 
+                                        isInvalid={!!resendEmailVerificationForm.errors.email}>
+                                        <EuiFieldText {...resendEmailVerificationForm.getFieldProps('email')} 
+                                            isInvalid={!!resendEmailVerificationForm.errors.email} />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem grow={false}>
+                                    <EuiFormRow hasEmptyLabelSpace>
+                                        <EuiButton fill color="primary" type="submit">Resend</EuiButton>
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                            </EuiFlexGroup>
+                        </EuiForm>
                     }
                 </Fragment>
             }

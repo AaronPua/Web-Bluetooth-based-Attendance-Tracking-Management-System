@@ -1,38 +1,44 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { userRegistrationSchema } from '/imports/api/users/UsersCollection';
 import { sendPasswordResetEmail } from '/imports/api/users/UsersMethods';
-import {
-  AutoForm,
-  AutoFields,
-  ErrorsField,
-  SubmitField,
-} from 'uniforms-semantic';
-import {
-    EuiCallOut,
-    EuiEmptyPrompt,
-    EuiLink,
-    EuiSpacer
-} from '@elastic/eui';
+import { EuiEmptyPrompt, EuiCallOut, EuiLink, EuiButton, EuiFieldText, EuiSpacer, EuiForm, EuiFormRow } from '@elastic/eui';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 export default function ForgotPassword() {
-    const bridge = new SimpleSchema2Bridge(userRegistrationSchema.pick('email'));
+    let navigate = useNavigate();
 
     const [error, setError] = useState('');
     const [showError, setShowError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    let navigate = useNavigate();
+    const forgotPasswordForm = useFormik({
+        initialValues: {
+            email: '',
+        },
+        validationSchema: yup.object().shape({
+            email: yup.string().email('Must be a valid email address').required('Email is required'),
+        }),
+        onSubmit: (values) => {
+            forgotPassword(values);
+        }
+    });
 
-    const forgotPassword = (model: any) => {
-        sendPasswordResetEmail.callPromise({model})
+    type FormInputs = {
+        email: string
+    }
+
+    const forgotPassword = (values: FormInputs) => {
+        sendPasswordResetEmail.callPromise({
+            email: values.email
+        })
         .then(() => {
             setShowSuccess(true);
         })
         .catch((error: any) => {
             setShowError(true);
-            setError(error.reason);
+            const reason = error.reason != null ? error.reason : error.message;
+            setError(reason);
         });
     }
 
@@ -41,7 +47,7 @@ export default function ForgotPassword() {
             title={<h2>Forgot Password</h2>}
             color="plain"
             body={
-                <Fragment>
+                <>
                     { showError && 
                         <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                             <p>{error}</p>
@@ -52,17 +58,24 @@ export default function ForgotPassword() {
                             <p>Password reset email has been sent.</p>
                         </EuiCallOut> 
                     }
-                    <AutoForm schema={bridge} onSubmit={(model: any) => forgotPassword(model)}>
-                        <ErrorsField />
-                        <AutoFields />
-                        <EuiSpacer />
-                        <SubmitField value="Reset Password"/>
-                    </AutoForm>
-                </Fragment>
+
+                    <EuiSpacer />
+
+                    <EuiForm component="form" onSubmit={forgotPasswordForm.handleSubmit}>
+                        <EuiFormRow label="Email" error={forgotPasswordForm.errors.email} 
+                            isInvalid={!!forgotPasswordForm.errors.email}>
+                            <EuiFieldText {...forgotPasswordForm.getFieldProps('email')} 
+                                isInvalid={!!forgotPasswordForm.errors.email} />
+                        </EuiFormRow>
+                        <EuiFormRow>
+                            <EuiButton fullWidth fill color="primary" type="submit">Resend</EuiButton>
+                        </EuiFormRow>
+                    </EuiForm>
+                </>
             }
             footer={
                 <p>
-                    Remembered your password? <EuiLink onClick={() => navigate('/login')}>Sign In</EuiLink>
+                    Remembered your password? <EuiLink onClick={() => navigate('/')}>Sign In</EuiLink>
                 </p>
             }
         />

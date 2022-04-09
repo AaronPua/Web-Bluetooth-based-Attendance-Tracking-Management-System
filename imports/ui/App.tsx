@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import LoginForm from './components/auth/LoginForm';
+import LoginForm from './components/auth/Login';
 import Home from './Home';
-import RegistrationForm from './components/auth/RegistrationForm';
+import RegistrationForm from './components/auth/Registration';
 import UnknownRoute from './components/auth/UnknownRoute';
 import FullPageLayout from './layouts/FullPageLayout';
 import CenteredBody from './layouts/CenteredBody';
@@ -43,8 +43,7 @@ export const App = () => {
                 </Route>
                 <Route element={<CenteredBody />} >
                     <Route path="/" element={<LoginForm />} />
-                    <Route path="login" element={<LoginForm />} />
-                    <Route path="sign-up" element={<RegistrationForm />} />
+                    <Route path="register" element={<RegistrationForm />} />
                     <Route path="verify-email" element={<VerifyEmail />} />
                     <Route path="verify-email/:token" element={<VerifiedEmail />} />
                     <Route path="forgot-password" element={<ForgotPassword />} />
