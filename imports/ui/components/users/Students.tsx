@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import _ from 'underscore';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { addStudentToCourse, removeStudentFromCourse } from '../../../api/courses/CoursesMethods';
@@ -23,6 +23,7 @@ export default function Students() {
     const [showRemoveStudentError, setShowRemoveStudentError] = useState(false);
     const [removeStudentError, setRemoveStudentError] = useState('');
     
+    let navigate = useNavigate();
     const { courseId } = useParams();
 
     const addStudentToThisCourse = (e: { preventDefault: () => void; }) => {
@@ -81,6 +82,10 @@ export default function Students() {
             removeStudentSelectMap, isLoadingStudentsNotInCourse, studentsNotInCourse };
     }, []);
 
+    const goToStudentCourseAttendance = (userId: string) => {
+        navigate(`/courses/${courseId}/students/${userId}/attendance`)
+    }
+
     const studentColumns: TableColumn<Meteor.User>[] = [
         {
             name: 'First Name',
@@ -91,7 +96,12 @@ export default function Students() {
             name: 'Last Name',
             selector: row => row.profile.lastName,
             sortable: true,
-        }
+        },
+        {
+            name: 'Actions',
+            cell: row => <EuiButton size="s" color="primary" id={row._id} 
+                            onClick={() => goToStudentCourseAttendance(row._id)}>View Attendance</EuiButton>,
+        },
     ];
 
     useEffect(() => {

@@ -1,7 +1,7 @@
-import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
+import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { useSubscribe, useFind, useTracker } from 'meteor/react-meteor-data';
+import { useTracker } from 'meteor/react-meteor-data';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -52,12 +52,15 @@ export default function Beacons() {
         navigate(`/courses/${courseId}/beacons/${beaconId}`);
     }
 
-    const isLoading = useSubscribe('beacons.all');
-    const allBeacons = useFind(() => BeaconsCollection.find());
-
-    const course = useTracker(() => { 
+    const { course, isLoadingBeacons, courseBeacons } = useTracker(() => { 
         Meteor.subscribe('courses.specific', courseId);
-        return CoursesCollection.findOne(courseId) ;
+        const course = CoursesCollection.findOne(courseId);
+
+        const courseBeaconsSub = Meteor.subscribe('beacons.forOneCourse', courseId);
+        const isLoadingBeacons = !courseBeaconsSub.ready();
+        const courseBeacons = BeaconsCollection.find(courseBeaconsSub.scopeQuery(), courseId).fetch();
+
+        return { course, isLoadingBeacons, courseBeacons };
     }, []);
 
     type DataRow = {
@@ -143,8 +146,8 @@ export default function Beacons() {
                         <DataTable
                             title="Beacons"
                             columns={columns}
-                            data={allBeacons}
-                            progressPending={isLoading()}
+                            data={courseBeacons}
+                            progressPending={isLoadingBeacons}
                             pagination
                             striped
                             responsive

@@ -3,7 +3,6 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { LoggedInMixin } from 'meteor/tunifight:loggedin-mixin';
 import { BeaconsCollection, beaconCreateSchema } from './BeaconsCollection';
-import { CoursesCollection } from '../courses/CoursesCollection';
 
 export const createBeacon = new ValidatedMethod({
     name: 'beacon.create',

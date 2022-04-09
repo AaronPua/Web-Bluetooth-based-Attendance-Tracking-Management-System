@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
 import { useNavigate, useParams } from 'react-router';
-import { useFind, useSubscribe, useTracker } from 'meteor/react-meteor-data';
+import { useTracker } from 'meteor/react-meteor-data';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import { createLesson } from '../../../api/lessons/LessonsMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -52,7 +52,6 @@ export default function Lessons() {
     const barChartData = _.map(lessons, (lesson) => {
         return { name: lesson.name, present: lesson.studentAttendance.length, absent: (studentsInCourse.length - lesson.studentAttendance.length) };
     });
-    console.log('barChartData', barChartData);
 
     let navigate = useNavigate();
     const goToLesson = (lessonId: string) => {
@@ -320,9 +319,6 @@ export default function Lessons() {
                                 </VictoryChart>
                             </EuiPanel>
                         </EuiFlexItem>
-                        {/* <EuiFlexItem>
-
-                        </EuiFlexItem> */}
                     </EuiFlexGroup>
                 </EuiPageContentBody>
             </EuiPageContent>

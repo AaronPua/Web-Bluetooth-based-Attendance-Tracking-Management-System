@@ -53,7 +53,7 @@ export default function Courses() {
         const isLoadingCourses = !allCoursesSub.ready();
         const allCourses = CoursesCollection.find(allCoursesSub.scopeQuery()).fetch();
 
-        const currentUserCoursesSub = Meteor.subscribe('users.courses.currentUser');
+        const currentUserCoursesSub = Meteor.subscribe('courses.currentUser');
         const isLoadingUserCourses = !currentUserCoursesSub.ready();
         const userCourses = CoursesCollection.find(currentUserCoursesSub.scopeQuery()).fetch();
 
@@ -104,11 +104,13 @@ export default function Courses() {
                             { showError &&
                                 <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                     <p>{error}</p>
-                                </EuiCallOut>}
+                                </EuiCallOut>
+                            }
                             { showSuccess &&
                                 <EuiCallOut title="Success!" color="success">
                                     <p>Course created sucessfully.</p>
-                                </EuiCallOut>}
+                                </EuiCallOut>
+                            }
                             <EuiForm component="form" onSubmit={createCourseForm.handleSubmit}>
                                 <EuiFlexGroup justifyContent='flexStart'>
                                     <EuiFlexItem grow={false}>
