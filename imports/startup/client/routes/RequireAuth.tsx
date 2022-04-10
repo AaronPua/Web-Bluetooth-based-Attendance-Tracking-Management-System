@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 
 export default function RequireAuth({children}: { children: JSX.Element }) {
 
-    const user = useTracker(() => Meteor.user());
+    const user = useTracker(() => Meteor.userId());
     
-    return user ? children : <Navigate to='/login' />;
+    return user ? children : <Navigate to='/' />;
 }

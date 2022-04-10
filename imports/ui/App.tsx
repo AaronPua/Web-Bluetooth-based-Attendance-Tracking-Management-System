@@ -21,6 +21,7 @@ import Beacons from './components/beacons/Beacons';
 import Beacon from './components/beacons/Beacon';
 import User from './components/users/User';
 import Instructors from './components/users/Instructors';
+import Attendance from './components/attendance/Attendance';
 
 export const App = () => {
     return (
@@ -28,17 +29,18 @@ export const App = () => {
             <Routes>
                 <Route element={<FullPageLayout />} >
                     <Route path="home" element={<RequireAuth><Home /></RequireAuth>} />
-                    <Route path="users" element={<Users />} />
-                    <Route path="user/:userId" element={<User />} />
+                    <Route path="users" element={<RequireAuth><Users /></RequireAuth>} />
+                    <Route path="user/:userId" element={<RequireAuth><User /></RequireAuth>} />
                     <Route path="courses" element={<Outlet />} >
-                        <Route index element={<Courses />} />
-                        <Route path=":courseId" element={<Course />} />
-                        <Route path=":courseId/lessons/" element={<Lessons />} />
-                        <Route path=":courseId/lessons/:lessonId" element={<Lesson />} />
-                        <Route path=":courseId/students/" element={<Students />} />
-                        <Route path=":courseId/instructors/" element={<Instructors />} />
-                        <Route path=":courseId/beacons/" element={<Beacons />} />
-                        <Route path=":courseId/beacons/:beaconId" element={<Beacon />} />
+                        <Route index element={<RequireAuth><Courses /></RequireAuth>} />
+                        <Route path=":courseId" element={<RequireAuth><Course /></RequireAuth>} />
+                        <Route path=":courseId/lessons/" element={<RequireAuth><Lessons /></RequireAuth>} />
+                        <Route path=":courseId/lessons/:lessonId" element={<RequireAuth><Lesson /></RequireAuth>} />
+                        <Route path=":courseId/students/" element={<RequireAuth><Students /></RequireAuth>} />
+                        <Route path=":courseId/students/:userId/attendance" element={<RequireAuth><Attendance /></RequireAuth>} />
+                        <Route path=":courseId/instructors/" element={<RequireAuth><Instructors /></RequireAuth>} />
+                        <Route path=":courseId/beacons/" element={<RequireAuth><Beacons /></RequireAuth>} />
+                        <Route path=":courseId/beacons/:beaconId" element={<RequireAuth><Beacon /></RequireAuth>} />
                     </Route>
                 </Route>
                 <Route element={<CenteredBody />} >

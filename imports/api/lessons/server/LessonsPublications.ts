@@ -5,6 +5,12 @@ import _ from 'underscore';
 
 Meteor.publish('lessons.all', function() {
     this.enableScope();
+
+    if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
+        this.ready();
+        return;
+    }
+
     return LessonsCollection.find({});
 });
 
@@ -27,6 +33,11 @@ Meteor.publish('lesson.attendance.present', function(courseId, lessonId) {
     check(courseId, String);
     check(lessonId, String);
 
+    if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
+        this.ready();
+        return;
+    }
+
     const attended = LessonsCollection.find({ _id: lessonId }, { fields: { studentAttendance: 1 } }).fetch();
     const attendedIds = _.pluck(_.flatten(_.pluck(attended, 'studentAttendance')), '_id');
     
@@ -37,6 +48,11 @@ Meteor.publish('lesson.attendance.absent', function(courseId, lessonId) {
     this.enableScope();
     check(courseId, String);
     check(lessonId, String);
+
+    if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
+        this.ready();
+        return;
+    }
 
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');

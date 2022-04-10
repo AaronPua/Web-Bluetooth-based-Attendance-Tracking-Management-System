@@ -1,3 +1,4 @@
+import '/imports/server/Login';
 import '/imports/server/Email';
 import '/imports/api/users/UsersMethods';
 import '/imports/api/users/UsersCollection';
