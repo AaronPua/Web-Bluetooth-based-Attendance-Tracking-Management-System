@@ -1,13 +1,12 @@
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
 import { LoggedInMixin } from 'meteor/tunifight:loggedin-mixin';
-import { CoursesCollection } from './CoursesCollection';
-import { courseCreateSchema } from './CoursesCollection';
+import { CoursesCollection, courseCreateSchema } from './CoursesCollection';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor';
 import { LessonsCollection } from '../lessons/LessonsCollection';
-import _ from 'underscore';
 import { updateAttendance } from '../lessons/LessonsMethods';
+import _ from 'underscore';
 
 export const createCourse = new ValidatedMethod({
     name: 'course.create',
@@ -53,7 +52,7 @@ export const updateCourse = new ValidatedMethod({
         name: { type: String },
         credits: { type: Number },
     }).validator(),
-    run({ courseId, name, credits }: any) {
+    run({ courseId, name, credits }: { courseId: string, name: string, credits: string }) {
         CoursesCollection.update({ _id: courseId }, { 
             $set: { 
                 name: name, 
@@ -71,10 +70,10 @@ export const addStudentToCourse = new ValidatedMethod({
         message: 'You need to be logged in before adding students to a course.',
     },
     validate: new SimpleSchema({
-        courseId: { type: String },
-        studentId: { type: String },
+        courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        studentId: { type: String, regEx: SimpleSchema.RegEx.Id },
     }).validator(),
-    run({ courseId, studentId }: any) {
+    run({ courseId, studentId }: { courseId: string, studentId: string }) {
         Meteor.users.update({ _id: studentId }, {
             $addToSet: { courses: { _id: courseId } }
         });
@@ -89,10 +88,10 @@ export const removeStudentFromCourse = new ValidatedMethod({
         message: 'You need to be logged in before removing students from a course.',
     },
     validate: new SimpleSchema({
-        courseId: { type: String },
-        studentId: { type: String },
+        courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        studentId: { type: String, regEx: SimpleSchema.RegEx.Id },
     }).validator(),
-    run({ courseId, studentId }: any) {
+    run({ courseId, studentId }: { courseId: string, studentId: string }) {
         Meteor.users.update({ _id: studentId }, {
             $pull: { courses: { _id: courseId } }
         });
@@ -118,10 +117,10 @@ export const addInstructorToCourse = new ValidatedMethod({
         message: 'You need to be logged in before adding instructors to a course.',
     },
     validate: new SimpleSchema({
-        courseId: { type: String },
-        instructorId: { type: String },
+        courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        instructorId: { type: String, regEx: SimpleSchema.RegEx.Id },
     }).validator(),
-    run({ courseId, instructorId }: any) {
+    run({ courseId, instructorId }: { courseId: string, instructorId: string }) {
         Meteor.users.update({ _id: instructorId }, {
             $addToSet: { courses: { _id: courseId } }
         });
@@ -136,10 +135,10 @@ export const removeInstructorFromCourse = new ValidatedMethod({
         message: 'You need to be logged in before removing instructors from a course.',
     },
     validate: new SimpleSchema({
-        courseId: { type: String },
-        instructorId: { type: String },
+        courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        instructorId: { type: String, regEx: SimpleSchema.RegEx.Id },
     }).validator(),
-    run({ courseId, instructorId }: any) {
+    run({ courseId, instructorId }: { courseId: string, instructorId: string }) {
        Meteor.users.update({ _id: instructorId }, {
             $pull: { courses: { _id: courseId } }
         });

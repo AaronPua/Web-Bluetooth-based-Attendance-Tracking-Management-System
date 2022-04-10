@@ -12,8 +12,8 @@ export const createLesson = new ValidatedMethod({
         message: 'You need to be logged in before creating a lesson.',
     },
     validate: lessonCreateSchema.validator(),
-    applyOptions: { noRetry: true },
-    run({ courseId, name, startTime, endTime, date }: any) {
+    run({ courseId, name, startTime, endTime, date }:
+        { courseId: string, name:string, startTime: Date, endTime: Date, date: Date }) {
         LessonsCollection.insert({
             courseId: courseId,
             name: name,
@@ -35,7 +35,6 @@ export const removeLesson = new ValidatedMethod({
     validate: new SimpleSchema({
         lessonId: { type: String }
     }).validator(),
-    applyOptions: { noRetry: true },
     run({ lessonId }: { lessonId: string }) {
         LessonsCollection.remove(lessonId);
     }
@@ -55,8 +54,8 @@ export const updateLesson = new ValidatedMethod({
         endTime: { type: Date },
         date: { type: Date }
     }).validator(),
-    applyOptions: { noRetry: true },
-    run({ lessonId, name, startTime, endTime, date }: any) {
+    run({ lessonId, name, startTime, endTime, date }: 
+        { lessonId: string, name:string, startTime: Date, endTime: Date, date: Date }) {
         LessonsCollection.update({ _id: lessonId }, {
             $set: {
                 name: name,
@@ -80,7 +79,7 @@ export const updateAttendance = new ValidatedMethod({
         studentId: { type: String },
         action: { type: String, allowedValues: ['add', 'remove'] }
     }).validator(),
-    run({lessonId, studentId, action}: { lessonId: string, studentId: string, action: string }) {
+    run({ lessonId, studentId, action }: { lessonId: string, studentId: string, action: string }) {
         if(action === 'add') {
             LessonsCollection.update({ _id: lessonId }, {
                 $addToSet: { studentAttendance: { _id: studentId } }

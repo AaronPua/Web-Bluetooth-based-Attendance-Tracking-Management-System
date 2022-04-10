@@ -18,9 +18,8 @@ export const registerUser = new ValidatedMethod({
     name: 'users.registerUser',
     mixins: [CallPromiseMixin],
     validate: userRegistrationSchema.validator(),
-    applyOptions: { noRetry: true },
-    run({email, password, firstName, lastName, gender}: {email: string, password: string, 
-        firstName: string, lastName: string, gender: string}) {
+    run({ email, password, firstName, lastName, gender }: 
+        { email: string, password: string, firstName: string, lastName: string, gender: string }) {
         const userId = Accounts.createUser({
             email: email,
             password: password,
@@ -43,9 +42,8 @@ export const registerStudentUser = new ValidatedMethod({
     name: 'users.registerStudentUser',
     mixins: [CallPromiseMixin],
     validate: userRegistrationSchema.validator(),
-    applyOptions: { noRetry: true },
-    run({email, password, firstName, lastName, gender}: {email: string, password: string, 
-        firstName: string, lastName: string, gender: string}) {
+    run({ email, password, firstName, lastName, gender }: 
+        { email: string, password: string, firstName: string, lastName: string, gender: string }) {
         const userId = Accounts.createUser({
             email: email,
             password: password,
@@ -69,8 +67,7 @@ export const resendVerificationEmail = new ValidatedMethod({
     validate: new SimpleSchema({
         email: { type: String, regEx: SimpleSchema.RegEx.Email }
     }).validator(),
-    applyOptions: { noRetry: true },
-    run({email}: {email: string}) {
+    run({ email }: { email: string }) {
         if(Meteor.isServer) {
             const user = Accounts.findUserByEmail(email);
 
@@ -88,8 +85,7 @@ export const sendPasswordResetEmail = new ValidatedMethod({
     validate: new SimpleSchema({
         email: { type: String, regEx: SimpleSchema.RegEx.Email }
     }).validator(),
-    applyOptions: { noRetry: true },
-    run({email}: {email: string}) {
+    run({ email }: { email: string }) {
         if(Meteor.isServer) {
             const user = Accounts.findUserByEmail(email);
 
@@ -108,8 +104,7 @@ export const changePassword = new ValidatedMethod({
         oldPassword: { type: String },
         newPassword: { type: String },
     }).validator(),
-    applyOptions: { noRetry: true },
-    run({oldPassword, newPassword}: {oldPassword: string, newPassword: string}) {
+    run({ oldPassword, newPassword }: { oldPassword: string, newPassword: string }) {
         if(!Meteor.userId) {
             throw new Meteor.Error("not-logged-in", 'You need to be logged in before changing your password.')
         }
@@ -121,10 +116,10 @@ export const addUserToRoles = new ValidatedMethod({
     name: 'users.addUserToRoles',
     mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
-        userId: { type: String },
+        userId: { type: String, regEx: SimpleSchema.RegEx.Id },
         roleName: { type: String },
     }).validator(),
-    run({userId, roleName}: any) {
+    run({ userId, roleName }: { userId: string, roleName: string | string[] }) {
         Roles.addUsersToRoles(userId, roleName);
     }
 });
@@ -137,13 +132,14 @@ export const updateUser = new ValidatedMethod({
         message: 'You need to be logged in before updating a user.',
     },
     validate: new SimpleSchema({
-        userId: { type: String },
-        email: { type: String },
+        userId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        email: { type: String, regEx: SimpleSchema.RegEx.Email },
         firstName: { type: String },
         lastName: { type: String },
         gender: { type: String },
     }).validator(),
-    run({userId, email, firstName, lastName, gender}: any) {
+    run({ userId, email, firstName, lastName, gender }: 
+        { userId: string, email: string, firstName: string, lastName: string, gender: string }) {
         Meteor.users.update({ _id: userId }, {
             $set: {
                 "emails.0.address": email,
