@@ -3,6 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { Roles } from 'meteor/alanning:roles';
 
+// Publish the role assignment collection as required by alanning:roles package
+Meteor.publish(null, function () {
+    if (this.userId) {
+        return Meteor.roleAssignment.find({ 'user._id': this.userId });
+    } else {
+        this.ready();
+    }
+});
+
 Meteor.publish('users.all', function() {
     this.enableScope();
 

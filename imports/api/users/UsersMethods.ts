@@ -56,6 +56,7 @@ export const registerStudentUser = new ValidatedMethod({
 
         if(userId) {
             Roles.addUsersToRoles(userId, 'student');
+            Accounts.sendVerificationEmail(userId);
         }
         return userId;
     }

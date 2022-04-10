@@ -5,18 +5,13 @@ import { EuiPageHeader, EuiPageContent, EuiPageContentBody } from '@elastic/eui'
 
 function Home() {
 
-    const user = useTracker(() => Meteor.user());
-
     const isLoading = useSubscribe('users.all');
     const allUsers = useFind(() => Meteor.users.find({}));
 
     return (
         <>
             <EuiPageHeader
-                // restrictWidth
-                // iconType="logoElastic"
                 pageTitle="Dashboard"
-                // rightSideItems={[button]}
             />
             <EuiPageContent
                 hasBorder={false}
@@ -28,7 +23,6 @@ function Home() {
             >
                 <EuiPageContentBody>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    {/* <p>{ user?.profile.firstName }</p> */}
                     { isLoading() && <div className="loading">loading...</div> }
                     <ul className="tasks">
                         {allUsers.map(user => (

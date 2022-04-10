@@ -72,7 +72,7 @@ export default function LoginForm() {
             }
             footer={
                 <p>
-                    Don't have an account yet? <EuiLink href="/sign-up">Register Now</EuiLink>
+                    Don't have an account yet? <EuiLink href="/register">Register Now</EuiLink>
                 </p>
             }
         />
