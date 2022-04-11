@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { useNavigate } from 'react-router';
-import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, 
-    EuiForm, EuiFormRow, EuiLink, EuiSpacer } from '@elastic/eui';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, EuiForm, EuiFormRow, EuiLink, EuiSpacer } from '@elastic/eui';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function LoginForm() {
+export default function Login() {
     let navigate = useNavigate();
+    const location = useLocation();
 
     const [error, setError] = useState('');
     const [showError, setShowError] = useState(false);
+
+    const [loginError, setLoginError] = useState('');
+    const [showLoginError, setShowLoginError] = useState(false);
 
     const userLoginForm = useFormik({
         initialValues: {
@@ -24,6 +27,7 @@ export default function LoginForm() {
         onSubmit: (values) => {
             login(values)
             .catch((error: Meteor.Error) => {
+                setShowLoginError(false);
                 setShowError(true);
                 const reason = error.reason != null ? error.reason : error.message;
                 setError(reason);
@@ -44,6 +48,28 @@ export default function LoginForm() {
         });
     }
 
+    useEffect(() => {
+        if(Meteor.userId()) {
+            navigate('/home');
+        }
+
+        if(location.state != null && location.state.loginFirst != null) {
+            setLoginError(location.state.loginFirst);
+            setShowLoginError(true);
+            setShowError(false);
+        }
+
+        if(location.state != null && location.state.accessDenied != null) {
+            setLoginError(location.state.accessDenied);
+            setShowLoginError(true);
+            setShowError(false);
+        }
+        
+        Meteor.setTimeout(() => {
+            setShowLoginError(false);
+        }, 5000);
+    }, [location]);
+
     return (
         <EuiEmptyPrompt
             title={<h2>Sign In</h2>}
@@ -53,6 +79,11 @@ export default function LoginForm() {
                     { showError && 
                         <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                             <p>{error}</p>
+                        </EuiCallOut>
+                    }
+                    { showLoginError && 
+                        <EuiCallOut title="Access Denied" color="danger" iconType="alert">
+                            <p>{loginError}</p>
                         </EuiCallOut> 
                     }
                     <EuiForm component="form" onSubmit={userLoginForm.handleSubmit}>
@@ -72,7 +103,7 @@ export default function LoginForm() {
             }
             footer={
                 <p>
-                    Don't have an account yet? <EuiLink href="/register">Register Now</EuiLink>
+                    Don't have an account yet? <EuiLink onClick={() => navigate('/register')}>Register Now</EuiLink>
                 </p>
             }
         />

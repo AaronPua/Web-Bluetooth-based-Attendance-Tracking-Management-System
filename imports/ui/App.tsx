@@ -1,12 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import LoginForm from './components/auth/Login';
-import Home from './Home';
-import RegistrationForm from './components/auth/Registration';
+import Login from './components/auth/Login';
+import Home from './components/Home';
+import './Icons';
+import Registration from './components/auth/Registration';
 import UnknownRoute from './components/auth/UnknownRoute';
 import FullPageLayout from './layouts/FullPageLayout';
 import CenteredBody from './layouts/CenteredBody';
-import RequireAuth from '../startup/client/routes/RequireAuth';
+import RequireAuth from './components/auth/RequireAuth';
 import VerifyEmail from './components/auth/VerifyEmail';
 import VerifiedEmail from './components/auth/VerifiedEmail';
 import ForgotPassword from './components/auth/ForgotPassword';
@@ -44,8 +45,8 @@ export const App = () => {
                     </Route>
                 </Route>
                 <Route element={<CenteredBody />} >
-                    <Route path="/" element={<LoginForm />} />
-                    <Route path="register" element={<RegistrationForm />} />
+                    <Route path="/" element={<Login />} />
+                    <Route path="register" element={<Registration />} />
                     <Route path="verify-email" element={<VerifyEmail />} />
                     <Route path="verify-email/:token" element={<VerifiedEmail />} />
                     <Route path="forgot-password" element={<ForgotPassword />} />

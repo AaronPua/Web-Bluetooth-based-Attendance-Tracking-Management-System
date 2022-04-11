@@ -1,22 +1,27 @@
-import { EuiSideNav, htmlIdGenerator } from '@elastic/eui';
+import { EuiIcon, EuiSideNav, htmlIdGenerator } from '@elastic/eui';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 function SideNav() {
 
+    const navigate = useNavigate();
+
     const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const toggleOpenOnMobile = () => {
         setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);
     };
 
-    const sideNavItems = [{
+    const adminSideNavItems = [{
         name: 'Navigation',
-        id: htmlIdGenerator('navigation')(),
+        id: htmlIdGenerator('adminNavigation')(),
         items: [
             {
                 name: 'Users',
                 id: htmlIdGenerator('usersPage')(),
-                href: '/users',
+                icon: <EuiIcon type="users" />,
+                onClick: (() => navigate('/users')),
                 // forceOpen: true,
                 // items: [
                 //     {
@@ -34,10 +39,32 @@ function SideNav() {
             {
                 name: 'Courses',
                 id: htmlIdGenerator('coursesPage')(),
-                href: '/courses',
+                icon: <EuiIcon type="list" />,
+                onClick: (() => navigate('/courses')),
             }
         ],
     }];
+
+    const instructorSideNavItems = [{
+        name: 'Navigation',
+        id: htmlIdGenerator('instructorNavigation')(),
+        items: [
+            {
+                name: 'Courses',
+                id: htmlIdGenerator('coursesPage')(),
+                icon: <EuiIcon type="list" />,
+                onClick: (() => navigate('/courses')),
+            }
+        ],
+    }];
+
+    Meteor.setTimeout(() => {
+        if(Roles.userIsInRole(Meteor.userId(), 'admin')) {
+            setIsAdmin(true);
+        }
+    }, 1000);
+
+    const sideNavItems = isAdmin ? adminSideNavItems : instructorSideNavItems;
 
     return (
         <EuiSideNav

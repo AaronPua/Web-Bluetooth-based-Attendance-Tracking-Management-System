@@ -11,7 +11,7 @@ function Home() {
     return (
         <>
             <EuiPageHeader
-                pageTitle="Dashboard"
+                pageTitle="Home"
             />
             <EuiPageContent
                 hasBorder={false}

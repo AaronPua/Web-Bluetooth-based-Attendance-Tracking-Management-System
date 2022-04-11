@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, EuiFlexGroup, EuiFlexItem,
-    EuiForm, EuiFormRow, EuiSelect, EuiSpacer } from '@elastic/eui';
+    EuiForm, EuiFormRow, EuiLink, EuiSelect, EuiSpacer } from '@elastic/eui';
 import { registerUser } from '../../../api/users/UsersMethods';
 import { } from '@elastic/eui';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function RegistrationForm() {
+export default function Registration() {
     let navigate = useNavigate();
 
     const [error, setError] = useState('');
@@ -110,6 +110,11 @@ export default function RegistrationForm() {
                         <EuiButton fullWidth fill color="primary" type="submit">Register</EuiButton>
                     </EuiForm>
                 </>
+            }
+            footer={
+                <p>
+                    Already have an account? <EuiLink onClick={() => navigate('/')}>Log In To Your Account</EuiLink>
+                </p>
             }
         />
     );

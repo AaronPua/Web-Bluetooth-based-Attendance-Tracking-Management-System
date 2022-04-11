@@ -21,12 +21,12 @@ export default function Header() {
     return (
         <EuiHeader position="static">
             <EuiHeaderSectionItem border="right">
-                <h6>COMP8047</h6>
+                <EuiHeaderLogo iconType="managementApp" href="/home" type='button' onClick={() => navigate('/home')}>COMP8047</EuiHeaderLogo>
             </EuiHeaderSectionItem>
 
             <EuiHeaderSectionItem>
-                <EuiHeaderLinks aria-label="App navigation links example">
-                    <EuiHeaderLink onClick={logout}>Log Out</EuiHeaderLink>
+                <EuiHeaderLinks>
+                    <EuiHeaderLink iconType="exit" onClick={logout}>Log Out</EuiHeaderLink>
                 </EuiHeaderLinks>
             </EuiHeaderSectionItem>
         </EuiHeader>
