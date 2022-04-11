@@ -121,12 +121,12 @@ export default function Course() {
                                     </EuiTitle>
                                     <EuiSpacer />
                                     { showCourseError && 
-                                        <EuiCallOut title="An error has occured" color="danger">
+                                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                             <p>{courseError}</p>
                                         </EuiCallOut> 
                                     }
                                     { showCourseSuccess && 
-                                        <EuiCallOut title="Success!" color="success">
+                                        <EuiCallOut title="Success!" color="success" iconType="user">
                                             <p>Course updated sucessfully.</p>
                                         </EuiCallOut> 
                                     }

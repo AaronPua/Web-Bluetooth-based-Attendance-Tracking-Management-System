@@ -145,12 +145,12 @@ export default function Students() {
                                     </EuiTitle>
                                     <EuiSpacer />
                                     { showAddStudentError && 
-                                        <EuiCallOut title="An error has occured" color="danger">
+                                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                             <p>{addStudentError}</p>
                                         </EuiCallOut> 
                                     }
                                     { showAddStudentSuccess && 
-                                        <EuiCallOut title="Success!" color="success">
+                                        <EuiCallOut title="Success!" color="success" iconType="user">
                                             <p>Student sucessfully added to course.</p>
                                         </EuiCallOut> 
                                     }
@@ -182,12 +182,12 @@ export default function Students() {
                                     </EuiTitle>
                                     <EuiSpacer />
                                     { showRemoveStudentError && 
-                                        <EuiCallOut title="An error has occured" color="danger">
+                                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                             <p>{removeStudentError}</p>
                                         </EuiCallOut> 
                                     }
                                     { showRemoveStudentSuccess && 
-                                        <EuiCallOut title="Success!" color="success">
+                                        <EuiCallOut title="Success!" color="success" iconType="user">
                                             <p>Student sucessfully removed from course.</p>
                                         </EuiCallOut> 
                                     }

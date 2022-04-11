@@ -107,7 +107,7 @@ export default function Courses() {
                                 </EuiCallOut>
                             }
                             { showSuccess &&
-                                <EuiCallOut title="Success!" color="success">
+                                <EuiCallOut title="Success!" color="success" iconType="user">
                                     <p>Course created sucessfully.</p>
                                 </EuiCallOut>
                             }

@@ -134,12 +134,12 @@ export default function Instructors() {
                                     </EuiTitle>
                                     <EuiSpacer />
                                     { showAddInstructorError && 
-                                        <EuiCallOut title="An error has occured" color="danger">
+                                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                             <p>{addInstructorError}</p>
                                         </EuiCallOut> 
                                     }
                                     { showAddInstructorSuccess && 
-                                        <EuiCallOut title="Success!" color="success">
+                                        <EuiCallOut title="Success!" color="success" iconType="user">
                                             <p>Instructor sucessfully added to course.</p>
                                         </EuiCallOut> 
                                     }
@@ -171,12 +171,12 @@ export default function Instructors() {
                                     </EuiTitle>
                                     <EuiSpacer />
                                     { showRemoveInstructorError && 
-                                        <EuiCallOut title="An error has occured" color="danger">
+                                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                             <p>{removeInstructorError}</p>
                                         </EuiCallOut> 
                                     }
                                     { showRemoveInstructorSuccess && 
-                                        <EuiCallOut title="Success!" color="success">
+                                        <EuiCallOut title="Success!" color="success" iconType="user">
                                             <p>Instructor sucessfully removed from course.</p>
                                         </EuiCallOut> 
                                     }

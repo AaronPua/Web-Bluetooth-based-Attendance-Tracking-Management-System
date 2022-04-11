@@ -128,12 +128,12 @@ export default function User() {
                             </EuiTitle>
                             <EuiSpacer />
                             { showError &&
-                                <EuiCallOut title="An error has occured" color="danger">
+                                <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                     <p>{error}</p>
                                 </EuiCallOut>
                             }
                             { showSuccess &&
-                                <EuiCallOut title="Success!" color="success">
+                                <EuiCallOut title="Success!" color="success" iconType="user">
                                     <p>User updated sucessfully.</p>
                                 </EuiCallOut>
                             }

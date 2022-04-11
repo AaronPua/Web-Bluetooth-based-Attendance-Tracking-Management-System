@@ -180,12 +180,12 @@ export default function Lesson() {
                                 </EuiTitle>
                                 <EuiSpacer />
                                 { showLessonError && 
-                                    <EuiCallOut title="An error has occured" color="danger">
+                                    <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                         <p>{lessonError}</p>
                                     </EuiCallOut> 
                                 }
                                 { showLessonSuccess && 
-                                    <EuiCallOut title="Success!" color="success">
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
                                         <p>Lesson updated sucessfully.</p>
                                     </EuiCallOut> 
                                 }
@@ -259,12 +259,12 @@ export default function Lesson() {
                         <EuiFlexItem>
                             <EuiPanel>
                                 { showRemoveAttendanceError && 
-                                    <EuiCallOut title="An error has occured" color="danger">
+                                    <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                         <p>{removeAttendanceError}</p>
                                     </EuiCallOut> 
                                 }
                                 { showRemoveAttendanceSuccess && 
-                                    <EuiCallOut title="Success!" color="success">
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
                                         <p>Student attendance sucessfully marked as absent.</p>
                                     </EuiCallOut> 
                                 }
@@ -283,12 +283,12 @@ export default function Lesson() {
                         <EuiFlexItem>
                             <EuiPanel>
                                 { showAddAttendanceError && 
-                                    <EuiCallOut title="An error has occured" color="danger">
+                                    <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                         <p>{addAttendanceError}</p>
                                     </EuiCallOut> 
                                 }
                                 { showAddAttendanceSuccess && 
-                                    <EuiCallOut title="Success!" color="success">
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
                                         <p>Student attendance sucessfully marked as present.</p>
                                     </EuiCallOut> 
                                 }

@@ -50,7 +50,9 @@ export default function Lessons() {
     ];
 
     const barChartData = _.map(lessons, (lesson) => {
-        return { name: lesson.name, present: lesson.studentAttendance.length, absent: (studentsInCourse.length - lesson.studentAttendance.length) };
+        const absentNum = studentsInCourse.length - lesson.studentAttendance.length;
+        const absent = absentNum >= 0 ? absentNum: 0;
+        return { name: lesson.name, present: lesson.studentAttendance.length, absent: absent };
     });
 
     let navigate = useNavigate();
@@ -163,12 +165,12 @@ export default function Lessons() {
                                 </EuiTitle>
                                 <EuiSpacer />
                                 { showLessonError && 
-                                    <EuiCallOut title="An error has occured" color="danger">
+                                    <EuiCallOut title="An error has occured" color="danger" iconType="alert">
                                         <p>{lessonError}</p>
                                     </EuiCallOut> 
                                 }
                                 { showLessonSuccess && 
-                                    <EuiCallOut title="Success!" color="success">
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
                                         <p>Lesson created sucessfully.</p>
                                     </EuiCallOut> 
                                 }
@@ -287,20 +289,15 @@ export default function Lessons() {
                                     <h4>Attendance by Lesson</h4>
                                 </EuiTitle>
                                 <VictoryChart width={1000} height={350}>
-                                     <VictoryLegend x={150} y={-10}
-                                            // title="Legend"
-                                            // centerTitle
-                                            orientation="horizontal"
-                                            gutter={20}
-                                            // style={{ border: { stroke: "black" }, title: {fontSize: 20 } }}
-                                            data={[
-                                                { name: "Present", symbol: { fill: "LightSkyBlue" } },
-                                                { name: "Absent", symbol: { fill: "Orange" } },
-                                            ]}
-                                        />
-                                    <VictoryGroup offset={45} 
-                                        colorScale={"qualitative"}
-                                    >
+                                    <VictoryLegend x={150} y={0}
+                                        orientation="horizontal"
+                                        gutter={20}
+                                        data={[
+                                            { name: "Present", symbol: { fill: "LightSkyBlue" } },
+                                            { name: "Absent", symbol: { fill: "Orange" } },
+                                        ]}
+                                    />
+                                    <VictoryGroup offset={45} colorScale={"qualitative"}>
                                         <VictoryBar
                                             data={barChartData}
                                             x="name"
