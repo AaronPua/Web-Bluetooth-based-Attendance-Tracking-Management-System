@@ -14,8 +14,9 @@ export default function Header() {
     let navigate = useNavigate();
 
     const logout = () => { 
-        Meteor.logout();
-        navigate('/');
+        Meteor.logout(() => {
+            navigate('/');
+        });
     };
 
     return (

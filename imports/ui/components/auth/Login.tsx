@@ -49,7 +49,7 @@ export default function Login() {
     }
 
     useEffect(() => {
-        if(Meteor.userId()) {
+        if(Meteor.userId() && !Meteor.loggingOut()) {
             navigate('/home');
         }
 
@@ -64,11 +64,7 @@ export default function Login() {
             setShowLoginError(true);
             setShowError(false);
         }
-        
-        Meteor.setTimeout(() => {
-            setShowLoginError(false);
-        }, 5000);
-    }, [location]);
+    }, [location.state]);
 
     return (
         <EuiEmptyPrompt
@@ -82,7 +78,7 @@ export default function Login() {
                         </EuiCallOut>
                     }
                     { showLoginError && 
-                        <EuiCallOut title="Access Denied" color="danger" iconType="alert">
+                        <EuiCallOut title="Warning" color="danger" iconType="alert">
                             <p>{loginError}</p>
                         </EuiCallOut> 
                     }

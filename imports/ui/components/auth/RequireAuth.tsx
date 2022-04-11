@@ -9,8 +9,8 @@ export default function RequireAuth({ children }: { children: JSX.Element }) {
 
     if(Roles.userIsInRole(userId, 'student')) {
         Meteor.logout();
-        return <Navigate to='/' state={{ accessDenied: 'You do not have proper access to login'}} />;
+        return <Navigate to='/' state={{ accessDenied: 'You do not have proper permissions to access' }} />;
     }
     
-    return userId ? children : <Navigate to='/' state={{ loginFirst: 'You need to log in first'}} />;
+    return userId ? children : <Navigate to='/' state={{ loginFirst: 'You must log in to access this area' }} />;
 }
