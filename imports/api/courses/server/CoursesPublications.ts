@@ -29,7 +29,7 @@ Meteor.publish('courses.specificUser', function(userId) {
     const user = Meteor.users.find({ _id: userId }).fetch();
     const courseIds = _.pluck(_.flatten(_.pluck(user, 'courses')), '_id');
 
-    return CoursesCollection.find({ _id: { $all: courseIds } });
+    return CoursesCollection.find({ _id: { $in: courseIds } });
 });
 
 Meteor.publish('courses.currentUser', function() {
@@ -38,7 +38,7 @@ Meteor.publish('courses.currentUser', function() {
     const user = Meteor.users.find({ _id: this.userId }).fetch();
     const courseIds = _.pluck(_.flatten(_.pluck(user, 'courses')), '_id');
 
-    return CoursesCollection.find({ _id: { $all: courseIds } });
+    return CoursesCollection.find({ _id: { $in: courseIds } });
 });
 
 Meteor.publish('courses.student.attendedLessons', function(userId, courseId) {
