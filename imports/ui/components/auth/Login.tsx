@@ -25,13 +25,7 @@ export const Login = () => {
             password: yup.string().required('Password is required')
         }),
         onSubmit: (values) => {
-            login(values)
-            .catch((error: Meteor.Error) => {
-                setShowLoginError(false);
-                setShowError(true);
-                const reason = error.reason != null ? error.reason : error.message;
-                setError(reason);
-            });
+            login(values);
         }
     });
 
@@ -41,10 +35,16 @@ export const Login = () => {
     }
 
     const login = (values: FormInputs) => {
-        return new Promise((resolve, reject) => {
-            Meteor.loginWithPassword(values.email, values.password, error => {
-                error ? reject(error) : resolve(navigate('/home'));
-            });
+        Meteor.loginWithPassword(values.email, values.password, (error: any) => {
+            if(error) {
+                setShowLoginError(false);
+                setShowError(true);
+                const reason = error.reason != null ? error.reason : error.message;
+                setError(reason);
+            }
+            else {
+                navigate('/home');
+            }
         });
     }
 
