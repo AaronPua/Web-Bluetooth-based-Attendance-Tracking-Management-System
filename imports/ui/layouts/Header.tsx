@@ -9,7 +9,7 @@ import {
   EuiHeaderSectionItem
 } from '@elastic/eui';
 
-export default function Header() {
+export const Header = () => {
 
     let navigate = useNavigate();
 

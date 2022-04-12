@@ -10,7 +10,7 @@ import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 import { Meteor } from 'meteor/meteor';
 import { updateAttendance } from '/imports/api/lessons/LessonsMethods';
 
-export default function Attendance() {
+export const Attendance = () => {
 
     const { courseId, userId } = useParams();
 

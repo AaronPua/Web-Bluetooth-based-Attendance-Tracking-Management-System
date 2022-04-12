@@ -6,7 +6,7 @@ import {
   EuiPageBody,
 } from '@elastic/eui';
 
-function CenteredBody() {
+export const CenteredBody = () => {
     return (
         <EuiPage paddingSize="none">
             <EuiPageBody paddingSize="l">
@@ -21,5 +21,3 @@ function CenteredBody() {
         </EuiPage>
     );
 }
-
-export default CenteredBody;

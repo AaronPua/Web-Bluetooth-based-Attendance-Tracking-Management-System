@@ -5,7 +5,7 @@ import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiForm, EuiFo
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function ResetPassword() {
+export const ResetPassword = () => {
     const [error, setError] = useState('');
     const [showError, setShowError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);

@@ -10,7 +10,7 @@ import * as yup from 'yup';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 
-export default function Courses() {
+export const Courses = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [error, setError] = useState('');

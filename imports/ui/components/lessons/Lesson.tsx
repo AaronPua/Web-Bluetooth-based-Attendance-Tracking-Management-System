@@ -12,7 +12,7 @@ import _ from 'underscore';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function Lesson() {
+export const Lesson = () => {
 
     const { courseId, lessonId } = useParams();
 

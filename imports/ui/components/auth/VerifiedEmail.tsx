@@ -4,7 +4,7 @@ import { EuiButton, EuiCallOut, EuiEmptyPrompt } from '@elastic/eui';
 import { Accounts } from 'meteor/accounts-base';
 import { useParams } from "react-router-dom";
 
-function VerifiedEmail() {
+export const VerifiedEmail = () => {
 
     let navigate = useNavigate();
     let params = useParams();
@@ -55,5 +55,3 @@ function VerifiedEmail() {
         />
     );
 }
-
-export default VerifiedEmail;

@@ -7,7 +7,7 @@ import { } from '@elastic/eui';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function Registration() {
+export const Registration = () => {
     let navigate = useNavigate();
 
     const [error, setError] = useState('');

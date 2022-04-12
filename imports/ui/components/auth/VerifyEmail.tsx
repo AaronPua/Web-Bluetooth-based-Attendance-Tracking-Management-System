@@ -5,7 +5,7 @@ import { resendVerificationEmail } from '/imports/api/users/UsersMethods';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-function VerifyEmail() {
+export const VerifyEmail = () => {
 
     const [showResend, setShowResend] = useState(false);
 
@@ -89,5 +89,3 @@ function VerifyEmail() {
         />
     );
 }
-
-export default VerifyEmail;

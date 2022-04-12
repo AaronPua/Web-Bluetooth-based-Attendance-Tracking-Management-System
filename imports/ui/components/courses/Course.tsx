@@ -12,7 +12,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 
-export default function Course() {
+export const Course = () => {
     const [courseName, setCourseName] = useState('');
     const [courseCredits, setCourseCredits] = useState(1);
 

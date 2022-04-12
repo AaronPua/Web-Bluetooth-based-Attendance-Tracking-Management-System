@@ -5,7 +5,7 @@ import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function Login() {
+export const Login = () => {
     let navigate = useNavigate();
     const location = useLocation();
 

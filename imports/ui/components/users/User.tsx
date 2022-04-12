@@ -10,7 +10,7 @@ import { updateUser } from '/imports/api/users/UsersMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 
-export default function User() {
+export const User = () => {
     const { userId } = useParams();
 
     const [firstName, setFirstName] = useState('');

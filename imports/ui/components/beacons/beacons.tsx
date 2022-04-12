@@ -11,7 +11,7 @@ import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 import { Meteor } from 'meteor/meteor';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 
-export default function Beacons() {
+export const Beacons = () => {
     const { courseId } = useParams();
 
     const [courseName, setCourseName] = useState('');

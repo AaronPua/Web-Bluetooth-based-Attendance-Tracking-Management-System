@@ -9,7 +9,7 @@ import _ from 'underscore';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { addInstructorToCourse, removeInstructorFromCourse } from '../../../api/courses/CoursesMethods';
 
-export default function Instructors() {
+export const Instructors = () => {
     const [addInstructorId, setAddInstructorId] = useState('');
     const [removeInstructorId, setRemoveInstructorId] = useState('');
     const [courseName, setCourseName] = useState('');

@@ -9,7 +9,7 @@ import { updateBeacon } from '/imports/api/beacons/BeaconsMethods';
 import { Meteor } from 'meteor/meteor';
 import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 
-export default function Beacon() {
+export const Beacon = () => {
     const { courseId, beaconId } = useParams();
 
     const [name, setName] = useState('');

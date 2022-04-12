@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { EuiButton, EuiEmptyPrompt } from '@elastic/eui';
 
-function UnknownRoute() {
+export const UnknownRoute = () => {
 
     let navigate = useNavigate();
 
@@ -19,5 +19,3 @@ function UnknownRoute() {
         />
     );
 }
-
-export default UnknownRoute;

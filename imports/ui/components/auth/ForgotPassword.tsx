@@ -5,7 +5,7 @@ import { EuiEmptyPrompt, EuiCallOut, EuiLink, EuiButton, EuiFieldText, EuiSpacer
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-export default function ForgotPassword() {
+export const ForgotPassword = () => {
     let navigate = useNavigate();
 
     const [error, setError] = useState('');

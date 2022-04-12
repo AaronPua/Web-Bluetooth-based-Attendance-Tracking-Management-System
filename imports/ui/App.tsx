@@ -1,28 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import Login from './components/auth/Login';
-import Home from './components/Home';
 import './Icons';
-import Registration from './components/auth/Registration';
-import UnknownRoute from './components/auth/UnknownRoute';
-import FullPageLayout from './layouts/FullPageLayout';
-import CenteredBody from './layouts/CenteredBody';
-import RequireAuth from './components/auth/RequireAuth';
-import VerifyEmail from './components/auth/VerifyEmail';
-import VerifiedEmail from './components/auth/VerifiedEmail';
-import ForgotPassword from './components/auth/ForgotPassword';
-import ResetPassword from './components/auth/ResetPassword';
-import Users from './components/users/Users';
-import Courses from './components/courses/Courses';
-import Course from './components/courses/Course';
-import Lesson from './components/lessons/Lesson';
-import Lessons from './components/lessons/Lessons';
-import Students from './components/users/Students';
-import Beacons from './components/beacons/Beacons';
-import Beacon from './components/beacons/Beacon';
-import User from './components/users/User';
-import Instructors from './components/users/Instructors';
-import Attendance from './components/attendance/Attendance';
+import { FullPageLayout, CenteredBody } from './layouts/index';
+import { Login, Home, Registration, UnknownRoute, RequireAuth, VerifyEmail, VerifiedEmail, 
+    ForgotPassword, ResetPassword, Users, User, Courses, Course, Lessons, Lesson, Students, 
+    Beacons, Beacon, Instructors, Attendance } from './components/index';
 
 export const App = () => {
     return (

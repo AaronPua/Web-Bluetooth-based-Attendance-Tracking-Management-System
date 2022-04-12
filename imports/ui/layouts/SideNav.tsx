@@ -2,7 +2,7 @@ import { EuiIcon, EuiSideNav, htmlIdGenerator } from '@elastic/eui';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-function SideNav() {
+export const SideNav = () => {
 
     const navigate = useNavigate();
 
@@ -76,5 +76,3 @@ function SideNav() {
         />
     );
 }
-
-export default SideNav;

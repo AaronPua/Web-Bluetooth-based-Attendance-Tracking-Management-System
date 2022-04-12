@@ -1,10 +1,9 @@
 import React from 'react';
 import { Outlet } from 'react-router';
 import { EuiPage, EuiPageSideBar, EuiPageBody } from '@elastic/eui';
-import Header from './Header';
-import SideNav from './SideNav';
+import { Header, SideNav } from './index';
 
-export default function FullPageLayout() {
+export const FullPageLayout = () => {
     return (
         <>
             <Header />

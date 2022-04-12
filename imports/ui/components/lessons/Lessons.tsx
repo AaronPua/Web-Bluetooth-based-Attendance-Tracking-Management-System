@@ -14,7 +14,7 @@ import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 import { Meteor } from 'meteor/meteor';
 import { VictoryBar, VictoryChart, VictoryGroup, VictoryLabel, VictoryPie, VictoryLegend } from 'victory';
 
-export default function Lessons() {
+export const Lessons = () => {
 
     const { courseId } = useParams();
 

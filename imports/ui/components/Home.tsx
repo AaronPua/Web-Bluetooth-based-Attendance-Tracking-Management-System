@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker, useSubscribe, useFind } from 'meteor/react-meteor-data';
 import { EuiPageHeader, EuiPageContent, EuiPageContentBody } from '@elastic/eui';
 
-function Home() {
+export const Home = () => {
 
     const isLoading = useSubscribe('users.all');
     const allUsers = useFind(() => Meteor.users.find({}));
@@ -36,5 +36,3 @@ function Home() {
         </>
     );
 }
-
-export default Home;

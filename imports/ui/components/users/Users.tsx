@@ -7,7 +7,7 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
 
-export default function Users() {
+export const Users = () => {
 
     const isLoading = useSubscribe('users.all');
     const allUsers = useFind(() => Meteor.users.find());

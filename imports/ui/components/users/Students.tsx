@@ -10,7 +10,7 @@ import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { addStudentToCourse, removeStudentFromCourse } from '../../../api/courses/CoursesMethods';
 import { Roles } from 'meteor/alanning:roles';
 
-export default function Students() {
+export const Students = () => {
     const [addStudentId, setAddStudentId] = useState('');
     const [removeStudentId, setRemoveStudentId] = useState('');
     const [courseName, setCourseName] = useState('');
