@@ -4,6 +4,7 @@ import { CoursesCollection } from '../CoursesCollection';
 import { Roles } from 'meteor/alanning:roles';
 import _ from 'underscore';
 import { LessonsCollection } from '../../lessons/LessonsCollection';
+import { ReactiveAggregate } from 'meteor/tunguska:reactive-aggregate';
 
 Meteor.publish('courses.all', function() {
     this.enableScope();
@@ -20,6 +21,34 @@ Meteor.publish('courses.specific', function(courseId) {
     check(courseId, String);
 
     return CoursesCollection.find({ _id: courseId });
+});
+
+Meteor.publish('courses.specific.withLessons', function(courseId) {
+    this.enableScope();
+    check(courseId, String);
+
+    ReactiveAggregate(this, CoursesCollection, [
+        {
+            $match: { _id: courseId }
+        },
+        {
+            $lookup: {
+                from: "lessons",
+                localField: "_id",
+                foreignField: "courseId",
+                as: "lessons"
+            }
+        },
+        {
+            $project: {
+                name: 1,
+                credits: 1,
+                "lessons._id": 1,
+                "lessons.name": 1,
+                "lessons.studentAttendance": 1
+            }
+        }
+    ]);
 });
 
 Meteor.publish('courses.specificUser', function(userId) {

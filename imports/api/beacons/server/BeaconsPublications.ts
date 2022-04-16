@@ -29,10 +29,10 @@ Meteor.publish('beacons.forOneCourse', function(courseId) {
     this.enableScope();
     check(courseId, String);
 
-    if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
-        this.ready();
-        return;
-    }
+    // if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
+    //     this.ready();
+    //     return;
+    // }
 
     return BeaconsCollection.find({ courseId: courseId });
 });

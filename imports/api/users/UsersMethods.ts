@@ -151,3 +151,15 @@ export const updateUser = new ValidatedMethod({
         });
     }
 });
+
+export const isUserInRole = new ValidatedMethod({
+    name: 'users.isUserInRole',
+    mixins: [CallPromiseMixin],
+    validate: new SimpleSchema({
+        userId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        roleName: { type: String },
+    }).validator(),
+    run({ userId, roleName }: { userId: string, roleName: string }) {
+        return Roles.userIsInRole(userId, roleName);
+    }
+});
