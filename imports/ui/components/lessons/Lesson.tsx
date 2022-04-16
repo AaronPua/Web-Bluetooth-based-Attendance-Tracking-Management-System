@@ -203,12 +203,9 @@ export const Lesson = () => {
                                                     isInvalid={!!updateLessonForm.errors.startTime}>
                                                     <EuiDatePicker
                                                         showTimeSelect
-                                                        showTimeSelectOnly
-                                                        showIcon={false}
                                                         selected={updateLessonForm.values.startTime}
                                                         onChange={(date: Moment) => updateLessonForm.setFieldValue('startTime', date)}
-                                                        dateFormat="HH:mm"
-                                                        timeFormat="HH:mm"
+                                                        dateFormat="DD-MM-YYYY hh:mm a"
                                                         isInvalid={!!updateLessonForm.errors.startTime}
                                                     />
                                                 </EuiFormRow>
@@ -219,22 +216,18 @@ export const Lesson = () => {
                                                     isInvalid={!!updateLessonForm.errors.endTime}>
                                                     <EuiDatePicker
                                                         showTimeSelect
-                                                        showTimeSelectOnly
-                                                        showIcon={false}
                                                         selected={updateLessonForm.values.endTime}
                                                         onChange={(date: Moment) => updateLessonForm.setFieldValue('endTime', date)}
-                                                        dateFormat="HH:mm"
-                                                        timeFormat="HH:mm"
+                                                        dateFormat="DD-MM-YYYY hh:mm a"
                                                         isInvalid={!!updateLessonForm.errors.endTime}
                                                     />
                                                 </EuiFormRow>
                                             </EuiFlexItem>
 
                                             <EuiFlexItem>
-                                                <EuiFormRow label="Date (DD-MM-YYYY)" error={updateLessonForm.errors.date} 
+                                                <EuiFormRow label="Date" error={updateLessonForm.errors.date} 
                                                     isInvalid={!!updateLessonForm.errors.date}>
                                                     <EuiDatePicker
-                                                        showIcon={false}
                                                         dateFormat="DD-MM-YYYY"
                                                         selected={updateLessonForm.values.date}
                                                         onChange={(date: Moment) => updateLessonForm.setFieldValue('date', date)}

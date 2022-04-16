@@ -96,17 +96,17 @@ export const Attendance = () => {
         {
             name: 'Start Time',
             selector: (row: any) => row.startTime,
-            format: row => moment(row.startTime).format('HH:mm'),
+            format: row => moment(row.startTime).format('hh:mm a'),
             sortable: true,
         },
         {
             name: 'End Time',
             selector: (row: any) => row.endTime,
-            format: row => moment(row.endTime).format('HH:mm'),
+            format: row => moment(row.endTime).format('hh:mm a'),
             sortable: true,
         },
         {
-            name: 'Date (DD-MM-YYYY)',
+            name: 'Date',
             selector: (row: any) => row.date,
             format: row => moment(row.date).format('DD-MM-YYYY'),
             sortable: true,
@@ -127,17 +127,17 @@ export const Attendance = () => {
         {
             name: 'Start Time',
             selector: (row: any) => row.startTime,
-            format: row => moment(row.startTime).format('HH:mm'),
+            format: row => moment(row.startTime).format('hh:mm a'),
             sortable: true,
         },
         {
             name: 'End Time',
             selector: (row: any) => row.endTime,
-            format: row => moment(row.endTime).format('HH:mm'),
+            format: row => moment(row.endTime).format('hh:mm a'),
             sortable: true,
         },
         {
-            name: 'Date (DD-MM-YYYY)',
+            name: 'Date',
             selector: (row: any) => row.date,
             format: row => moment(row.date).format('DD-MM-YYYY'),
             sortable: true,
