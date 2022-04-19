@@ -13,7 +13,8 @@ import { addStudentToCourse, addInstructorToCourse } from '../../courses/Courses
 
 describe('UsersPublications', function() {
  
-    let courseId: string, adminId: string, students, studentIds, studentId, instructors, instructorIds, instructorId;
+    let courseId: string, adminId: string, students, studentIds, 
+    studentId: string | undefined, instructors, instructorIds, instructorId: string | undefined;
 
     before(function() {
         resetDatabase();
@@ -52,11 +53,12 @@ describe('UsersPublications', function() {
         assert.equal(collections.users.length, 11);
     });
 
-    it('publish specific users', async function() {
+    it('publish specific user', async function() {
         const collector = new PublicationCollector();
         
         const collections = await collector.collect('users.specific', adminId);
         assert.equal(collections.users.length, 1);
+        assert.equal(collections.users[0]._id, adminId);
     });
 
     it('publish all instructors', async function() {
@@ -78,6 +80,7 @@ describe('UsersPublications', function() {
 
         const collections = await collector.collect('users.students.inSpecificCourse', courseId);
         assert.equal(collections.users.length, 1);
+        assert.equal(collections.users[0]._id, studentId);
     });
 
     it('publish all students not in a specific course', async function() {
@@ -85,6 +88,7 @@ describe('UsersPublications', function() {
 
         const collections = await collector.collect('users.students.notInSpecificCourse', courseId);
         assert.equal(collections.users.length, 4);
+        assert.notEqual(collections.users[0]._id, studentId);
     });
 
     it('publish all instructors in a specific course', async function() {
@@ -92,6 +96,7 @@ describe('UsersPublications', function() {
 
         const collections = await collector.collect('users.instructors.inSpecificCourse', courseId);
         assert.equal(collections.users.length, 1);
+        assert.equal(collections.users[0]._id, instructorId);
     });
 
     it('publish all instructors not in a specific course', async function() {
@@ -99,6 +104,7 @@ describe('UsersPublications', function() {
 
         const collections = await collector.collect('users.instructors.notInSpecificCourse', courseId);
         assert.equal(collections.users.length, 4);
+        assert.notEqual(collections.users[0]._id, instructorId);
     });
 
     after(function() {

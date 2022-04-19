@@ -41,6 +41,7 @@ describe('BeaconsPublications', function() {
         
         const collections = await collector.collect('beacons.specific', beaconId);
         assert.equal(collections.beacons.length, 1);
+        assert.equal(collections.beacons[0]._id, beaconId);
     });
 
     it('publish beacons for a course', async function() {

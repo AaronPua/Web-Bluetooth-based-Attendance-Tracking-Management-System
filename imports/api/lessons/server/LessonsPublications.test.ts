@@ -61,6 +61,7 @@ describe('LessonsPublications', function() {
         
         const collections = await collector.collect('lessons.specific', lessonId);
         assert.equal(collections.lessons.length, 1);
+        assert.equal(collections.lessons[0]._id, lessonId);
     });
 
     it('publish specific lessons for a specific course', async function() {
@@ -68,6 +69,8 @@ describe('LessonsPublications', function() {
         
         const collections = await collector.collect('lessons.forOneCourse', courseId);
         assert.equal(collections.lessons.length, 2);
+        assert.equal(collections.lessons[0].courseId, courseId);
+        assert.equal(collections.lessons[1].courseId, courseId);
     });
 
     it('publish students who have attended a lesson', async function() {
@@ -75,13 +78,16 @@ describe('LessonsPublications', function() {
         
         const collections = await collector.collect('lesson.attendance.present', courseId, lessonId);
         assert.equal(collections.users.length, 1);
+        assert.equal(collections.users[0]._id, studentId);
     });
 
     it('publish students who are absent for a lesson', async function() {
         const collector = new PublicationCollector({ userId: adminId });
         
         const collections = await collector.collect('lesson.attendance.absent', courseId, lessonId);
+        const result = _.chain(collections.users).pluck('_id').contains(studentId).value();
         assert.equal(collections.users.length, 4);
+        assert.equal(result, false);
     });
 
     after(function() {
