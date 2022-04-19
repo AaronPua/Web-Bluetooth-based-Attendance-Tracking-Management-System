@@ -33,6 +33,24 @@ describe('BeaconsMethods', function() {
                 createBeacon._execute({}, { courseId: courseId, name: 'Beacon 1', uuid: uuid() });
             }, Meteor.Error, 'You need to be logged in before creating a beacon');
         });
+
+        it('fail - create a beacon without course ID', function() {
+            assert.throws(() => {
+                createBeacon._execute({}, { name: 'Beacon 1', uuid: uuid() });
+            }, 'Course ID is required');
+        });
+
+        it('fail - create a beacon without name', function() {
+            assert.throws(() => {
+                createBeacon._execute({}, { courseId: courseId, uuid: uuid() });
+            }, 'Name is required');
+        });
+
+        it('fail - create a beacon without uuid', function() {
+            assert.throws(() => {
+                createBeacon._execute({}, { courseId: courseId, name: 'Beacon 1' });
+            }, 'Uuid is required');
+        });
     });
 
     describe('Remove Beacon', function() {
@@ -49,7 +67,7 @@ describe('BeaconsMethods', function() {
             }, Meteor.Error, 'You need to be logged in before removing a beacon');
         });
 
-        it('fail - remove a beacon without supplying a proper beacon id', function() {
+        it('fail - remove a beacon without proper beacon id', function() {
             beacon = BeaconsCollection.find().fetch()[0];
             assert.throws(() => {
                 removeBeacon._execute({ userId: Random.id() }, { beaconId: 'ZxCv1234' });
@@ -70,40 +88,6 @@ describe('BeaconsMethods', function() {
             assert.throws(() => {
                 updateBeacon._execute({}, { beaconId: beacon._id, courseId: courseId, name: 'Beacon 3', uuid: uuid() });
             }, Meteor.Error, 'You need to be logged in before updating a beacon');
-        });
-    });
-
-    describe('Add Beacon To Course', function() {
-        it('success - add beacon to course', function() {
-            createBeacon._execute({ userId: Random.id() }, { name: 'Beacon 1', uuid: uuid() });
-            beacon = BeaconsCollection.find().fetch()[0];
-            course = CoursesCollection.find().fetch()[0];
-            addBeaconToCourse._execute({ userId: Random.id() }, { courseId: course._id, beaconId: beacon._id });
-            beacon = BeaconsCollection.find().fetch()[0];
-            assert.equal(beacon.courseId, course._id);
-        });
-
-        it('fail - add a beacon to course without logging in', function() {
-            assert.throws(() => {
-                addBeaconToCourse._execute({}, { courseId: courseId, beaconId: beacon._id });
-            }, Meteor.Error, 'You need to be logged in before adding beacon to a course');
-        });
-    });
-
-    describe('Remove Beacon From Course', function() {
-        it('success - remove beacon from course', function() {
-            course = CoursesCollection.find().fetch()[0];
-            createBeacon._execute({ userId: Random.id() }, { courseId: course._id, name: 'Beacon 1', uuid: uuid() });
-            beacon = BeaconsCollection.find().fetch()[0];
-            removeBeaconFromCourse._execute({ userId: Random.id() }, { courseId: course._id, beaconId: beacon._id });
-            beacon = BeaconsCollection.find().fetch()[0];
-            assert.equal(beacon.courseId, null);
-        });
-
-        it('fail - remove beacon from course without logging in', function() {
-            assert.throws(() => {
-                removeBeaconFromCourse._execute({}, { courseId: courseId, beaconId: beacon._id });
-            }, Meteor.Error, 'You need to be logged in before removing a beacon from a course');
         });
     });
     

@@ -56,10 +56,65 @@ describe('LessonMethods', function() {
                 });
             }, Meteor.Error, 'You need to be logged in before creating a lesson');
         });
+
+        it('fail - create a lesson without course ID', function() {
+            assert.throws(() => {
+                createLesson._execute({}, { 
+                    name: `Lesson 1`,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'Course ID is required');
+        });
+
+        it('fail - create a lesson without name', function() {
+            assert.throws(() => {
+                createLesson._execute({}, { 
+                    courseId: courseId,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'Name is required');
+        });
+
+        it('fail - create a lesson without start time', function() {
+            assert.throws(() => {
+                createLesson._execute({}, { 
+                    courseId: courseId,
+                    name: `Lesson 1`,
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'Start time is required');
+        });
+
+        it('fail - create a lesson without end time', function() {
+            assert.throws(() => {
+                createLesson._execute({}, { 
+                    courseId: courseId,
+                    name: `Lesson 1`,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'End time is required');
+        });
+
+        it('fail - create a lesson without date', function() {
+            assert.throws(() => {
+                createLesson._execute({}, { 
+                    courseId: courseId,
+                    name: `Lesson 1`,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                });
+            }, 'Date is required');
+        });
     });
 
     describe('Remove Lesson', function() {
-        it('success - remove a course', function() {
+        it('success - remove a lesson', function() {
             createLesson._execute({ userId: Random.id() }, { 
                 courseId: courseId,
                 name: `Lesson 2`,
@@ -72,10 +127,16 @@ describe('LessonMethods', function() {
             assert.equal(LessonsCollection.find().count(), 1);
         });
 
-        it('fail - remove a course without logging in', function() {
+        it('fail - remove a lesson without logging in', function() {
             lesson = LessonsCollection.find().fetch()[0];
             assert.throws(() => { removeLesson._execute({}, { lessonId: lesson._id });
             }, Meteor.Error, 'You need to be logged in before removing a lesson');
+        });
+
+        it('fail - remove a lesson without lesson ID', function() {
+            lesson = LessonsCollection.find().fetch()[0];
+            assert.throws(() => { removeLesson._execute({}, {});
+            }, 'Lesson ID is required');
         });
     });
 
@@ -104,6 +165,50 @@ describe('LessonMethods', function() {
                 });
             }, Meteor.Error, 'You need to be logged in before updating a lesson');
         });
+
+        it('fail - update a lesson without lesson ID', function() {
+            assert.throws(() => {
+                updateLesson._execute({}, { 
+                    name: `Lesson 1`,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'Lesson ID is required');
+        });
+
+        it('fail - update a lesson without name', function() {
+            assert.throws(() => {
+                updateLesson._execute({}, { 
+                    lessonId: lesson._id,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'Name is required');
+        });
+
+        it('fail - update a lesson without start time', function() {
+            assert.throws(() => {
+                updateLesson._execute({}, { 
+                    lessonId: lesson._id,
+                    name: `Lesson 1`,
+                    endTime: moment().hours(3).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'Start time is required');
+        });
+
+        it('fail - update a lesson without end time', function() {
+            assert.throws(() => {
+                updateLesson._execute({}, { 
+                    lessonId: lesson._id,
+                    name: `Lesson 1`,
+                    startTime: moment().hours(1).minutes(0).toDate(),
+                    date: moment().day(1).toDate(),
+                });
+            }, 'End time is required');
+        });
     });
 
     describe('Add Student Attendance', function() {
@@ -122,6 +227,27 @@ describe('LessonMethods', function() {
                 updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId, action: 'add' });
             }, Meteor.Error, "You need to be logged in before updating a student's attendance");
         });
+
+        it('fail - add student attendance without lesson ID', function() {
+            assert.throws(() => {
+                lesson = LessonsCollection.find().fetch()[0];
+                updateAttendance._execute({}, { studentId: studentId, action: 'add' });
+            }, "Lesson ID is required");
+        });
+
+        it('fail - add student attendance without student ID', function() {
+            assert.throws(() => {
+                lesson = LessonsCollection.find().fetch()[0];
+                updateAttendance._execute({}, { lessonId: lesson._id, action: 'add' });
+            }, "Student ID is required");
+        });
+
+        it('fail - add student attendance without action', function() {
+            assert.throws(() => {
+                lesson = LessonsCollection.find().fetch()[0];
+                updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId });
+            }, "Action is required");
+        });
     });
 
     describe('Remove Student Attendance', function() {
@@ -137,6 +263,27 @@ describe('LessonMethods', function() {
                 lesson = LessonsCollection.find().fetch()[0];
                 updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId, action: 'remove' });
             }, Meteor.Error, "You need to be logged in before updating a student's attendance");
+        });
+
+        it('fail - remove student attendance without lesson ID', function() {
+            assert.throws(() => {
+                lesson = LessonsCollection.find().fetch()[0];
+                updateAttendance._execute({}, { studentId: studentId, action: 'remove' });
+            }, "Lesson ID is required");
+        });
+
+        it('fail - remove student attendance without student ID', function() {
+            assert.throws(() => {
+                lesson = LessonsCollection.find().fetch()[0];
+                updateAttendance._execute({}, { lessonId: lesson._id, action: 'remove' });
+            }, "Student ID is required");
+        });
+
+        it('fail - remove student attendance without action', function() {
+            assert.throws(() => {
+                lesson = LessonsCollection.find().fetch()[0];
+                updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId });
+            }, "Action is required");
         });
     });
     

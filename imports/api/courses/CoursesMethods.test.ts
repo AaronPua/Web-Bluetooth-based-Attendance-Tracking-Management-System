@@ -45,6 +45,18 @@ describe('CoursesMethods', function() {
                 createCourse._execute({}, { name: 'Course 2', credits: 4 });
             }, Meteor.Error, 'You need to be logged in before creating a course');
         });
+
+        it('fail - create a course without name', function() {
+            assert.throws(() => {
+                createCourse._execute({}, { credits: 4 });
+            }, 'Name is required');
+        });
+
+        it('fail - create a course without credits', function() {
+            assert.throws(() => {
+                createCourse._execute({}, { name: 'Course 2' });
+            }, 'Credits is required');
+        });
     });
 
     describe('Remove Course', function() {
@@ -59,7 +71,7 @@ describe('CoursesMethods', function() {
             }, Meteor.Error, 'You need to be logged in before removing a course');
         });
 
-        it('fail - remove a course without supplying a proper course id', function() {
+        it('fail - remove a course without proper course id', function() {
             assert.throws(() => {
                 removeCourse._execute({ userId: Random.id() }, { courseId: 'ZxCv1234' });
             }, 'Course ID must be a valid alphanumeric ID');
@@ -79,6 +91,24 @@ describe('CoursesMethods', function() {
                 updateCourse._execute({}, { courseId: courseId, name: 'Course 3', credits: 2 });
             }, Meteor.Error, 'You need to be logged in before updating a course');
         });
+
+        it('fail - update a course without course ID', function() {
+            assert.throws(() => {
+                updateCourse._execute({}, { name: 'Course 3', credits: 2 });
+            }, 'Course ID is required');
+        });
+
+        it('fail - update a course without name', function() {
+            assert.throws(() => {
+                updateCourse._execute({}, { courseId: courseId, credits: 2 });
+            }, 'Name is required');
+        });
+
+        it('fail - update a course without credits', function() {
+            assert.throws(() => {
+                updateCourse._execute({}, { courseId: courseId, name: 'Course 3' });
+            }, 'Credits is required');
+        });
     });
 
     describe('Add Student To Course', function() {
@@ -93,6 +123,18 @@ describe('CoursesMethods', function() {
             assert.throws(() => {
                 addStudentToCourse._execute({}, { courseId: courseId, studentId: studentId });
             }, Meteor.Error, 'You need to be logged in before adding students to a course');
+        });
+
+        it('fail - add a student to course without course ID', function() {
+            assert.throws(() => {
+                addStudentToCourse._execute({}, { studentId: studentId });
+            }, 'Course ID is required');
+        });
+
+        it('fail - add a student to course without student ID', function() {
+            assert.throws(() => {
+                addStudentToCourse._execute({}, { courseId: courseId });
+            }, 'Student ID is required');
         });
     });
 
@@ -110,6 +152,18 @@ describe('CoursesMethods', function() {
                 removeStudentFromCourse._execute({}, { courseId: courseId, studentId: studentId });
             }, Meteor.Error, 'You need to be logged in before removing students from a course');
         });
+
+        it('fail - remove student from course without course ID', function() {
+            assert.throws(() => {
+                removeStudentFromCourse._execute({}, { studentId: studentId });
+            }, 'Course ID is required');
+        });
+
+        it('fail - remove student from course without student ID', function() {
+            assert.throws(() => {
+                removeStudentFromCourse._execute({}, { courseId: courseId });
+            }, 'Student ID is required');
+        });
     });
 
     describe('Add Instructor To Course', function() {
@@ -124,6 +178,18 @@ describe('CoursesMethods', function() {
             assert.throws(() => {
                 addInstructorToCourse._execute({}, { courseId: courseId, instructorId: instructorId });
             }, Meteor.Error, 'You need to be logged in before adding instructors to a course');
+        });
+
+        it('fail - add instructor from course without course ID', function() {
+            assert.throws(() => {
+                addInstructorToCourse._execute({}, { instructorId: instructorId });
+            }, 'Course ID is required');
+        });
+
+        it('fail - add instructor from course without instructor ID', function() {
+            assert.throws(() => {
+                addInstructorToCourse._execute({}, { courseId: courseId });
+            }, 'Instructor ID is required');
         });
     });
 
@@ -140,6 +206,18 @@ describe('CoursesMethods', function() {
             assert.throws(() => {
                 removeInstructorFromCourse._execute({}, { courseId: courseId, instructorId: instructorId });
             }, Meteor.Error, 'You need to be logged in before removing instructors from a course');
+        });
+
+        it('fail - remove instructor from course without course ID', function() {
+            assert.throws(() => {
+                removeInstructorFromCourse._execute({}, { instructorId: instructorId });
+            }, 'Course ID is required');
+        });
+
+        it('fail - remove instructor from course without instructor ID', function() {
+            assert.throws(() => {
+                removeInstructorFromCourse._execute({}, { courseId: courseId });
+            }, 'Instructor ID is required');
         });
     });
     

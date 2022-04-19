@@ -75,8 +75,8 @@ export const updateAttendance = new ValidatedMethod({
         message: "You need to be logged in before updating a student's attendance.",
     },
     validate: new SimpleSchema({
-        lessonId: { type: String },
-        studentId: { type: String },
+        lessonId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        studentId: { type: String, regEx: SimpleSchema.RegEx.Id },
         action: { type: String, allowedValues: ['add', 'remove'] }
     }).validator(),
     run({ lessonId, studentId, action }: { lessonId: string, studentId: string, action: string }) {

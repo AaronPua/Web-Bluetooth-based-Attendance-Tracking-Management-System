@@ -54,6 +54,27 @@ export const StudentSeeder = (resetCollection: boolean, seedIfExistingData: bool
     }
 });
 
+export const AdminsSeeder = (iteration: any) => {
+    let adminIds: Array<String> = [];
+
+    for(let i = 0; i < iteration; i++) {
+        const userId = Accounts.createUser({
+            email: faker.internet.email(), 
+            password: 'test', 
+            profile: { 
+                firstName: faker.name.firstName("male"), 
+                lastName: faker.name.lastName("male"),
+                gender: 'male' 
+            }
+        });
+
+        Roles.addUsersToRoles(userId, 'admin');
+        adminIds.push(userId);
+    }
+
+    return adminIds;
+}
+
 export const InstructorsSeeder = (iteration: any) => {
     let instructorIds: Array<String> = [];
 

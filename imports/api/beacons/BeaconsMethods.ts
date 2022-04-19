@@ -60,35 +60,3 @@ export const updateBeacon = new ValidatedMethod({
         });
     }
 });
-
-export const addBeaconToCourse = new ValidatedMethod({
-    name: 'beacon.addBeaconToCourse',
-    mixins: [CallPromiseMixin, LoggedInMixin],
-    checkLoggedInError: {
-        error: 'not-logged-in',
-        message: 'You need to be logged in before adding beacon to a course.',
-    },
-    validate: new SimpleSchema({
-        courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
-        beaconId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    }).validator(),
-    run({ courseId, beaconId }: { courseId: string, beaconId: string }) {
-        BeaconsCollection.update({ _id: beaconId }, { $set: { courseId: courseId }});
-    }
-});
-
-export const removeBeaconFromCourse = new ValidatedMethod({
-    name: 'beacon.removeBeaconFromCourse',
-    mixins: [CallPromiseMixin, LoggedInMixin],
-    checkLoggedInError: {
-        error: 'not-logged-in',
-        message: 'You need to be logged in before removing a beacon from a course.',
-    },
-    validate: new SimpleSchema({
-        courseId: { type: String, regEx: SimpleSchema.RegEx.Id },
-        beaconId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    }).validator(),
-    run({ courseId, beaconId }: { courseId: string, beaconId: string }) {
-       BeaconsCollection.update({ _id: beaconId }, { $unset: { courseId: courseId }});
-    }
-});

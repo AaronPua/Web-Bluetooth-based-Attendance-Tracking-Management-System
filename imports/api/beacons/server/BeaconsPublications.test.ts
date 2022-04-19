@@ -7,13 +7,22 @@ import { BeaconsSeeder } from '/imports/server/seeders/BeaconsSeeder';
 import _ from 'underscore';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
 import { BeaconsCollection } from '../BeaconsCollection';
+import { AdminsSeeder } from '/imports/server/seeders/UsersSeeder';
 
-describe('CoursesPublication', function() {
+describe('BeaconsPublications', function() {
 
-    let courseId: string, beaconId: string;
+    let adminId: string, courseId: string, beaconId: string;
 
     before(function() {
         resetDatabase();
+        if(Meteor.roles.find().count() === 0) {
+            Roles.createRole('admin');
+            Roles.createRole('instructor');
+            Roles.createRole('student');
+        }
+
+        AdminsSeeder(1);
+        adminId = Meteor.users.find().fetch()[0]._id;
         CoursesSeeder(1);
         courseId = CoursesCollection.find().fetch()[0]._id;
         BeaconsSeeder(5, courseId);
@@ -21,14 +30,14 @@ describe('CoursesPublication', function() {
     });
 
     it('publish all beacons', async function() {
-        const collector = new PublicationCollector();
+        const collector = new PublicationCollector({ userId: adminId });
         
         const collections = await collector.collect('beacons.all');
         assert.equal(collections.beacons.length, 5);
     });
 
     it('publish specific beacon', async function() {
-        const collector = new PublicationCollector();
+        const collector = new PublicationCollector({ userId: adminId });
         
         const collections = await collector.collect('beacons.specific', beaconId);
         assert.equal(collections.beacons.length, 1);

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert } from 'chai';
-import { InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
+import { InstructorsSeeder, StudentsSeeder, AdminsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
 import { LessonsSeeder } from '/imports/server/seeders/LessonsSeeder';
 import './LessonsPublications';
@@ -16,7 +16,7 @@ import { updateAttendance } from '../LessonsMethods';
 
 describe('LessonsPublications', function() {
  
-    let courseId: string, students, studentIds, studentId, lessonId: string;
+    let adminId: string, courseId: string, students, studentIds: string[], studentId: string | undefined, lessonId: string;
 
     before(function() {
         resetDatabase();
@@ -27,10 +27,12 @@ describe('LessonsPublications', function() {
             Roles.createRole('student');
         }
 
+        AdminsSeeder(1);
         InstructorsSeeder(5);
         StudentsSeeder(5);
         CoursesSeeder(1);
 
+        adminId = Meteor.users.find().fetch()[0]._id;
         courseId = CoursesCollection.find().fetch()[0]._id;
         students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
         studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
@@ -48,7 +50,7 @@ describe('LessonsPublications', function() {
     });
 
     it('publish all lessons', async function() {
-        const collector = new PublicationCollector();
+        const collector = new PublicationCollector({ userId: adminId });
         
         const collections = await collector.collect('lessons.all');
         assert.equal(collections.lessons.length, 2);
@@ -69,14 +71,14 @@ describe('LessonsPublications', function() {
     });
 
     it('publish students who have attended a lesson', async function() {
-        const collector = new PublicationCollector();
+        const collector = new PublicationCollector({ userId: adminId });
         
         const collections = await collector.collect('lesson.attendance.present', courseId, lessonId);
         assert.equal(collections.users.length, 1);
     });
 
     it('publish students who are absent for a lesson', async function() {
-        const collector = new PublicationCollector();
+        const collector = new PublicationCollector({ userId: adminId });
         
         const collections = await collector.collect('lesson.attendance.absent', courseId, lessonId);
         assert.equal(collections.users.length, 4);

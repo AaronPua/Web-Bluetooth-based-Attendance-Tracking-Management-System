@@ -22,19 +22,19 @@ export const SideNav = () => {
                 id: htmlIdGenerator('usersPage')(),
                 icon: <EuiIcon type="users" />,
                 onClick: (() => navigate('/users')),
-                // forceOpen: true,
-                // items: [
-                //     {
-                //         name: 'Instructors',
-                //         id: htmlIdGenerator('instructorsPage')(),
-                //         href: '/users',
-                //     },
-                //     {
-                //         name: 'Students',
-                //         id: htmlIdGenerator('studentsPage')(),
-                //         href: '/users',
-                //     }
-                // ]
+                forceOpen: true,
+                items: [
+                    {
+                        name: 'Instructors',
+                        id: htmlIdGenerator('instructorsPage')(),
+                        onClick: (() => navigate('/users/instructors')),
+                    },
+                    {
+                        name: 'Students',
+                        id: htmlIdGenerator('studentsPage')(),
+                        onClick: (() => navigate('/users/students')),
+                    }
+                ]
             },
             {
                 name: 'Courses',
