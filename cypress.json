@@ -4,5 +4,7 @@
   "pluginsFile": "tests/cypress/plugins/index.ts",
   "screenshotsFolder": "tests/cypress/screenshots",
   "supportFile": "tests/cypress/support/index.ts",
-  "videosFolder": "tests/cypress/videos"
+  "videosFolder": "tests/cypress/videos",
+
+  "baseUrl": "http://localhost:3000"
 }
