@@ -65,7 +65,7 @@ export const VerifyEmail = () => {
                             }
                             { showSuccess && 
                                 <EuiCallOut title="Success!" color="success" iconType="user">
-                                    <p>Password reset email has been sent.</p>
+                                    <p>Verification email has been sent.</p>
                                 </EuiCallOut> 
                             }
                             <EuiFlexGroup>

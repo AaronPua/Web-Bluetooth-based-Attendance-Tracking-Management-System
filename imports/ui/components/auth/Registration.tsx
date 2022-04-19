@@ -71,7 +71,7 @@ export const Registration = () => {
             body={
                 <>
                     { showError && 
-                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                        <EuiCallOut title="Error" color="danger" iconType="alert">
                             <p>{error}</p>
                         </EuiCallOut> 
                     }
