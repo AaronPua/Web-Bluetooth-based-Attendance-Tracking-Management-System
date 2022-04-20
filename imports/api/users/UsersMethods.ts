@@ -6,6 +6,8 @@ import { LoggedInMixin } from 'meteor/tunifight:loggedin-mixin';
 import SimpleSchema from 'simpl-schema';
 import { Roles } from 'meteor/alanning:roles';
 import { userRegistrationSchema } from './UsersCollection';
+import { removeStudentFromCourse } from '../courses/CoursesMethods';
+import _ from 'underscore';
 
 SimpleSchema.defineValidationErrorTransform(error => {
     const ddpError = new Meteor.Error(error.message);
@@ -100,15 +102,16 @@ export const sendPasswordResetEmail = new ValidatedMethod({
 
 export const changePassword = new ValidatedMethod({
     name: 'users.changePassword',
-    mixins: [CallPromiseMixin],
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before changing your password.',
+    },
     validate: new SimpleSchema({
         oldPassword: { type: String },
         newPassword: { type: String },
     }).validator(),
     run({ oldPassword, newPassword }: { oldPassword: string, newPassword: string }) {
-        if(!Meteor.userId) {
-            throw new Meteor.Error("not-logged-in", 'You need to be logged in before changing your password.')
-        }
         Accounts.setPassword(oldPassword, newPassword);
     }
 });
@@ -149,6 +152,31 @@ export const updateUser = new ValidatedMethod({
                 "profile.gender": gender,
             }
         });
+    }
+});
+
+export const removeUser = new ValidatedMethod({
+    name: 'users.remove',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before removing a user.',
+    },
+    validate: new SimpleSchema({
+        userId: { type: String, regEx: SimpleSchema.RegEx.Id }
+    }).validator(),
+    run({ userId }: { userId: string }) {
+        const user = Meteor.users.findOne(userId);
+        if(!_.isEmpty(user.courses)) {
+            const courseIds = _.chain(user).get('courses').pluck('_id').value();
+            _.each(courseIds, (courseId) => {
+                removeStudentFromCourse.callPromise({
+                    courseId: courseId,
+                    studentId: userId,
+                });
+            });
+        }
+        Meteor.users.remove(userId);
     }
 });
 
