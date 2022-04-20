@@ -125,7 +125,7 @@ export const Courses = () => {
                                     </EuiFlexItem>
                                     <EuiFlexItem grow={false}>
                                         <EuiFormRow hasEmptyLabelSpace>
-                                            <EuiButton fill color="primary" type="submit">Create Course</EuiButton>
+                                            <EuiButton fill color="primary" type="submit">Create</EuiButton>
                                         </EuiFormRow>
                                     </EuiFlexItem>
                                 </EuiFlexGroup>

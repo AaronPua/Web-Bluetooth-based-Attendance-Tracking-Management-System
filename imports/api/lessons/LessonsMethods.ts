@@ -20,7 +20,8 @@ export const createLesson = new ValidatedMethod({
             startTime: startTime,
             endTime: endTime,
             date: date,
-            createdAt: new Date()
+            createdAt: new Date(),
+            studentAttendance: []
         });
     }
 });

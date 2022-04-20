@@ -130,7 +130,7 @@ export const Course = () => {
                                             <p>Course updated sucessfully.</p>
                                         </EuiCallOut> 
                                     }
-                                    <EuiForm component="form">
+                                    <EuiForm component="form" onSubmit={updateCourseForm.handleSubmit}>
                                         <EuiFlexGroup style={{ maxWidth: 1000 }}>
                                             <EuiFlexItem>
                                                 <EuiFormRow label="Course Name" error={updateCourseForm.errors.name} isInvalid={!!updateCourseForm.errors.name}>

@@ -14,7 +14,7 @@ const lessonSchema = new SimpleSchema({
     "studentAttendance.$._id": { type: String },
 });
 
-export const lessonCreateSchema = lessonSchema.pick('courseId', 'name', 'startTime', 'endTime', 'date');
+export const lessonCreateSchema = lessonSchema.pick('courseId', 'name', 'startTime', 'endTime', 'date', 'studentAttendance');
 
 export const LessonsCollection = createCollection({
     name: 'lessons',

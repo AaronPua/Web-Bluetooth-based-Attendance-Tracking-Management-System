@@ -207,6 +207,7 @@ export const Lesson = () => {
                                                         onChange={(date: Moment) => updateLessonForm.setFieldValue('startTime', date)}
                                                         dateFormat="DD-MM-YYYY hh:mm a"
                                                         isInvalid={!!updateLessonForm.errors.startTime}
+                                                        name="startTime"
                                                     />
                                                 </EuiFormRow>
                                             </EuiFlexItem>
@@ -220,6 +221,7 @@ export const Lesson = () => {
                                                         onChange={(date: Moment) => updateLessonForm.setFieldValue('endTime', date)}
                                                         dateFormat="DD-MM-YYYY hh:mm a"
                                                         isInvalid={!!updateLessonForm.errors.endTime}
+                                                        name="endTime"
                                                     />
                                                 </EuiFormRow>
                                             </EuiFlexItem>
@@ -232,6 +234,7 @@ export const Lesson = () => {
                                                         selected={updateLessonForm.values.date}
                                                         onChange={(date: Moment) => updateLessonForm.setFieldValue('date', date)}
                                                         isInvalid={!!updateLessonForm.errors.date}
+                                                        name="date"
                                                     />
                                                 </EuiFormRow>
                                             </EuiFlexItem>
