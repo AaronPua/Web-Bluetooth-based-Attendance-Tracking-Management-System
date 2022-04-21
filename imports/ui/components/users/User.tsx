@@ -28,6 +28,8 @@ export const User = () => {
         { value: 'female', text: 'Female'}
     ];
 
+    let navigate = useNavigate();
+
     const updateUserForm = useFormik({
         initialValues: {
             firstName: firstName,
@@ -91,7 +93,10 @@ export const User = () => {
         }
     }, [user]);
 
-    let navigate = useNavigate();
+    const goToCourse = (courseId: string) => {
+        navigate(`/courses/${courseId}`);
+    }
+
     const goToStudentCourseAttendance = (courseId: string, userId: string | undefined) => {
         navigate(`/courses/${courseId}/students/${userId}/attendance`)
     }
@@ -113,6 +118,10 @@ export const User = () => {
             selector: row => row.credits,
             sortable: true,
         },
+        {
+            name: 'Actions',
+            cell: row => <EuiButton size="s" color="primary" id={row._id} onClick={() => goToCourse(row._id)}>Edit</EuiButton>,
+        },
     ];
 
     const studentColumns: TableColumn<DataRow>[] = [
@@ -128,8 +137,13 @@ export const User = () => {
         },
         {
             name: 'Actions',
-            cell: row => <EuiButton size="s" color="primary" id={row._id} 
-                            onClick={() => goToStudentCourseAttendance(row._id, userId)}>View Attendance</EuiButton>,
+            cell: row => (
+                <>
+                    <EuiButton size="s" color="primary" id={row._id} onClick={() => goToCourse(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
+                    <EuiButton size="s" color="primary" id={row._id} 
+                        onClick={() => goToStudentCourseAttendance(row._id, userId)}>View Attendance</EuiButton>
+                </>
+            ),
         },
     ];
 

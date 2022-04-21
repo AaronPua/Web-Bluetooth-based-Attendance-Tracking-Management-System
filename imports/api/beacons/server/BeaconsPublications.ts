@@ -33,9 +33,9 @@ Meteor.publish('beacons.all.withCourse', function() {
         },
         {
             $project: {
+                courseId: 1,
                 name: 1,
                 uuid: 1,
-                "course._id": 1,
                 "course.name": 1,
             }
         }

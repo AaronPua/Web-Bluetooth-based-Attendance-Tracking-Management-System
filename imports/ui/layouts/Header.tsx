@@ -22,7 +22,9 @@ export const Header = () => {
     return (
         <EuiHeader position="static">
             <EuiHeaderSectionItem border="right">
-                <EuiHeaderLogo iconType="managementApp" href="/home" type='button' onClick={() => navigate('/home')}>COMP8047</EuiHeaderLogo>
+                <EuiHeaderLogo iconType="managementApp" type='button' onClick={() => navigate('/home')} style={{ cursor: "pointer" }}>
+                    COMP8047
+                </EuiHeaderLogo>
             </EuiHeaderSectionItem>
 
             <EuiHeaderSectionItem>

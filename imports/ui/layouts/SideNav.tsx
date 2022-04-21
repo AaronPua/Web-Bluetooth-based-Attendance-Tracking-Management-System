@@ -48,6 +48,12 @@ export const SideNav = () => {
                 onClick: (() => navigate('/beacons')),
             },
             {
+                name: 'Lessons',
+                id: htmlIdGenerator('lessonsPage')(),
+                icon: <EuiIcon type="editorOrderedList" />,
+                onClick: (() => navigate('/lessons')),
+            },
+            {
                 name: 'Courses',
                 id: htmlIdGenerator('coursesPage')(),
                 icon: <EuiIcon type="list" />,

@@ -2,54 +2,63 @@ import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent,
     EuiPageContentBody, EuiPageHeader, EuiPanel, EuiConfirmModal, EuiFormRow, EuiCallOut } from '@elastic/eui';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
+import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
-import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
-import { removeBeacon } from '/imports/api/beacons/BeaconsMethods';
+import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
+import { removeLesson } from '/imports/api/lessons/LessonsMethods';
 
-export const BeaconsList = () => {
+export const LessonsList = () => {
 
     const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
     const [showRemoveError, setShowRemoveError] = useState(false);
     const [removeError, setRemoveError] = useState('');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [beaconId, setBeaconId] = useState('');
-    const [beaconName, setBeaconName] = useState('');
+    const [lessonId, setLessonId] = useState('');
+    const [lessonName, setLessonName] = useState('');
     const [value, setValue] = useState('');
     const onChange = (e: any) => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allBeacons } = useTracker(() => {
-        const beaconsSub = Meteor.subscribe('beacons.all.withCourse');
-        const isLoading = !beaconsSub.ready()
-        const beacons = BeaconsCollection.find(beaconsSub.scopeQuery()).fetch();
+    const { isLoading, allLessons } = useTracker(() => {
+        const lessonsSub = Meteor.subscribe('lessons.all.withCourse');
+        const isLoading = !lessonsSub.ready()
+        const lessons = LessonsCollection.find(lessonsSub.scopeQuery()).fetch();
 
-        const allBeacons = _.map(beacons, (beacon) => {
-            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
+        const allLessons = _.map(lessons, (lesson) => {
+            return { 
+                lessonId: lesson._id,
+                lessonName: lesson.name,
+                lessonStartTime: lesson.startTime,
+                lessonEndTime: lesson.endTime,
+                lessonDate: lesson.date,
+                courseId: lesson.courseId,
+                courseName: lesson.course[0].name
+            };
         });
 
-        return { isLoading, allBeacons };
+        return { isLoading, allLessons };
     });
 
     let navigate = useNavigate();
 
-    const goToBeacon = (courseId: string | undefined, beaconId: string) => {
-        navigate(`/courses/${courseId}/beacons/${beaconId}`);
+    const goToLesson = (courseId: string | undefined, lessonId: string) => {
+        navigate(`/courses/${courseId}/lessons/${lessonId}`);
     }
 
-    const showRemoveBeaconModal = (beaconId: string, beaconName: string) => {
+    const showRemoveLessonModal = (lessonId: string, lessonName: string) => {
         setIsModalVisible(true);
-        setBeaconId(beaconId);
-        setBeaconName(beaconName);
+        setLessonId(lessonId);
+        setLessonName(lessonName);
     }
 
-    const removeThisBeacon = (beaconId: string) => {
-        removeBeacon.callPromise({
-            beaconId: beaconId
+    const removeThisLesson = (lessonId: string) => {
+        removeLesson.callPromise({
+            lessonId: lessonId
         }).then(() => {
             setShowRemoveSuccess(true);
         }).catch((error: any) => {
@@ -63,13 +72,13 @@ export const BeaconsList = () => {
     if (isModalVisible) {
         modal = (
             <EuiConfirmModal
-                title={`Remove ${beaconName}?`}
+                title={`Remove ${lessonName}?`}
                 onCancel={() => {
                     setIsModalVisible(false);
                     setValue('');
                 }}
                 onConfirm={() => {
-                    removeThisBeacon(beaconId);
+                    removeThisLesson(lessonId);
                     setIsModalVisible(false);
                     setValue('');
                 }}
@@ -90,10 +99,13 @@ export const BeaconsList = () => {
     }
 
     type DataRow = {
-        beaconId: string;
-        courseId: string;
-        courseName: string;
-        beaconName: string;
+        lessonId: string,
+        lessonName: string,
+        lessonStartTime: Date,
+        lessonEndTime: Date,
+        lessonDate: Date,
+        courseId: string,
+        courseName: string
     }
 
     const columns: TableColumn<DataRow>[] = [
@@ -103,17 +115,35 @@ export const BeaconsList = () => {
             sortable: true,
         },
         {
-            name: 'Beacon',
-            selector: row => row.beaconName,
+            name: 'Lesson',
+            selector: row => row.lessonName,
+            sortable: true,
+        },
+        {
+            name: 'Start Time',
+            selector: (row: any) => row.lessonStartTime,
+            format: row => moment(row.startTime).format('hh:mm a'),
+            sortable: true,
+        },
+        {
+            name: 'End Time',
+            selector: (row: any) => row.lessonEndTime,
+            format: row => moment(row.startTime).format('hh:mm a'),
+            sortable: true,
+        },
+        {
+            name: 'Date',
+            selector: (row: any) => row.lessonDate,
+            format: row => moment(row.date).format('DD-MM-YYYY'),
             sortable: true,
         },
         {
             name: 'Actions',
             cell: row => (
                 <>
-                    <EuiButton size="s" color="primary" id={row.beaconId} onClick={() => goToBeacon(row.courseId, row.beaconId)} 
+                    <EuiButton size="s" color="primary" id={row.lessonId} onClick={() => goToLesson(row.courseId, row.lessonId)} 
                         style={{ marginRight: "1em" }}>Edit</EuiButton>
-                    <EuiButton size="s" color="text" id={row.beaconId} onClick={() => showRemoveBeaconModal(row.beaconId, row.beaconName)}>Remove</EuiButton>
+                    <EuiButton size="s" color="text" id={row.lessonId} onClick={() => showRemoveLessonModal(row.lessonId, row.lessonName)}>Remove</EuiButton>
                     { modal }
                 </>
             ),
@@ -121,7 +151,7 @@ export const BeaconsList = () => {
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allBeacons.filter(
+    const filteredItems = allLessons.filter(
         (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
                     .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );
@@ -151,7 +181,7 @@ export const BeaconsList = () => {
 
     return (
         <>
-            <EuiPageHeader pageTitle="All Beacons" />
+            <EuiPageHeader pageTitle="All Lessons" />
             <EuiPageContent
                 hasBorder={false}
                 hasShadow={false}
@@ -171,11 +201,11 @@ export const BeaconsList = () => {
                                 }
                                 { showRemoveSuccess &&
                                     <EuiCallOut title="Success!" color="success" iconType="user">
-                                        <p>Beacon removed sucessfully.</p>
+                                        <p>Lesson removed sucessfully.</p>
                                     </EuiCallOut>
                                 }
                                 <DataTable
-                                    title="Beacons"
+                                    title="Lessons"
                                     columns={columns}
                                     data={filteredItems}
                                     progressPending={isLoading}

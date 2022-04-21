@@ -2,16 +2,48 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { LessonsCollection } from '../LessonsCollection';
 import _ from 'underscore';
+import { ReactiveAggregate } from 'meteor/tunguska:reactive-aggregate';
 
 Meteor.publish('lessons.all', function() {
     this.enableScope();
 
-    if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
+    if(!Roles.userIsInRole(this.userId, 'admin')) {
         this.ready();
         return;
     }
 
     return LessonsCollection.find({});
+});
+
+Meteor.publish('lessons.all.withCourse', function() {
+    this.enableScope();
+
+    if(!Roles.userIsInRole(this.userId, 'admin')) {
+        this.ready();
+        return;
+    }
+
+    ReactiveAggregate(this, LessonsCollection, [
+        {
+            $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                as: "course"
+            }
+        },
+        {
+            $project: {
+                courseId: 1,
+                name: 1,
+                startTime: 1,
+                endTime: 1,
+                date: 1,
+                "course.name": 1,
+                "course.credits": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('lessons.specific', function(lessonId) {

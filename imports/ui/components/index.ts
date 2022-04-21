@@ -18,6 +18,7 @@ export * from './courses/Courses';
 
 export * from './lessons/Lesson';
 export * from './lessons/Lessons';
+export * from './lessons/Lessons-list';
 
 export * from './users/Instructors';
 export * from './users/Students';

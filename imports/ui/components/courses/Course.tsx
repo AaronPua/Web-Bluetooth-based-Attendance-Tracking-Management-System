@@ -160,7 +160,7 @@ export const Course = () => {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiTitle size="s">
-                                    <h4>Number of Lessons</h4>
+                                    <h4>Lessons</h4>
                                 </EuiTitle>
                                 <EuiSpacer />
                                 <EuiSplitPanel.Outer hasShadow={false}>
@@ -185,7 +185,7 @@ export const Course = () => {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiTitle size="s">
-                                    <h4>Number of Students</h4>
+                                    <h4>Students</h4>
                                 </EuiTitle>
                                 <EuiSpacer />
                                 <EuiSplitPanel.Outer hasShadow={false}>
@@ -210,7 +210,7 @@ export const Course = () => {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiTitle size="s">
-                                    <h4>Number of Instructors</h4>
+                                    <h4>Instructors</h4>
                                 </EuiTitle>
                                 <EuiSpacer />
                                 <EuiSplitPanel.Outer hasShadow={false}>
@@ -235,7 +235,7 @@ export const Course = () => {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiTitle size="s">
-                                    <h4>Number of Beacons</h4>
+                                    <h4>Beacons</h4>
                                 </EuiTitle>
                                 <EuiSpacer />
                                 <EuiSplitPanel.Outer hasShadow={false}>
