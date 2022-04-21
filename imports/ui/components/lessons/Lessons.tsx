@@ -61,11 +61,12 @@ export const Lessons = () => {
         { x: "Present", y: present },
     ];
 
-    const barChartData = _.map(lessons, (lesson) => {
-        const absentNum = studentsInCourse.length - lesson.studentAttendance.length;
-        const absent = absentNum >= 0 ? absentNum: 0;
-        return { name: lesson.name, present: lesson.studentAttendance.length, absent: absent };
-    });
+    const barChartData = _.chain(lessons)
+                            .map((lesson) => {
+                                const absentNum = studentsInCourse.length - lesson.studentAttendance.length;
+                                const absent = absentNum >= 0 ? absentNum: 0;
+                                return { name: lesson.name, present: lesson.studentAttendance.length, absent: absent };
+                            }).sortBy('name').value();
 
     let navigate = useNavigate();
     const goToLesson = (lessonId: string) => {
@@ -369,7 +370,7 @@ export const Lessons = () => {
                                             { name: "Absent", symbol: { fill: "Orange" } },
                                         ]}
                                     />
-                                    <VictoryGroup offset={45} colorScale={"qualitative"}>
+                                    <VictoryGroup offset={45}>
                                         <VictoryBar
                                             data={barChartData}
                                             x="name"

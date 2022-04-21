@@ -142,7 +142,9 @@ export const Courses = () => {
             cell: row => (
                 <>
                     <EuiButton size="s" color="primary" id={row._id} onClick={() => goToCourse(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
-                    <EuiButton size="s" color="text" id={row._id} onClick={() => showRemoveCourseModal(row._id, row.name)}>Remove</EuiButton>
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') &&
+                        <EuiButton size="s" color="text" id={row._id} onClick={() => showRemoveCourseModal(row._id, row.name)}>Remove</EuiButton>
+                    }
                     { modal }
                 </>
             ),

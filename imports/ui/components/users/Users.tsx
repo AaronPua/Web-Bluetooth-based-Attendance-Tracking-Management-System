@@ -112,8 +112,10 @@ export const Users = () => {
             cell: row => (
                 <>
                     <EuiButton size="s" color="primary" id={row._id} onClick={() => goToUser(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
-                    <EuiButton size="s" color="text" id={row._id} 
-                        onClick={() => showRemoveUserModal(row._id, row.profile.firstName, row.profile.lastName) }>Remove</EuiButton>
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') &&
+                        <EuiButton size="s" color="text" id={row._id} 
+                            onClick={() => showRemoveUserModal(row._id, row.profile.firstName, row.profile.lastName) }>Remove</EuiButton>
+                    }
                         { modal }
                 </>
             
