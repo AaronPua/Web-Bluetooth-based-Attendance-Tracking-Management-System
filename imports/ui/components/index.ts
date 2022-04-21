@@ -11,6 +11,7 @@ export * from './auth/VerifyEmail';
 
 export * from './beacons/Beacon';
 export * from './beacons/Beacons';
+export * from './beacons/Beacons-list';
 
 export * from './courses/Course';
 export * from './courses/Courses';
@@ -22,5 +23,8 @@ export * from './users/Instructors';
 export * from './users/Students';
 export * from './users/User';
 export * from './users/Users';
+export * from './users/Users-instructors';
+export * from './users/Users-students';
+export * from './users/Users-admins';
 
 export * from './Home';

@@ -25,6 +25,11 @@ export const SideNav = () => {
                 forceOpen: true,
                 items: [
                     {
+                        name: 'Admins',
+                        id: htmlIdGenerator('adminsPage')(),
+                        onClick: (() => navigate('/users/admins')),
+                    },
+                    {
                         name: 'Instructors',
                         id: htmlIdGenerator('instructorsPage')(),
                         onClick: (() => navigate('/users/instructors')),
@@ -37,11 +42,17 @@ export const SideNav = () => {
                 ]
             },
             {
+                name: 'Beacons',
+                id: htmlIdGenerator('beaconsPage')(),
+                icon: <EuiIcon type="online" />,
+                onClick: (() => navigate('/beacons')),
+            },
+            {
                 name: 'Courses',
                 id: htmlIdGenerator('coursesPage')(),
                 icon: <EuiIcon type="list" />,
                 onClick: (() => navigate('/courses')),
-            }
+            },
         ],
     }];
 

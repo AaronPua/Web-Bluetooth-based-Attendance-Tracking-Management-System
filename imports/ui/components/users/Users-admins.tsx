@@ -1,7 +1,7 @@
 import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent, 
     EuiPageContentBody, EuiPageHeader, EuiPanel, EuiConfirmModal, EuiFormRow, EuiCallOut } from '@elastic/eui';
 import { Meteor } from 'meteor/meteor';
-import { useSubscribe, useFind } from 'meteor/react-meteor-data';
+import { useTracker } from 'meteor/react-meteor-data';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router';
 import _ from 'underscore';
 import { removeUser } from '/imports/api/users/UsersMethods';
 
-export const Users = () => {
+export const UsersAdmins = () => {
 
     const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
     const [showRemoveError, setShowRemoveError] = useState(false);
@@ -23,8 +23,13 @@ export const Users = () => {
         setValue(e.target.value);
     };
 
-    const isLoading = useSubscribe('users.all');
-    const allUsers = useFind(() => Meteor.users.find());
+    const { isLoading, allAdmins } = useTracker(() => {
+        const adminsSub = Meteor.subscribe('users.admins');
+        const isLoading = !adminsSub.ready()
+        const allAdmins = Meteor.users.find(adminsSub.scopeQuery()).fetch();
+
+        return { isLoading, allAdmins }
+    });
 
     let navigate = useNavigate();
 
@@ -124,7 +129,7 @@ export const Users = () => {
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allUsers.filter(
+    const filteredItems = allAdmins.filter(
         (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
                     .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );
@@ -154,7 +159,7 @@ export const Users = () => {
 
     return (
         <>
-            <EuiPageHeader pageTitle="All Users" />
+            <EuiPageHeader pageTitle="All Admins" />
             <EuiPageContent
                 hasBorder={false}
                 hasShadow={false}
@@ -174,14 +179,14 @@ export const Users = () => {
                                 }
                                 { showRemoveSuccess &&
                                     <EuiCallOut title="Success!" color="success" iconType="user">
-                                        <p>User removed sucessfully.</p>
+                                        <p>Admin removed sucessfully.</p>
                                     </EuiCallOut>
                                 }
                                 <DataTable
-                                    title="Users"
+                                    title="Admins"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading()}
+                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

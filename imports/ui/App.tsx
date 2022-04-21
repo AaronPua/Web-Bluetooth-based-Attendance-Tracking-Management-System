@@ -4,7 +4,8 @@ import './Icons';
 import { FullPageLayout, CenteredBody } from './layouts/index';
 import { Login, Home, Registration, UnknownRoute, RequireAuth, VerifyEmail, VerifiedEmail, 
     ForgotPassword, ResetPassword, Users, User, Courses, Course, Lessons, Lesson, Students, 
-    Beacons, Beacon, Instructors, Attendance } from './components/index';
+    Beacons, Beacon, Instructors, Attendance, UsersInstructors, UsersStudents, UsersAdmins,
+    BeaconsList } from './components/index';
 
 export const App = () => {
     return (
@@ -12,8 +13,16 @@ export const App = () => {
             <Routes>
                 <Route element={<FullPageLayout />} >
                     <Route path="home" element={<RequireAuth><Home /></RequireAuth>} />
-                    <Route path="users" element={<RequireAuth><Users /></RequireAuth>} />
-                    <Route path="user/:userId" element={<RequireAuth><User /></RequireAuth>} />
+                    <Route path="users" element={<Outlet />} >
+                        <Route index element={<RequireAuth><Users /></RequireAuth>} />
+                        <Route path=":userId" element={<RequireAuth><User /></RequireAuth>} />
+                        <Route path="admins" element={<RequireAuth><UsersAdmins /></RequireAuth>} />
+                        <Route path="instructors" element={<RequireAuth><UsersInstructors /></RequireAuth>} />
+                        <Route path="students" element={<RequireAuth><UsersStudents /></RequireAuth>} />
+                    </Route>
+                    <Route path="beacons" element={<Outlet />} >
+                        <Route index element={<RequireAuth><BeaconsList /></RequireAuth>} />
+                    </Route>
                     <Route path="courses" element={<Outlet />} >
                         <Route index element={<RequireAuth><Courses /></RequireAuth>} />
                         <Route path=":courseId" element={<RequireAuth><Course /></RequireAuth>} />

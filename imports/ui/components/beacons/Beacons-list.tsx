@@ -1,46 +1,55 @@
 import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent, 
     EuiPageContentBody, EuiPageHeader, EuiPanel, EuiConfirmModal, EuiFormRow, EuiCallOut } from '@elastic/eui';
 import { Meteor } from 'meteor/meteor';
-import { useSubscribe, useFind } from 'meteor/react-meteor-data';
-import moment from 'moment';
+import { useTracker } from 'meteor/react-meteor-data';
 import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
-import { removeUser } from '/imports/api/users/UsersMethods';
+import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
+import { removeBeacon } from '/imports/api/beacons/BeaconsMethods';
 
-export const Users = () => {
+export const BeaconsList = () => {
 
     const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
     const [showRemoveError, setShowRemoveError] = useState(false);
     const [removeError, setRemoveError] = useState('');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [userId, setUserId] = useState('');
-    const [userName, setUserName] = useState('');
+    const [beaconId, setBeaconId] = useState('');
+    const [beaconName, setBeaconName] = useState('');
     const [value, setValue] = useState('');
     const onChange = (e: any) => {
         setValue(e.target.value);
     };
 
-    const isLoading = useSubscribe('users.all');
-    const allUsers = useFind(() => Meteor.users.find());
+    const { isLoading, allBeacons } = useTracker(() => {
+        const beaconsSub = Meteor.subscribe('beacons.all.withCourse');
+        const isLoading = !beaconsSub.ready()
+        const beacons = BeaconsCollection.find(beaconsSub.scopeQuery()).fetch();
+
+        const allBeacons = _.map(beacons, (beacon) => {
+            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.course[0]._id , courseName: beacon.course[0].name };
+        });
+
+        return { isLoading, allBeacons }
+    });
 
     let navigate = useNavigate();
 
-    const goToUser = (userId: string) => {
-        navigate(`/users/${userId}`);
+    const goToBeacon = (courseId: string | undefined, beaconId: string) => {
+        navigate(`/courses/${courseId}/beacons/${beaconId}`);
     }
 
-    const showRemoveUserModal = (userId: string, firstName: string, lastName: string) => {
+    const showRemoveBeaconModal = (beaconId: string, beaconName: string) => {
         setIsModalVisible(true);
-        setUserId(userId);
-        setUserName(`${firstName} ${lastName}`);
+        setBeaconId(beaconId);
+        setBeaconName(beaconName);
     }
 
-    const removeThisUser = (userId: string) => {
-        removeUser.callPromise({
-            userId: userId
+    const removeThisBeacon = (beaconId: string) => {
+        removeBeacon.callPromise({
+            beaconId: beaconId
         }).then(() => {
             setShowRemoveSuccess(true);
         }).catch((error: any) => {
@@ -54,13 +63,13 @@ export const Users = () => {
     if (isModalVisible) {
         modal = (
             <EuiConfirmModal
-                title={`Remove ${userName}?`}
+                title={`Remove ${beaconName}?`}
                 onCancel={() => {
                     setIsModalVisible(false);
                     setValue('');
                 }}
                 onConfirm={() => {
-                    removeThisUser(userId);
+                    removeThisBeacon(beaconId);
                     setIsModalVisible(false);
                     setValue('');
                 }}
@@ -80,51 +89,39 @@ export const Users = () => {
         );
     }
 
-    const columns: TableColumn<Meteor.User>[] = [
+    type DataRow = {
+        beaconId: string;
+        courseId: string;
+        courseName: string;
+        beaconName: string;
+    }
+
+    const columns: TableColumn<DataRow>[] = [
         {
-            name: 'First Name',
-            selector: row => row.profile.firstName,
+            name: 'Course',
+            selector: row => row.courseName,
             sortable: true,
         },
         {
-            name: 'Last Name',
-            selector: row => row.profile.lastName,
-            sortable: true,
-        },
-        {
-            name: 'Email',
-            selector: row => row.emails[0].address,
-            sortable: true,
-        },
-        {
-            name: 'Gender',
-            selector: row => row.profile.gender,
-            sortable: true,
-        },
-        {
-            name: 'Registered Date',
-            selector: (row: any) => row.createdAt,
-            format: row => moment(row.createdAt).format('YYYY-MM-DD'),
+            name: 'Beacon',
+            selector: row => row.beaconName,
             sortable: true,
         },
         {
             name: 'Actions',
             cell: row => (
                 <>
-                    <EuiButton size="s" color="primary" id={row._id} onClick={() => goToUser(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
-                    { Roles.userIsInRole(Meteor.userId(), 'admin') &&
-                        <EuiButton size="s" color="text" id={row._id} 
-                            onClick={() => showRemoveUserModal(row._id, row.profile.firstName, row.profile.lastName) }>Remove</EuiButton>
-                    }
-                        { modal }
+                    <EuiButton size="s" color="primary" id={row.beaconId} onClick={() => goToBeacon(row.courseId, row.beaconId)} 
+                        style={{ marginRight: "1em" }}>Edit</EuiButton>
+                    <EuiButton size="s" color="text" id={row.beaconId} onClick={() => showRemoveBeaconModal(row.beaconId, row.beaconName)}>Remove</EuiButton>
+                    { modal }
                 </>
-            
             ),
         },
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allUsers.filter(
+    const filteredItems = allBeacons.filter(
         (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
                     .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );
@@ -154,7 +151,7 @@ export const Users = () => {
 
     return (
         <>
-            <EuiPageHeader pageTitle="All Users" />
+            <EuiPageHeader pageTitle="All Beacons" />
             <EuiPageContent
                 hasBorder={false}
                 hasShadow={false}
@@ -174,14 +171,14 @@ export const Users = () => {
                                 }
                                 { showRemoveSuccess &&
                                     <EuiCallOut title="Success!" color="success" iconType="user">
-                                        <p>User removed sucessfully.</p>
+                                        <p>Beacon removed sucessfully.</p>
                                     </EuiCallOut>
                                 }
                                 <DataTable
-                                    title="Users"
+                                    title="Beacons"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading()}
+                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

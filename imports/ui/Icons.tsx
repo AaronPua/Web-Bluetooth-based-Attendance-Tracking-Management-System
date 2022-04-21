@@ -14,6 +14,7 @@ import { icon as EuiIconCheck } from '@elastic/eui/es/components/icon/assets/che
 import { icon as EuiIconList } from '@elastic/eui/es/components/icon/assets/list';
 import { icon as EuiIconCalendar } from '@elastic/eui/es/components/icon/assets/calendar';
 import { icon as EuiIconCross } from '@elastic/eui/es/components/icon/assets/cross';
+import { icon as EuiIconOnline } from '@elastic/eui/es/components/icon/assets/online';
 
 appendIconComponentCache({
     arrowDown: EuiIconArrowDown,
@@ -30,4 +31,5 @@ appendIconComponentCache({
     list: EuiIconList,
     calendar: EuiIconCalendar,
     cross: EuiIconCross,
+    online: EuiIconOnline,
 });

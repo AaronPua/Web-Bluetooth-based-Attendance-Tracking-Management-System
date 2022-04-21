@@ -2,13 +2,14 @@ import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton
     EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiSelect } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Meteor } from 'meteor/meteor';
 import { updateUser } from '/imports/api/users/UsersMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { Roles } from 'meteor/alanning:roles';
 
 export const User = () => {
     const { userId } = useParams();
@@ -90,13 +91,18 @@ export const User = () => {
         }
     }, [user]);
 
+    let navigate = useNavigate();
+    const goToStudentCourseAttendance = (courseId: string, userId: string | undefined) => {
+        navigate(`/courses/${courseId}/students/${userId}/attendance`)
+    }
+
      type DataRow = {
         _id: string;
         name: string;
         credits: number;
     }
 
-    const columns: TableColumn<DataRow>[] = [
+    const nonStudentColumns: TableColumn<DataRow>[] = [
         {
             name: 'Name',
             selector: row => row.name,
@@ -108,6 +114,26 @@ export const User = () => {
             sortable: true,
         },
     ];
+
+    const studentColumns: TableColumn<DataRow>[] = [
+        {
+            name: 'Name',
+            selector: row => row.name,
+            sortable: true,
+        },
+        {
+            name: 'Credits',
+            selector: row => row.credits,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => <EuiButton size="s" color="primary" id={row._id} 
+                            onClick={() => goToStudentCourseAttendance(row._id, userId)}>View Attendance</EuiButton>,
+        },
+    ];
+
+    const columns = Roles.userIsInRole(userId, 'student') ? studentColumns : nonStudentColumns;
 
     return (
         <>

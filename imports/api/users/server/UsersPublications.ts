@@ -5,9 +5,13 @@ import { Roles } from 'meteor/alanning:roles';
 
 // Publish the role assignment collection as required by alanning:roles package
 Meteor.publish(null, function () {
-    if (this.userId) {
+    if(Roles.userIsInRole(this.userId, 'admin')) {
+        return Meteor.roleAssignment.find();
+    }
+    else if (this.userId) {
         return Meteor.roleAssignment.find({ 'user._id': this.userId });
-    } else {
+    } 
+    else {
         this.ready();
     }
 });
@@ -28,6 +32,20 @@ Meteor.publish('users.specific', function(userId) {
     check(userId, String);
 
     return Meteor.users.find({ _id: userId });
+});
+
+Meteor.publish('users.admins', function() {
+    this.enableScope();
+
+    if(!Roles.userIsInRole(this.userId, 'admin')) {
+        this.ready();
+        return;
+    }
+
+    const admins = Meteor.roleAssignment.find({ "role._id": 'admin' }).fetch();
+    const adminIds = _.pluck(_.flatten(_.pluck(admins, 'user')), '_id');
+
+    return Meteor.users.find({ _id: { $in: adminIds }});
 });
 
 Meteor.publish('users.instructors', function() {
