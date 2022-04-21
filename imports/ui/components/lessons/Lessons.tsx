@@ -158,7 +158,7 @@ export const Lessons = () => {
             >
                 <EuiFormRow label="Type the word 'remove' to confirm">
                 <EuiFieldText
-                    name="delete"
+                    name="remove"
                     value={value}
                     onChange={onChange}
                 />

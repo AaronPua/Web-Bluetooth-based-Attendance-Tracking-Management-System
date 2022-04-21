@@ -1,4 +1,5 @@
-import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel } from '@elastic/eui';
+import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent, 
+    EuiPageContentBody, EuiPageHeader, EuiPanel, EuiConfirmModal, EuiFormRow } from '@elastic/eui';
 import { Meteor } from 'meteor/meteor';
 import { useSubscribe, useFind } from 'meteor/react-meteor-data';
 import moment from 'moment';
@@ -6,8 +7,21 @@ import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
+import { removeUser } from '/imports/api/users/UsersMethods';
 
 export const Users = () => {
+
+    const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
+    const [showRemoveError, setShowRemoveError] = useState(false);
+    const [removeError, setRemoveError] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [userId, setUserId] = useState('');
+    const [userName, setUserName] = useState('');
+    const [value, setValue] = useState('');
+    const onChange = (e: any) => {
+        setValue(e.target.value);
+    };
 
     const isLoading = useSubscribe('users.all');
     const allUsers = useFind(() => Meteor.users.find());
@@ -16,6 +30,54 @@ export const Users = () => {
 
     const goToUser = (userId: string) => {
         navigate(`/user/${userId}`);
+    }
+
+    const showRemoveUserModal = (userId: string, firstName: string, lastName: string) => {
+        setIsModalVisible(true);
+        setUserId(userId);
+        setUserName(`${firstName} ${lastName}`);
+    }
+
+    const removeThisUser = (userId: string) => {
+        removeUser.callPromise({
+            userId: userId
+        }).then(() => {
+            setShowRemoveSuccess(true);
+        }).catch((error: any) => {
+            setShowRemoveError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setRemoveError(reason);
+        });
+    }
+
+    let modal: any;
+    if (isModalVisible) {
+        modal = (
+            <EuiConfirmModal
+                title={`Remove ${userName}?`}
+                onCancel={() => {
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                onConfirm={() => {
+                    removeThisUser(userId);
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                confirmButtonText="Remove"
+                cancelButtonText="Cancel"
+                buttonColor="danger"
+                confirmButtonDisabled={value.toLowerCase() !== 'remove'}
+            >
+                <EuiFormRow label="Type the word 'remove' to confirm">
+                <EuiFieldText
+                    name="remove"
+                    value={value}
+                    onChange={onChange}
+                />
+                </EuiFormRow>
+            </EuiConfirmModal>
+        );
     }
 
     const columns: TableColumn<Meteor.User>[] = [
@@ -41,14 +103,21 @@ export const Users = () => {
         },
         {
             name: 'Registered Date',
-            selector: row => row.createdAt,
+            selector: (row: any) => row.createdAt,
             format: row => moment(row.createdAt).format('YYYY-MM-DD'),
             sortable: true,
         },
         {
             name: 'Actions',
-            cell: row => <EuiButton size="s" color="primary" id={row._id} 
-                    onClick={() => goToUser(row._id) }>Edit</EuiButton>,
+            cell: row => (
+                <>
+                    <EuiButton size="s" color="primary" id={row._id} onClick={() => goToUser(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
+                    <EuiButton size="s" color="text" id={row._id} 
+                        onClick={() => showRemoveUserModal(row._id, row.profile.firstName, row.profile.lastName) }>Remove</EuiButton>
+                        { modal }
+                </>
+            
+            ),
         },
     ];
 
