@@ -1,4 +1,5 @@
-import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
+import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiPageContent, 
+EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiConfirmModal } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useTracker } from 'meteor/react-meteor-data';
@@ -6,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import uuid from 'uuid-random';
-import { createBeacon } from '/imports/api/beacons/BeaconsMethods';
+import { createBeacon, removeBeacon } from '/imports/api/beacons/BeaconsMethods';
 import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 import { Meteor } from 'meteor/meteor';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
@@ -18,6 +19,18 @@ export const Beacons = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [error, setError] = useState('');
+
+    const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
+    const [showRemoveError, setShowRemoveError] = useState(false);
+    const [removeError, setRemoveError] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [beaconId, setBeaconId] = useState('');
+    const [beaconName, setBeaconName] = useState('');
+    const [value, setValue] = useState('');
+    const onChange = (e: any) => {
+        setValue(e.target.value);
+    };
 
     const createBeaconForm = useFormik({
         initialValues: {
@@ -63,6 +76,54 @@ export const Beacons = () => {
         return { course, isLoadingBeacons, courseBeacons };
     }, []);
 
+    const showRemoveBeaconModal = (beaconId: string, beaconName: string) => {
+        setIsModalVisible(true);
+        setBeaconId(beaconId);
+        setBeaconName(beaconName);
+    }
+
+    const removeThisBeacon = (beaconId: string) => {
+        removeBeacon.callPromise({
+            beaconId: beaconId
+        }).then(() => {
+            setShowRemoveSuccess(true);
+        }).catch((error: any) => {
+            setShowRemoveError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setRemoveError(reason);
+        });
+    }
+
+    let modal: any;
+    if (isModalVisible) {
+        modal = (
+            <EuiConfirmModal
+                title={`Remove ${beaconName}?`}
+                onCancel={() => {
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                onConfirm={() => {
+                    removeThisBeacon(beaconId);
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                confirmButtonText="Remove"
+                cancelButtonText="Cancel"
+                buttonColor="danger"
+                confirmButtonDisabled={value.toLowerCase() !== 'remove'}
+            >
+                <EuiFormRow label="Type the word 'remove' to confirm">
+                <EuiFieldText
+                    name="delete"
+                    value={value}
+                    onChange={onChange}
+                />
+                </EuiFormRow>
+            </EuiConfirmModal>
+        );
+    }
+
     type DataRow = {
         _id: string;
         name: string;
@@ -82,7 +143,13 @@ export const Beacons = () => {
         },
         {
             name: 'Actions',
-            cell: row => <EuiButton size="s" color="primary" id={row._id} onClick={() => goToBeacon(courseId, row._id)}>Edit</EuiButton>,
+            cell: row => (
+                <>
+                    <EuiButton size="s" color="primary" id={row._id} onClick={() => goToBeacon(courseId, row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
+                    <EuiButton size="s" color="text" id={row._id} onClick={() => showRemoveBeaconModal(row._id, row.name)}>Remove</EuiButton>
+                    { modal }
+                </>
+            ),
         },
     ];
 
@@ -143,6 +210,16 @@ export const Beacons = () => {
                     <EuiSpacer />
 
                     <EuiPanel>
+                        { showRemoveError &&
+                            <EuiCallOut title="Error" color="danger" iconType="alert">
+                                <p>{removeError}</p>
+                            </EuiCallOut>
+                        }
+                        { showRemoveSuccess &&
+                            <EuiCallOut title="Success!" color="success" iconType="user">
+                                <p>Beacon removed sucessfully.</p>
+                            </EuiCallOut>
+                        }
                         <DataTable
                             title="Beacons"
                             columns={columns}

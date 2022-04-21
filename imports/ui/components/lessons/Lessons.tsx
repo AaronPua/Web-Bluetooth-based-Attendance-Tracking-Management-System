@@ -3,10 +3,10 @@ import moment, { Moment } from 'moment';
 import { useNavigate, useParams } from 'react-router';
 import { useTracker } from 'meteor/react-meteor-data';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
-import { createLesson } from '../../../api/lessons/LessonsMethods';
+import { createLesson, removeLesson } from '../../../api/lessons/LessonsMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm, EuiFlexGroup, 
-    EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiDatePicker, EuiTitle, EuiSpacer } from '@elastic/eui';
+    EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiDatePicker, EuiTitle, EuiSpacer, EuiConfirmModal } from '@elastic/eui';
 import _ from 'underscore';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -23,6 +23,18 @@ export const Lessons = () => {
     const [showLessonSuccess, setShowLessonSuccess] = useState(false);
     const [showLessonError, setShowLessonError] = useState(false);
     const [lessonError, setLessonError] = useState('');
+
+    const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
+    const [showRemoveError, setShowRemoveError] = useState(false);
+    const [removeError, setRemoveError] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [lessonId, setLessonId] = useState('');
+    const [lessonName, setLessonName] = useState('');
+    const [value, setValue] = useState('');
+    const onChange = (e: any) => {
+        setValue(e.target.value);
+    };
 
     const { course, isLoadinglessons, lessons, studentAttendance, studentsInCourse }  = useTracker(() => { 
         Meteor.subscribe('courses.specific', courseId);
@@ -107,6 +119,54 @@ export const Lessons = () => {
         }
     }, [course]);
 
+    const showRemoveLessonModal = (lessonId: string, lessonName: string) => {
+        setIsModalVisible(true);
+        setLessonId(lessonId);
+        setLessonName(lessonName);
+    }
+
+    const removeThisLesson = (lessonId: string) => {
+        removeLesson.callPromise({
+            lessonId: lessonId
+        }).then(() => {
+            setShowRemoveSuccess(true);
+        }).catch((error: any) => {
+            setShowRemoveError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setRemoveError(reason);
+        });
+    }
+
+    let modal: any;
+    if (isModalVisible) {
+        modal = (
+            <EuiConfirmModal
+                title={`Remove ${lessonName}?`}
+                onCancel={() => {
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                onConfirm={() => {
+                    removeThisLesson(lessonId);
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                confirmButtonText="Remove"
+                cancelButtonText="Cancel"
+                buttonColor="danger"
+                confirmButtonDisabled={value.toLowerCase() !== 'remove'}
+            >
+                <EuiFormRow label="Type the word 'remove' to confirm">
+                <EuiFieldText
+                    name="delete"
+                    value={value}
+                    onChange={onChange}
+                />
+                </EuiFormRow>
+            </EuiConfirmModal>
+        );
+    }
+
     type DataRow = {
         _id: string;
         name: string;
@@ -141,7 +201,13 @@ export const Lessons = () => {
         },
         {
             name: 'Actions',
-            cell: row => <EuiButton size="s" color="primary" id={row._id} onClick={() => goToLesson(row._id)}>Edit</EuiButton>,
+            cell: row => (
+                <>
+                    <EuiButton size="s" color="primary" id={row._id} onClick={() => goToLesson(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
+                    <EuiButton size="s" color="text" id={row._id} onClick={() => showRemoveLessonModal(row._id, row.name)}>Remove</EuiButton>
+                    { modal }
+                </>
+            ),
         },
     ];
 
@@ -238,6 +304,16 @@ export const Lessons = () => {
                     <EuiFlexGroup>
                         <EuiFlexItem>
                             <EuiPanel color="plain">
+                                { showRemoveError &&
+                                    <EuiCallOut title="Error" color="danger" iconType="alert">
+                                        <p>{removeError}</p>
+                                    </EuiCallOut>
+                                }
+                                { showRemoveSuccess &&
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
+                                        <p>Lesson removed sucessfully.</p>
+                                    </EuiCallOut>
+                                }
                                 <DataTable
                                     title="Current Lessons"
                                     columns={columns}

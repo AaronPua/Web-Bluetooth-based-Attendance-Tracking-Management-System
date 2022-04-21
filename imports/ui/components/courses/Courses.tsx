@@ -1,6 +1,6 @@
-import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle } from '@elastic/eui';
+import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, EuiFieldNumber, EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiConfirmModal } from '@elastic/eui';
 import React, { useState } from 'react';
-import { createCourse } from '../../../api/courses/CoursesMethods';
+import { createCourse, removeCourse } from '../../../api/courses/CoursesMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useTracker } from 'meteor/react-meteor-data';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
@@ -14,6 +14,18 @@ export const Courses = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [error, setError] = useState('');
+
+    const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
+    const [showRemoveError, setShowRemoveError] = useState(false);
+    const [removeError, setRemoveError] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [courseId, setCourseId] = useState('');
+    const [courseName, setCourseName] = useState('');
+    const [value, setValue] = useState('');
+    const onChange = (e: any) => {
+        setValue(e.target.value);
+    };
 
     const createCourseForm = useFormik({
         initialValues: {
@@ -48,6 +60,18 @@ export const Courses = () => {
         navigate(`/courses/${courseId}`);
     }
 
+    const removeThisCourse = (courseId: string) => {
+        removeCourse.callPromise({
+            courseId: courseId
+        }).then(() => {
+            setShowRemoveSuccess(true);
+        }).catch((error: any) => {
+            setShowRemoveError(true);
+            const reason = error.reason != null ? error.reason : error.message;
+            setRemoveError(reason);
+        });
+    }
+
     const { isLoadingCourses, allCourses, isLoadingUserCourses, userCourses } = useTracker(() => {
         const allCoursesSub = Meteor.subscribe('courses.all');
         const isLoadingCourses = !allCoursesSub.ready();
@@ -59,6 +83,42 @@ export const Courses = () => {
 
         return { isLoadingCourses, allCourses, isLoadingUserCourses, userCourses };
     });
+
+    const showRemoveCourseModal = (courseId: string, courseName: string) => {
+        setIsModalVisible(true);
+        setCourseId(courseId);
+        setCourseName(courseName);
+    }
+
+    let modal: any;
+    if (isModalVisible) {
+        modal = (
+            <EuiConfirmModal
+                title={`Remove ${courseName}?`}
+                onCancel={() => {
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                onConfirm={() => {
+                    removeThisCourse(courseId);
+                    setIsModalVisible(false);
+                    setValue('');
+                }}
+                confirmButtonText="Remove"
+                cancelButtonText="Cancel"
+                buttonColor="danger"
+                confirmButtonDisabled={value.toLowerCase() !== 'remove'}
+            >
+                <EuiFormRow label="Type the word 'remove' to confirm">
+                <EuiFieldText
+                    name="delete"
+                    value={value}
+                    onChange={onChange}
+                />
+                </EuiFormRow>
+            </EuiConfirmModal>
+        );
+    }
 
     type DataRow = {
         _id: string;
@@ -79,7 +139,13 @@ export const Courses = () => {
         },
         {
             name: 'Actions',
-            cell: row => <EuiButton size="s" color="primary" id={row._id} onClick={() => goToCourse(row._id)}>Edit</EuiButton>,
+            cell: row => (
+                <>
+                    <EuiButton size="s" color="primary" id={row._id} onClick={() => goToCourse(row._id)} style={{ marginRight: "1em" }}>Edit</EuiButton>
+                    <EuiButton size="s" color="text" id={row._id} onClick={() => showRemoveCourseModal(row._id, row.name)}>Remove</EuiButton>
+                    { modal }
+                </>
+            ),
         },
     ];
 
@@ -102,7 +168,7 @@ export const Courses = () => {
                             </EuiTitle>
                             <EuiSpacer />
                             { showError &&
-                                <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                                <EuiCallOut title="Error" color="danger" iconType="alert">
                                     <p>{error}</p>
                                 </EuiCallOut>
                             }
@@ -138,6 +204,16 @@ export const Courses = () => {
                     { Roles.userIsInRole(Meteor.userId(), 'admin') ? 
                         (
                             <EuiPanel>
+                                { showRemoveError &&
+                                    <EuiCallOut title="Error" color="danger" iconType="alert">
+                                        <p>{removeError}</p>
+                                    </EuiCallOut>
+                                }
+                                { showRemoveSuccess &&
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
+                                        <p>Course removed sucessfully.</p>
+                                    </EuiCallOut>
+                                }
                                 <DataTable
                                     title="Courses"
                                     columns={columns}
