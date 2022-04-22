@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import _ from 'underscore';
 import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 import { removeBeacon } from '/imports/api/beacons/BeaconsMethods';
+import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 
 export const BeaconsList = () => {
 
@@ -23,7 +24,7 @@ export const BeaconsList = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allBeacons } = useTracker(() => {
+    const { isLoading, allBeacons, instructorBeacons } = useTracker(() => {
         const beaconsSub = Meteor.subscribe('beacons.all.withCourse');
         const isLoading = !beaconsSub.ready()
         const beacons = BeaconsCollection.find(beaconsSub.scopeQuery()).fetch();
@@ -32,7 +33,18 @@ export const BeaconsList = () => {
             return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
         });
 
-        return { isLoading, allBeacons };
+        const userCoursesSub = Meteor.subscribe('courses.currentUser');
+        const userCourses = CoursesCollection.find(userCoursesSub.scopeQuery()).fetch();
+        const userCourseIds = _.pluck(userCourses, '_id');
+
+        const userCoursesBeaconsSub = Meteor.subscribe('beacons.forMultipleCourses', userCourseIds);
+        const userCoursesBeacons = BeaconsCollection.find(userCoursesBeaconsSub.scopeQuery()).fetch();
+
+        const instructorBeacons = _.map(userCoursesBeacons, (beacon) => {
+            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
+        });
+
+        return { isLoading, allBeacons, instructorBeacons };
     });
 
     let navigate = useNavigate();
@@ -120,8 +132,10 @@ export const BeaconsList = () => {
         },
     ];
 
+    const beacons = Roles.userIsInRole(Meteor.userId(), 'admin') ? allBeacons : instructorBeacons;
+
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allBeacons.filter(
+    const filteredItems = beacons.filter(
         (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
                     .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );

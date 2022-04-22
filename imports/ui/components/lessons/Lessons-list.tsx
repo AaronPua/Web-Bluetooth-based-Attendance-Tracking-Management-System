@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
+import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
 import { removeLesson } from '/imports/api/lessons/LessonsMethods';
 
@@ -24,7 +25,7 @@ export const LessonsList = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allLessons } = useTracker(() => {
+    const { isLoading, allLessons, instructorLessons } = useTracker(() => {
         const lessonsSub = Meteor.subscribe('lessons.all.withCourse');
         const isLoading = !lessonsSub.ready()
         const lessons = LessonsCollection.find(lessonsSub.scopeQuery()).fetch();
@@ -41,7 +42,28 @@ export const LessonsList = () => {
             };
         });
 
-        return { isLoading, allLessons };
+        const userCoursesSub = Meteor.subscribe('courses.currentUser');
+        const userCourses = CoursesCollection.find(userCoursesSub.scopeQuery()).fetch();
+        const userCourseIds = _.pluck(userCourses, '_id');
+
+        const userCoursesLessonsSub = Meteor.subscribe('lessons.forMultipleCourses', userCourseIds);
+        const userCoursesLessons = LessonsCollection.find(userCoursesLessonsSub.scopeQuery()).fetch();
+
+        const instructorLessons = _.map(userCoursesLessons, (lesson) => {
+            return { 
+                lessonId: lesson._id,
+                lessonName: lesson.name,
+                lessonStartTime: lesson.startTime,
+                lessonEndTime: lesson.endTime,
+                lessonDate: lesson.date,
+                courseId: lesson.courseId,
+                courseName: lesson.course[0].name
+            };
+        });
+
+        console.log(instructorLessons);
+
+        return { isLoading, allLessons, instructorLessons };
     });
 
     let navigate = useNavigate();
@@ -122,19 +144,19 @@ export const LessonsList = () => {
         {
             name: 'Start Time',
             selector: (row: any) => row.lessonStartTime,
-            format: row => moment(row.startTime).format('hh:mm a'),
+            format: row => moment(row.lessonStartTime).format('hh:mm a'),
             sortable: true,
         },
         {
             name: 'End Time',
             selector: (row: any) => row.lessonEndTime,
-            format: row => moment(row.startTime).format('hh:mm a'),
+            format: row => moment(row.lessonEndTime).format('hh:mm a'),
             sortable: true,
         },
         {
             name: 'Date',
             selector: (row: any) => row.lessonDate,
-            format: row => moment(row.date).format('DD-MM-YYYY'),
+            format: row => moment(row.lessonDate).format('DD-MM-YYYY'),
             sortable: true,
         },
         {
@@ -150,8 +172,10 @@ export const LessonsList = () => {
         },
     ];
 
+    const lessons = Roles.userIsInRole(Meteor.userId(), 'admin') ? allLessons : instructorLessons;
+
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allLessons.filter(
+    const filteredItems = lessons.filter(
         (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
                     .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );

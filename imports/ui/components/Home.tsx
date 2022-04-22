@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiFlexGroup, EuiFlexItem,
@@ -7,12 +7,16 @@ import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
 import { useNavigate } from 'react-router-dom';
+import _ from 'underscore';
 
 export const Home = () => {
 
     let navigate = useNavigate();
 
-    const { usersCount, adminsCount, instructorsCount, studentsCount, coursesCount, lessonsCount, beaconsCount } = useTracker(() => {
+    const [isUserAdmin, setIsUserAdmin] = useState(false);
+
+    const { usersCount, adminsCount, instructorsCount, studentsCount, coursesCount, lessonsCount, beaconsCount,
+            userCoursesCount, userCoursesLessonsCount, userCoursesBeaconsCount } = useTracker(() => {
         const usersSub = Meteor.subscribe('users.all');
         const usersCount = Meteor.users.find(usersSub.scopeQuery()).count();
 
@@ -34,8 +38,24 @@ export const Home = () => {
         const beaconsSub = Meteor.subscribe('beacons.all');
         const beaconsCount = BeaconsCollection.find(beaconsSub.scopeQuery()).count();
 
-        return { usersCount, adminsCount, instructorsCount, studentsCount, coursesCount, lessonsCount, beaconsCount };
+        const userCoursesSub = Meteor.subscribe('courses.currentUser');
+        const userCoursesCount = CoursesCollection.find(userCoursesSub.scopeQuery()).count();
+        const userCourses = CoursesCollection.find(userCoursesSub.scopeQuery()).fetch();
+        const userCourseIds = _.pluck(userCourses, '_id');
+
+        const userCoursesLessonsSub = Meteor.subscribe('lessons.forMultipleCourses', userCourseIds);
+        const userCoursesLessonsCount = LessonsCollection.find(userCoursesLessonsSub.scopeQuery()).count();
+
+        const userCoursesBeaconsSub = Meteor.subscribe('beacons.forMultipleCourses', userCourseIds);
+        const userCoursesBeaconsCount = BeaconsCollection.find(userCoursesBeaconsSub.scopeQuery()).count();
+
+        return { usersCount, adminsCount, instructorsCount, studentsCount, coursesCount, lessonsCount, beaconsCount,
+            userCoursesCount, userCoursesLessonsCount, userCoursesBeaconsCount };
     });
+
+    useEffect(() => {
+        setIsUserAdmin(Roles.userIsInRole(Meteor.userId(), 'admin'));
+    }, []);
 
     return (
         <>
@@ -51,109 +71,111 @@ export const Home = () => {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    <EuiFlexGroup>
-                        <EuiFlexItem>
-                            <EuiPanel>
-                                <EuiTitle size="s">
-                                    <h4>Users</h4>
-                                </EuiTitle>
-                                <EuiSpacer />
-                                <EuiSplitPanel.Outer hasShadow={false}>
-                                    <EuiSplitPanel.Inner color="primary">
-                                        <EuiStat
-                                            title={usersCount}
-                                            description=""
-                                            textAlign="center"
-                                        />
-                                    </EuiSplitPanel.Inner>
-                                    <EuiSplitPanel.Inner>
-                                        <EuiFlexGroup justifyContent="spaceAround">
-                                            <EuiFlexItem grow={false}>
-                                                <EuiButton color="primary" size="s" onClick={() => navigate('/users')}>View Users</EuiButton>
-                                            </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                    </EuiSplitPanel.Inner>
-                                </EuiSplitPanel.Outer>
-                            </EuiPanel>
-                        </EuiFlexItem>
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') &&
+                        <EuiFlexGroup>
+                            <EuiFlexItem>
+                                <EuiPanel>
+                                    <EuiTitle size="s">
+                                        <h4>Users</h4>
+                                    </EuiTitle>
+                                    <EuiSpacer />
+                                    <EuiSplitPanel.Outer hasShadow={false}>
+                                        <EuiSplitPanel.Inner color="primary">
+                                            <EuiStat
+                                                title={usersCount}
+                                                description=""
+                                                textAlign="center"
+                                            />
+                                        </EuiSplitPanel.Inner>
+                                        <EuiSplitPanel.Inner>
+                                            <EuiFlexGroup justifyContent="spaceAround">
+                                                <EuiFlexItem grow={false}>
+                                                    <EuiButton color="primary" size="s" onClick={() => navigate('/users')}>View Users</EuiButton>
+                                                </EuiFlexItem>
+                                            </EuiFlexGroup>
+                                        </EuiSplitPanel.Inner>
+                                    </EuiSplitPanel.Outer>
+                                </EuiPanel>
+                            </EuiFlexItem>
 
-                        <EuiFlexItem>
-                            <EuiPanel>
-                                <EuiTitle size="s">
-                                    <h4>Admins</h4>
-                                </EuiTitle>
-                                <EuiSpacer />
-                                <EuiSplitPanel.Outer hasShadow={false}>
-                                    <EuiSplitPanel.Inner color="primary">
-                                        <EuiStat
-                                            title={adminsCount}
-                                            description=""
-                                            textAlign="center"
-                                        />
-                                    </EuiSplitPanel.Inner>
-                                    <EuiSplitPanel.Inner>
-                                        <EuiFlexGroup justifyContent="spaceAround">
-                                            <EuiFlexItem grow={false}>
-                                                <EuiButton color="primary" size="s" onClick={() => navigate('/users/admins')}>View Admins</EuiButton>
-                                            </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                    </EuiSplitPanel.Inner>
-                                </EuiSplitPanel.Outer>
-                            </EuiPanel>
-                        </EuiFlexItem>
+                            <EuiFlexItem>
+                                <EuiPanel>
+                                    <EuiTitle size="s">
+                                        <h4>Admins</h4>
+                                    </EuiTitle>
+                                    <EuiSpacer />
+                                    <EuiSplitPanel.Outer hasShadow={false}>
+                                        <EuiSplitPanel.Inner color="primary">
+                                            <EuiStat
+                                                title={adminsCount}
+                                                description=""
+                                                textAlign="center"
+                                            />
+                                        </EuiSplitPanel.Inner>
+                                        <EuiSplitPanel.Inner>
+                                            <EuiFlexGroup justifyContent="spaceAround">
+                                                <EuiFlexItem grow={false}>
+                                                    <EuiButton color="primary" size="s" onClick={() => navigate('/users/admins')}>View Admins</EuiButton>
+                                                </EuiFlexItem>
+                                            </EuiFlexGroup>
+                                        </EuiSplitPanel.Inner>
+                                    </EuiSplitPanel.Outer>
+                                </EuiPanel>
+                            </EuiFlexItem>
 
-                        <EuiFlexItem>
-                            <EuiPanel>
-                                <EuiTitle size="s">
-                                    <h4>Instructors</h4>
-                                </EuiTitle>
-                                <EuiSpacer />
-                                <EuiSplitPanel.Outer hasShadow={false}>
-                                    <EuiSplitPanel.Inner color="primary">
-                                        <EuiStat
-                                            title={instructorsCount}
-                                            description=""
-                                            textAlign="center"
-                                        />
-                                    </EuiSplitPanel.Inner>
-                                    <EuiSplitPanel.Inner>
-                                        <EuiFlexGroup justifyContent="spaceAround">
-                                            <EuiFlexItem grow={false}>
-                                                <EuiButton color="primary" size="s" onClick={() => navigate('/users/instructors')}>View Instructors</EuiButton>
-                                            </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                    </EuiSplitPanel.Inner>
-                                </EuiSplitPanel.Outer>
-                            </EuiPanel>
-                        </EuiFlexItem>
+                            <EuiFlexItem>
+                                <EuiPanel>
+                                    <EuiTitle size="s">
+                                        <h4>Instructors</h4>
+                                    </EuiTitle>
+                                    <EuiSpacer />
+                                    <EuiSplitPanel.Outer hasShadow={false}>
+                                        <EuiSplitPanel.Inner color="primary">
+                                            <EuiStat
+                                                title={instructorsCount}
+                                                description=""
+                                                textAlign="center"
+                                            />
+                                        </EuiSplitPanel.Inner>
+                                        <EuiSplitPanel.Inner>
+                                            <EuiFlexGroup justifyContent="spaceAround">
+                                                <EuiFlexItem grow={false}>
+                                                    <EuiButton color="primary" size="s" onClick={() => navigate('/users/instructors')}>View Instructors</EuiButton>
+                                                </EuiFlexItem>
+                                            </EuiFlexGroup>
+                                        </EuiSplitPanel.Inner>
+                                    </EuiSplitPanel.Outer>
+                                </EuiPanel>
+                            </EuiFlexItem>
 
-                        <EuiFlexItem>
-                            <EuiPanel>
-                                <EuiTitle size="s">
-                                    <h4>Students</h4>
-                                </EuiTitle>
-                                <EuiSpacer />
-                                <EuiSplitPanel.Outer hasShadow={false}>
-                                    <EuiSplitPanel.Inner color="primary">
-                                        <EuiStat
-                                            title={studentsCount}
-                                            description=""
-                                            textAlign="center"
-                                        />
-                                    </EuiSplitPanel.Inner>
-                                    <EuiSplitPanel.Inner>
-                                        <EuiFlexGroup justifyContent="spaceAround">
-                                            <EuiFlexItem grow={false}>
-                                                <EuiButton color="primary" size="s" onClick={() => navigate('/users/students')}>View Students</EuiButton>
-                                            </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                    </EuiSplitPanel.Inner>
-                                </EuiSplitPanel.Outer>
-                            </EuiPanel>
-                        </EuiFlexItem>
-                    </EuiFlexGroup>
+                            <EuiFlexItem>
+                                <EuiPanel>
+                                    <EuiTitle size="s">
+                                        <h4>Students</h4>
+                                    </EuiTitle>
+                                    <EuiSpacer />
+                                    <EuiSplitPanel.Outer hasShadow={false}>
+                                        <EuiSplitPanel.Inner color="primary">
+                                            <EuiStat
+                                                title={studentsCount}
+                                                description=""
+                                                textAlign="center"
+                                            />
+                                        </EuiSplitPanel.Inner>
+                                        <EuiSplitPanel.Inner>
+                                            <EuiFlexGroup justifyContent="spaceAround">
+                                                <EuiFlexItem grow={false}>
+                                                    <EuiButton color="primary" size="s" onClick={() => navigate('/users/students')}>View Students</EuiButton>
+                                                </EuiFlexItem>
+                                            </EuiFlexGroup>
+                                        </EuiSplitPanel.Inner>
+                                    </EuiSplitPanel.Outer>
+                                </EuiPanel>
+                            </EuiFlexItem>
+                        </EuiFlexGroup>
+                    }
 
-                    <EuiSpacer />
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') && <EuiSpacer /> }
 
                     <EuiFlexGroup>
                         <EuiFlexItem>
@@ -165,7 +187,7 @@ export const Home = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="success">
                                         <EuiStat
-                                            title={coursesCount}
+                                            title={ isUserAdmin ? coursesCount : userCoursesCount }
                                             description=""
                                             textAlign="center"
                                         />
@@ -190,7 +212,7 @@ export const Home = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="accent">
                                         <EuiStat
-                                            title={lessonsCount}
+                                            title={ isUserAdmin ? lessonsCount : userCoursesLessonsCount }
                                             description=""
                                             textAlign="center"
                                         />
@@ -215,7 +237,7 @@ export const Home = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="danger">
                                         <EuiStat
-                                            title={beaconsCount}
+                                            title={ isUserAdmin ? beaconsCount : userCoursesBeaconsCount }
                                             description=""
                                             textAlign="center"
                                         />

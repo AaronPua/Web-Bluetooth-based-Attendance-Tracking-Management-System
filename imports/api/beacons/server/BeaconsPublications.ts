@@ -60,3 +60,30 @@ Meteor.publish('beacons.forOneCourse', function(courseId) {
 
     return BeaconsCollection.find({ courseId: courseId });
 });
+
+Meteor.publish('beacons.forMultipleCourses', function(courseIds) {
+    this.enableScope();
+    check(courseIds, [String]);
+
+    ReactiveAggregate(this, BeaconsCollection, [
+        {
+            $match: { courseId: { $in: courseIds } }
+        },
+        {
+            $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                as: "course"
+            }
+        },
+        {
+            $project: {
+                courseId: 1,
+                name: 1,
+                uuid: 1,
+                "course.name": 1,
+            }
+        }
+    ]);
+});

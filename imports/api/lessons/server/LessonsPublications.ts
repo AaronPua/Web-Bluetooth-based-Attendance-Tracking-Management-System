@@ -60,6 +60,36 @@ Meteor.publish('lessons.forOneCourse', function(courseId) {
     return LessonsCollection.find({ courseId: courseId });
 });
 
+Meteor.publish('lessons.forMultipleCourses', function(courseIds) {
+    this.enableScope();
+    check(courseIds, [String]);
+
+    ReactiveAggregate(this, LessonsCollection, [
+        {
+            $match: { courseId: { $in: courseIds } }
+        },
+        {
+            $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                as: "course"
+            }
+        },
+        {
+            $project: {
+                courseId: 1,
+                name: 1,
+                startTime: 1,
+                endTime: 1,
+                date: 1,
+                "course.name": 1,
+                "course.credits": 1,
+            }
+        }
+    ]);
+});
+
 Meteor.publish('lesson.attendance.present', function(courseId, lessonId) {
     this.enableScope();
     check(courseId, String);

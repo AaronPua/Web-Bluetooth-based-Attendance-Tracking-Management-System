@@ -67,6 +67,18 @@ export const SideNav = () => {
         id: htmlIdGenerator('instructorNavigation')(),
         items: [
             {
+                name: 'Beacons',
+                id: htmlIdGenerator('beaconsPage')(),
+                icon: <EuiIcon type="online" />,
+                onClick: (() => navigate('/beacons')),
+            },
+            {
+                name: 'Lessons',
+                id: htmlIdGenerator('lessonsPage')(),
+                icon: <EuiIcon type="editorOrderedList" />,
+                onClick: (() => navigate('/lessons')),
+            },
+            {
                 name: 'Courses',
                 id: htmlIdGenerator('coursesPage')(),
                 icon: <EuiIcon type="list" />,
