@@ -87,4 +87,23 @@ describe('login', function() {
         
         cy.contains('Sign In');
     });
+
+    it('clean up - admin logs in and removes test user', () => {
+        cy.contains('Sign In');
+
+        cy.get('input[name="email"]').type('admin1@test.com');
+        cy.get('input[name="password"]').type('test');
+        cy.get('button[type="submit"]').contains('Sign In').click();
+
+        cy.url().should('eq', Cypress.config().baseUrl + '/home');
+
+        cy.visit('/users');
+
+        cy.get('div#row-0').contains('A_TEST_USER');
+        cy.get('div#row-0').contains('Remove').click();
+        cy.get('input[name="remove"]').first().type('remove', {force: true});
+        cy.get('div.euiModalFooter').contains('Remove').click({force: true});
+
+        cy.contains('User removed sucessfully');
+    });
 });

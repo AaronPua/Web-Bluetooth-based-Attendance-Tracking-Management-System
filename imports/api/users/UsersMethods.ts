@@ -187,7 +187,9 @@ export const removeUser = new ValidatedMethod({
         }
         
         const roleAssignment = Meteor.roleAssignment.find({ 'user._id': userId }).fetch();
-        Meteor.roleAssignment.remove(roleAssignment._id);
+        _.each(roleAssignment, (item) => {
+            Meteor.roleAssignment.remove(item._id);
+        })
         Meteor.users.remove(userId);
     }
 });

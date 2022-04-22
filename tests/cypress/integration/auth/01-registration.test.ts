@@ -7,8 +7,8 @@ describe('registration', function() {
         cy.contains('Register Now').click();
         cy.url().should('eq', Cypress.config().baseUrl + '/register');
 
-        cy.get('input[name="firstName"]').type('Instructor');
-        cy.get('input[name="lastName"]').type('Test');
+        cy.get('input[name="firstName"]').type('A_TEST_USER');
+        cy.get('input[name="lastName"]').type('FAKE');
         cy.get('select[name="gender"]').select('female');
         cy.get('input[name="email"]').type('instructor@test.com');
         cy.get('input[name="password"]').type('test');
