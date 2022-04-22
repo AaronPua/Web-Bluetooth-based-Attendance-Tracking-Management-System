@@ -1,5 +1,5 @@
 import { EuiForm, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldText, EuiButton, EuiCallOut, 
-    EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiSelect } from '@elastic/eui';
+    EuiPageContent, EuiPageContentBody, EuiPageHeader, EuiPanel, EuiSpacer, EuiTitle, EuiSelect, EuiComboBox } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { updateUser } from '/imports/api/users/UsersMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
 import { Roles } from 'meteor/alanning:roles';
+import _ from 'underscore';
 
 export const User = () => {
     const { userId } = useParams();
@@ -28,6 +29,36 @@ export const User = () => {
         { value: 'female', text: 'Female'}
     ];
 
+    const { user, userRoles, isLoadingUser, courses, isLoadingCourses } = useTracker(() => { 
+        const userSub = Meteor.subscribe('users.specific', userId);
+        const isLoadingUser = !userSub.ready();
+        const user = Meteor.users.findOne(userId);
+        const userRoles = Roles.getRolesForUser(user);
+
+        const coursesSub = Meteor.subscribe('courses.specificUser', userId);
+        const isLoadingCourses = !coursesSub.ready();
+        const courses = CoursesCollection.find(coursesSub.scopeQuery(), userId).fetch();
+        
+        console.log(Meteor.roles.find().fetch());
+
+        return { user, userRoles, isLoadingUser, courses, isLoadingCourses };
+    }, []);
+
+    const roleOptions = [
+        { label: 'Admin', value: 'admin' },
+        { label: 'Instructor', value: 'instructor' },
+        { label: 'Student', value: 'student' },
+    ];
+
+    const currentRoles = _.filter(roleOptions, (item) => {
+                            return _.contains(userRoles, item.value);
+                        });
+
+    const [selectedOptions, setSelectedOptions] = useState(currentRoles);
+    const onChange = (selectedOptions: any) => {
+        setSelectedOptions(selectedOptions);
+    };
+
     let navigate = useNavigate();
 
     const updateUserForm = useFormik({
@@ -35,7 +66,8 @@ export const User = () => {
             firstName: firstName,
             lastName: lastName,
             gender: gender,
-            email: email
+            email: email,
+            roles: selectedOptions
         },
         enableReinitialize: true,
         validationSchema: yup.object().shape({
@@ -43,6 +75,7 @@ export const User = () => {
             lastName: yup.string().required('Last Name is required'),
             gender: yup.string().oneOf(['male', 'female']).required('Gender is required'),
             email: yup.string().email('Email must be valid').required('Email is required'),
+            roles: yup.array().min(1, 'Must have at least 1 role').required('Roles is required')
         }),
         onSubmit: (values) => {
             updateThisUser(userId, values);
@@ -53,7 +86,8 @@ export const User = () => {
         firstName: string,
         lastName: string,
         gender: string,
-        email: string
+        email: string,
+        roles: {label: string}[]
     }
 
     const updateThisUser = (userId: string | undefined, values: FormInputs) => {
@@ -62,7 +96,8 @@ export const User = () => {
             firstName: values.firstName,
             lastName: values.lastName,
             gender: values.gender,
-            email: values.email
+            email: values.email,
+            roles: values.roles
         }).then(() => {
             setShowSuccess(true);
         }).catch((error: any) => {
@@ -72,18 +107,6 @@ export const User = () => {
         });
     };
 
-    const { user, isLoadingUser, courses, isLoadingCourses } = useTracker(() => { 
-        const userSub = Meteor.subscribe('users.specific', userId);
-        const isLoadingUser = !userSub.ready();
-        const user = Meteor.users.findOne(userId);
-
-        const coursesSub = Meteor.subscribe('courses.specificUser', userId);
-        const isLoadingCourses = !coursesSub.ready();
-        const courses = CoursesCollection.find(coursesSub.scopeQuery(), userId).fetch();
-
-        return { user, isLoadingUser, courses, isLoadingCourses };
-    }, []);
-
     useEffect(() => {
         if(user) {
             setFirstName(user.profile.firstName);
@@ -91,6 +114,7 @@ export const User = () => {
             setGender(user.profile.gender);
             setEmail(user.emails[0].address);
         }
+        setSelectedOptions(currentRoles);
     }, [user]);
 
     const goToCourse = (courseId: string) => {
@@ -168,7 +192,7 @@ export const User = () => {
                             </EuiTitle>
                             <EuiSpacer />
                             { showError &&
-                                <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                                <EuiCallOut title="Error" color="danger" iconType="alert">
                                     <p>{error}</p>
                                 </EuiCallOut>
                             }
@@ -198,6 +222,18 @@ export const User = () => {
                                         <EuiFormRow label="Gender" error={updateUserForm.errors.gender} isInvalid={!!updateUserForm.errors.gender}>
                                             <EuiSelect options={genderOptions} {...updateUserForm.getFieldProps('gender')}
                                                 isInvalid={!!updateUserForm.errors.gender} />
+                                        </EuiFormRow>
+                                    </EuiFlexItem>
+                                    <EuiFlexItem>
+                                        <EuiFormRow label="Roles" error={updateUserForm.errors.roles} isInvalid={!!updateUserForm.errors.roles}>
+                                            <EuiComboBox
+                                                aria-label="Select roles for user"
+                                                placeholder="Select one or more options"
+                                                options={roleOptions}
+                                                selectedOptions={selectedOptions}
+                                                onChange={onChange}
+                                                isInvalid={!!updateUserForm.errors.roles}
+                                            />
                                         </EuiFormRow>
                                     </EuiFlexItem>
                                     <EuiFlexItem>

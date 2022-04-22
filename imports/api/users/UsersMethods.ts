@@ -141,9 +141,15 @@ export const updateUser = new ValidatedMethod({
         firstName: { type: String },
         lastName: { type: String },
         gender: { type: String },
+        roles: { type: Array },
+        'roles.$': { type: Object },
+        'roles.$.label': { type: String },
+        'roles.$.value': { type: String },
     }).validator(),
-    run({ userId, email, firstName, lastName, gender }: 
-        { userId: string, email: string, firstName: string, lastName: string, gender: string }) {
+    run({ userId, email, firstName, lastName, gender, roles }: 
+        { userId: string, email: string, firstName: string, lastName: string, gender: string, 
+            roles: { label: string, value: string }[] }) {
+
         Meteor.users.update({ _id: userId }, {
             $set: {
                 "emails.0.address": email,
@@ -152,6 +158,9 @@ export const updateUser = new ValidatedMethod({
                 "profile.gender": gender,
             }
         });
+
+        const roleNames = _.pluck(roles, 'value');
+        Roles.setUserRoles(userId, roleNames);
     }
 });
 

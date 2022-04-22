@@ -61,8 +61,6 @@ export const LessonsList = () => {
             };
         });
 
-        console.log(instructorLessons);
-
         return { isLoading, allLessons, instructorLessons };
     });
 

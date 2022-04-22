@@ -16,6 +16,16 @@ Meteor.publish(null, function () {
     }
 });
 
+// Publish the roles collection for admins, otherwise setUserRoles will not work.
+Meteor.publish(null, function () {
+    if(Roles.userIsInRole(this.userId, 'admin')) {
+        return Meteor.roles.find();
+    }
+    else {
+        this.ready();
+    }
+});
+
 Meteor.publish('users.all', function() {
     this.enableScope();
 
