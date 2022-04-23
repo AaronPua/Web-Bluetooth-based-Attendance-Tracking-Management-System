@@ -34,9 +34,11 @@ export const VerifyEmail = () => {
             email: values.email
         })
         .then(() => {
+            setShowError(false);
             setShowSuccess(true);
         })
         .catch((error: Meteor.Error) => {
+            setShowSuccess(false);
             setShowError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setError(reason);

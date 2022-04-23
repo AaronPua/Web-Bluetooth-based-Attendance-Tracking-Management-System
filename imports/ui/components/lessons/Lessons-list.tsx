@@ -80,8 +80,10 @@ export const LessonsList = () => {
         removeLesson.callPromise({
             lessonId: lessonId
         }).then(() => {
+            setShowRemoveError(false);
             setShowRemoveSuccess(true);
         }).catch((error: any) => {
+            setShowRemoveSuccess(false);
             setShowRemoveError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setRemoveError(reason);

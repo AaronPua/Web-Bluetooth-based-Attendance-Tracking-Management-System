@@ -86,8 +86,10 @@ export const Beacons = () => {
         removeBeacon.callPromise({
             beaconId: beaconId
         }).then(() => {
+            setShowRemoveError(false);
             setShowRemoveSuccess(true);
         }).catch((error: any) => {
+            setShowRemoveSuccess(false);
             setShowRemoveError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setRemoveError(reason);

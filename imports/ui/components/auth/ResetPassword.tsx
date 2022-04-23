@@ -33,11 +33,13 @@ export const ResetPassword = () => {
     const resetPassword = (token: string, values: FormInputs) => {
         Accounts.resetPassword(token, values.password, (error: any) => {
             if(error) {
+                setShowSuccess(false);
                 setShowError(true);
                 const reason = error.reason != null ? error.reason : error.message;
                 setError(reason);
             }
             else {
+                setShowError(false);
                 setShowSuccess(true);
             }
         });

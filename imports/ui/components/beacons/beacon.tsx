@@ -41,8 +41,10 @@ export const Beacon = () => {
             name: name,
             uuid: uuidString
         }).then(() => {
+            setShowError(false);
             setShowSuccess(true);
         }).catch((error: any) => {
+            setShowSuccess(false);
             setShowError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setError(reason);

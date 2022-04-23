@@ -100,8 +100,10 @@ export const Lesson = () => {
             endTime: values.endTime.toDate(),
             date: values.date.toDate(),
         }).then(() => {
+            setShowLessonError(false);
             setShowLessonSuccess(true);
         }).catch((error: any) => {
+            setShowLessonSuccess(false);
             setShowLessonError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setLessonError(reason);

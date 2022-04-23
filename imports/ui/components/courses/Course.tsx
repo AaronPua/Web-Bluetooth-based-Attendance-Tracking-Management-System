@@ -65,8 +65,10 @@ export const Course = () => {
             name: values.name,
             credits: values.credits
         }).then(() => {
+            setShowCourseError(false);
             setShowCourseSuccess(true);
         }).catch((error: any) => {
+            setShowCourseSuccess(false);
             setShowCourseError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setCourseError(reason);

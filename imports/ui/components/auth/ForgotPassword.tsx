@@ -34,8 +34,10 @@ export const ForgotPassword = () => {
         })
         .then(() => {
             setShowSuccess(true);
+            setShowError(false);
         })
         .catch((error: any) => {
+            setShowSuccess(false);
             setShowError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setError(reason);

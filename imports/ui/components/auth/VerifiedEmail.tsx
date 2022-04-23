@@ -17,14 +17,17 @@ export const VerifiedEmail = () => {
     useEffect(() => {
         Accounts.verifyEmail(token, (error: any) => {
             if (error?.reason === 'Verify email link expired') {
+                setShowSuccess(false);
                 setShowError(true);
                 setError('The email verification link has expired.');
             }
             else if (error) {
+                setShowSuccess(false);
                 setShowError(true);
                 setError(error.reason);
             }
             else {
+                setShowError(false);
                 setShowSuccess(true);
             }
         });

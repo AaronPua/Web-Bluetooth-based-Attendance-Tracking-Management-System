@@ -33,8 +33,10 @@ export const Students = () => {
             courseId: courseId,
             studentId: addStudentId
         }).then(() => {
+            setShowAddStudentError(false);
             setShowAddStudentSuccess(true);
         }).catch((error: any) => {
+            setShowAddStudentSuccess(false);
             setShowAddStudentError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setAddStudentError(reason);
@@ -48,8 +50,10 @@ export const Students = () => {
             courseId: courseId,
             studentId: removeStudentId
         }).then(() => {
+            setShowRemoveStudentError(false);
             setShowRemoveStudentSuccess(true);
         }).catch((error: any) => {
+            setShowRemoveStudentSuccess(false);
             setShowRemoveStudentError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setRemoveStudentError(reason);

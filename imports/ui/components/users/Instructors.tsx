@@ -31,8 +31,10 @@ export const Instructors = () => {
             courseId: courseId,
             instructorId: addInstructorId
         }).then(() => {
+            setShowAddInstructorError(false);
             setShowAddInstructorSuccess(true);
         }).catch((error: any) => {
+            setShowAddInstructorSuccess(false);
             setShowAddInstructorError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setAddInstructorError(reason);
@@ -46,8 +48,10 @@ export const Instructors = () => {
             courseId: courseId,
             instructorId: removeInstructorId
         }).then(() => {
+            setShowRemoveInstructorError(false);
             setShowRemoveInstructorSuccess(true);
         }).catch((error: any) => {
+            setShowRemoveInstructorSuccess(false);
             setShowRemoveInstructorError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setRemoveInstructorError(reason);

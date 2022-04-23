@@ -64,8 +64,10 @@ export const Courses = () => {
         removeCourse.callPromise({
             courseId: courseId
         }).then(() => {
+            setShowRemoveError(false);
             setShowRemoveSuccess(true);
         }).catch((error: any) => {
+            setShowRemoveSuccess(false);
             setShowRemoveError(true);
             const reason = error.reason != null ? error.reason : error.message;
             setRemoveError(reason);
