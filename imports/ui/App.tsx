@@ -5,7 +5,7 @@ import { FullPageLayout, CenteredBody } from './layouts/index';
 import { Login, Home, Registration, UnknownRoute, RequireAuth, VerifyEmail, VerifiedEmail, 
     ForgotPassword, ResetPassword, Users, User, Courses, Course, Lessons, Lesson, Students, 
     Beacons, Beacon, Instructors, Attendance, UsersInstructors, UsersStudents, UsersAdmins,
-    BeaconsList, LessonsList } from './components/index';
+    BeaconsList, LessonsList, Account } from './components/index';
 
 export const App = () => {
     return (
@@ -13,6 +13,7 @@ export const App = () => {
             <Routes>
                 <Route element={<FullPageLayout />} >
                     <Route path="home" element={<RequireAuth><Home /></RequireAuth>} />
+                    <Route path="account" element={<RequireAuth><Account /></RequireAuth>} />
                     <Route path="users" element={<Outlet />} >
                         <Route index element={<RequireAuth><Users /></RequireAuth>} />
                         <Route path=":userId" element={<RequireAuth><User /></RequireAuth>} />

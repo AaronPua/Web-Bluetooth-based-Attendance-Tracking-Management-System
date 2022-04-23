@@ -19,6 +19,10 @@ export const Header = () => {
         });
     };
 
+    const goToAccountPage = () => {
+        navigate('/account');
+    }
+
     return (
         <EuiHeader position="static">
             <EuiHeaderSectionItem border="right">
@@ -29,6 +33,7 @@ export const Header = () => {
 
             <EuiHeaderSectionItem>
                 <EuiHeaderLinks>
+                    <EuiHeaderLink iconType="user" onClick={goToAccountPage}>Account</EuiHeaderLink>
                     <EuiHeaderLink iconType="exit" onClick={logout}>Log Out</EuiHeaderLink>
                 </EuiHeaderLinks>
             </EuiHeaderSectionItem>

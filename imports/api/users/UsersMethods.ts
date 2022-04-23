@@ -100,22 +100,6 @@ export const sendPasswordResetEmail = new ValidatedMethod({
     }
 });
 
-export const changePassword = new ValidatedMethod({
-    name: 'users.changePassword',
-    mixins: [CallPromiseMixin, LoggedInMixin],
-    checkLoggedInError: {
-        error: 'not-logged-in',
-        message: 'You need to be logged in before changing your password.',
-    },
-    validate: new SimpleSchema({
-        oldPassword: { type: String },
-        newPassword: { type: String },
-    }).validator(),
-    run({ oldPassword, newPassword }: { oldPassword: string, newPassword: string }) {
-        Accounts.setPassword(oldPassword, newPassword);
-    }
-});
-
 export const addUserToRoles = new ValidatedMethod({
     name: 'users.addUserToRoles',
     mixins: [CallPromiseMixin],
@@ -161,6 +145,34 @@ export const updateUser = new ValidatedMethod({
 
         const roleNames = _.pluck(roles, 'value');
         Roles.setUserRoles(userId, roleNames);
+    }
+});
+
+export const updateUserAccount = new ValidatedMethod({
+    name: 'users.updateUserAccount',
+    mixins: [CallPromiseMixin, LoggedInMixin],
+    checkLoggedInError: {
+        error: 'not-logged-in',
+        message: 'You need to be logged in before updating a user.',
+    },
+    validate: new SimpleSchema({
+        userId: { type: String, regEx: SimpleSchema.RegEx.Id },
+        email: { type: String, regEx: SimpleSchema.RegEx.Email },
+        firstName: { type: String },
+        lastName: { type: String },
+        gender: { type: String },
+    }).validator(),
+    run({ userId, email, firstName, lastName, gender }: 
+        { userId: string, email: string, firstName: string, lastName: string, gender: string }) {
+
+        Meteor.users.update({ _id: userId }, {
+            $set: {
+                "emails.0.address": email,
+                "profile.firstName": firstName,
+                "profile.lastName": lastName,
+                "profile.gender": gender,
+            }
+        });
     }
 });
 

@@ -27,5 +27,6 @@ export * from './users/Users';
 export * from './users/Users-instructors';
 export * from './users/Users-students';
 export * from './users/Users-admins';
+export * from './users/Account';
 
 export * from './Home';
