@@ -1,4 +1,4 @@
-describe('course instructors', function() {
+describe('course clean up', function() {
     before(() => {
         cy.restoreLocalStorage();
         cy.visit("/courses");
@@ -15,7 +15,7 @@ describe('course instructors', function() {
         cy.saveLocalStorage();
     });
 
-    it('delete lesson', () => {
+    it('remove test lesson', () => {
         cy.contains('View Lessons').click();
         cy.contains('A_Test_Course: Lessons');
         cy.contains('Create Lesson');
@@ -28,7 +28,7 @@ describe('course instructors', function() {
         cy.contains('Lesson removed sucessfully');
     });
 
-    it('delete beacon', () => {
+    it('remove test beacon', () => {
         cy.visit("/courses");
         cy.get('div#row-0').contains('A_Test_Course');
         cy.get('div#row-0').contains('Edit').click();
@@ -45,7 +45,7 @@ describe('course instructors', function() {
         cy.contains('Beacon removed sucessfully');
     });
 
-    it('delete course', () => {
+    it('remove test course', () => {
         cy.visit('/courses')
         cy.get('div#row-0').contains('A_Test_Course');
         cy.get('div#row-0').contains('Remove').click();

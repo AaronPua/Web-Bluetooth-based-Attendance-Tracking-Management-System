@@ -99,7 +99,7 @@ describe('login', function() {
 
         cy.visit('/users');
 
-        cy.get('div#row-0').contains('A_TEST_USER');
+        cy.get('div#row-0').contains('A_Test_User');
         cy.get('div#row-0').contains('Remove').click();
         cy.get('input[name="remove"]').first().type('remove', {force: true});
         cy.get('div.euiModalFooter').contains('Remove').click({force: true});

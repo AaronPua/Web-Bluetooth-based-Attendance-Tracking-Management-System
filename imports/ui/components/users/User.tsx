@@ -38,8 +38,6 @@ export const User = () => {
         const coursesSub = Meteor.subscribe('courses.specificUser', userId);
         const isLoadingCourses = !coursesSub.ready();
         const courses = CoursesCollection.find(coursesSub.scopeQuery(), userId).fetch();
-        
-        console.log(Meteor.roles.find().fetch());
 
         return { user, userRoles, isLoadingUser, courses, isLoadingCourses };
     }, []);

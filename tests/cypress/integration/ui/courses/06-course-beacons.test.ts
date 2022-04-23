@@ -1,4 +1,4 @@
-describe('course instructors', function() {
+describe('course beacons', function() {
     before(() => {
         cy.restoreLocalStorage();
         cy.visit("/courses");
@@ -33,7 +33,7 @@ describe('course instructors', function() {
         cy.contains('A_Test Beacon');
         cy.contains('Edit Beacon');
 
-        cy.get('input[name="name"]').type('A_Test_Beacon');
+        cy.get('input[name="name"]').clear().type('A_Test_Beacon');
         cy.get('button[type="submit"]').contains('Update').click();
         cy.contains('Success!')
         cy.contains('Beacon updated sucessfully.');

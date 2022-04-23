@@ -7,10 +7,10 @@ describe('registration', function() {
         cy.contains('Register Now').click();
         cy.url().should('eq', Cypress.config().baseUrl + '/register');
 
-        cy.get('input[name="firstName"]').type('A_TEST_USER');
-        cy.get('input[name="lastName"]').type('FAKE');
+        cy.get('input[name="firstName"]').type('A_Test_User');
+        cy.get('input[name="lastName"]').type('Fake');
         cy.get('select[name="gender"]').select('female');
-        cy.get('input[name="email"]').type('instructor@test.com');
+        cy.get('input[name="email"]').type('test_user@fake.com');
         cy.get('input[name="password"]').type('test');
         cy.get('button[type="submit"]').contains('Register').click();
 
@@ -23,10 +23,10 @@ describe('registration', function() {
         cy.contains('Register Now').click();
         cy.url().should('eq', Cypress.config().baseUrl + '/register');
 
-        cy.get('input[name="firstName"]').type('Instructor');
-        cy.get('input[name="lastName"]').type('Test');
+        cy.get('input[name="firstName"]').type('A_Test_User_2');
+        cy.get('input[name="lastName"]').type('Fake');
         cy.get('select[name="gender"]').select('female');
-        cy.get('input[name="email"]').type('instructor1@test.com');
+        cy.get('input[name="email"]').type('test_user@fake.com');
         cy.get('input[name="password"]').type('test');
         cy.get('button[type="submit"]').contains('Register').click();
 
