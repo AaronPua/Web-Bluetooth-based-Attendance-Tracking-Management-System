@@ -92,13 +92,14 @@ export const Account = () => {
             oldPassword: yup.string().required('Old Password is required'),
             newPassword: yup.string().required('New Password is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, actions) => {
             updateUserPassword(values);
+            actions.resetForm();
         }
     });
 
     const updateUserPassword = (values: UserPasswordInput) => {
-        Accounts.changePassword(values.oldPassword, values.newPassword, (error: any) {
+        Accounts.changePassword(values.oldPassword, values.newPassword, (error: any) => {
             if(error) {
                 setShowPasswordSuccess(false);
                 setShowPasswordError(true);

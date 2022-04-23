@@ -34,9 +34,9 @@ describe('/users', function() {
         cy.get('select[name="gender"]').select('male');
         cy.get('button[type="submit"]').contains('Update').click();
 
-        cy.contains('Success!')
-        cy.contains('User updated sucessfully.')
-        cy.contains('Fake 2')
+        cy.contains('Success!');
+        cy.contains('User updated sucessfully.');
+        cy.contains('A_Test_User Fake 2');
     });
 
     it('access admin users page', () => {
@@ -59,16 +59,5 @@ describe('/users', function() {
         cy.contains('All Students');
         cy.contains('Edit');
         cy.contains('Remove');
-    });
-
-    it('remove test user', () => {
-        cy.visit('/users');
-        cy.get('div#row-0').contains('A_Test_User');
-        cy.get('div#row-0').contains('Remove').click();
-
-        cy.get('input[name="remove"]').first().type('remove', {force: true});
-        cy.get('div.euiModalFooter').contains('Remove').click({force: true});
-
-        cy.contains('User removed sucessfully');
     });
 });
