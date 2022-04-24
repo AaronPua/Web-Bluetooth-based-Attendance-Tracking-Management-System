@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { assert } from 'chai';
 import { faker } from '@faker-js/faker';
 import { Roles } from 'meteor/alanning:roles';
-import { addUserToRoles, isUserInRole, registerStudentUser, registerUser, updateUser } from './UsersMethods';
+import { addUserToRoles, isUserInRole, registerStudentUser, registerUser, updateUser } from '../UsersMethods';
 import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
-import './UsersMethods';
+import '../UsersMethods';
 import { Random } from 'meteor/random';
 import { InstructorsSeeder } from '/imports/server/seeders/UsersSeeder';
 
@@ -138,7 +138,8 @@ describe('UsersMethods', function() {
             email: 'test@test.com',
             firstName: 'test',
             lastName: 'person',
-            gender: 'female'
+            gender: 'female',
+            roles: [{ label: 'Instructor', value: 'instructor' }]
         });
         user = Meteor.users.find().fetch()[0];
         assert.equal(user.emails[0].address, 'test@test.com');

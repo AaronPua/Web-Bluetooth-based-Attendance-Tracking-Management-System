@@ -1,6 +1,6 @@
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { assert } from 'chai';
-import './BeaconsPublications';
+import '../server/BeaconsPublications';
 import { CoursesCollection } from '../../courses/CoursesCollection';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { BeaconsSeeder } from '/imports/server/seeders/BeaconsSeeder';

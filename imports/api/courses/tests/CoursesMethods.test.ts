@@ -3,8 +3,8 @@ import { assert } from 'chai';
 import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Random } from 'meteor/random';
-import { CoursesCollection } from './CoursesCollection';
-import { createCourse, removeCourse, updateCourse, addStudentToCourse, removeStudentFromCourse, addInstructorToCourse, removeInstructorFromCourse } from './CoursesMethods';
+import { CoursesCollection } from '../CoursesCollection';
+import { createCourse, removeCourse, updateCourse, addStudentToCourse, removeStudentFromCourse, addInstructorToCourse, removeInstructorFromCourse } from '../CoursesMethods';
 import { InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { Roles } from 'meteor/alanning:roles';
 

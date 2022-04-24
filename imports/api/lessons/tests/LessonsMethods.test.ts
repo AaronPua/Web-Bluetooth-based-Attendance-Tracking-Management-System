@@ -5,11 +5,11 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Random } from 'meteor/random';
 import { StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { Roles } from 'meteor/alanning:roles';
-import { CoursesCollection } from '../courses/CoursesCollection';
-import { createCourse } from '../courses/CoursesMethods';
-import { createLesson, removeLesson, updateAttendance, updateLesson } from './LessonsMethods';
+import { CoursesCollection } from '../../courses/CoursesCollection';
+import { createCourse } from '../../courses/CoursesMethods';
+import { createLesson, removeLesson, updateAttendance, updateLesson } from '../LessonsMethods';
 import moment from 'moment';
-import { LessonsCollection } from './LessonsCollection';
+import { LessonsCollection } from '../LessonsCollection';
 
 describe('LessonMethods', function() {
 

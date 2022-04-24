@@ -3,10 +3,10 @@ import { assert } from 'chai';
 import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Random } from 'meteor/random';
-import { CoursesCollection } from '../courses/CoursesCollection';
-import { addBeaconToCourse, createBeacon, removeBeacon, removeBeaconFromCourse, updateBeacon } from './BeaconsMethods';
+import { CoursesCollection } from '../../courses/CoursesCollection';
+import { addBeaconToCourse, createBeacon, removeBeacon, removeBeaconFromCourse, updateBeacon } from '../BeaconsMethods';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
-import { BeaconsCollection } from './BeaconsCollection';
+import { BeaconsCollection } from '../BeaconsCollection';
 import uuid from 'uuid-random';
 
 describe('BeaconsMethods', function() {

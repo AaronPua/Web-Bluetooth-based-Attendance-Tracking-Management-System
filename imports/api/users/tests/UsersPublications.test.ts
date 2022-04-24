@@ -4,7 +4,7 @@ import { assert } from 'chai';
 import { AdminsSeeder, InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
 import { LessonsSeeder } from '/imports/server/seeders/LessonsSeeder';
-import './UsersPublications';
+import '../server/UsersPublications';
 import { CoursesCollection } from '../../courses/CoursesCollection';
 import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
