@@ -1,29 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import assert from 'assert';
-import '../imports/api/users/UsersMethods.test.ts';
-import '../imports/api/courses/CoursesMethods.test.ts';
-import '../imports/api/lessons/LessonsMethods.test.ts';
-import '../imports/api/beacons/BeaconsMethods.test.ts';
-import '../imports/api/users/server/UsersPublications.test.ts';
-import '../imports/api/courses/server/CoursesPublications.test.ts';
-import '../imports/api/lessons/server/LessonsPublications.test.ts';
-import '../imports/api/beacons/server/BeaconsPublications.test.ts';
+/* // Users
+import '../imports/api/users/tests/UsersMethods.test.ts';
+import '../imports/api/users/tests/UsersPublications.test.ts';
 
-// describe('simple-todos-react', function () {
-//   it('package.json has correct name', async function () {
-//     const { name } = await import('../package.json');
-//     assert.strictEqual(name, 'simple-todos-react');
-//   });
+// Courses
+import '../imports/api/courses/tests/CoursesMethods.test.ts';
+import '../imports/api/courses/tests/CoursesPublications.test.ts';
 
-//   if (Meteor.isClient) {
-//     it('client is not server', function () {
-//       assert.strictEqual(Meteor.isServer, false);
-//     });
-//   }
+// Lessons
+import '../imports/api/lessons/tests/LessonsMethods.test.ts';
+import '../imports/api/lessons/tests/LessonsPublications.test.ts'; */
 
-//   if (Meteor.isServer) {
-//     it('server is not client', function () {
-//       assert.strictEqual(Meteor.isClient, false);
-//     });
-//   }
-// });
+// Beacons
+import '../imports/ui/tests/beacons/Beacons.test.tsx';
+// import '../imports/api/beacons/tests/BeaconsMethods.test.ts';
+// import '../imports/api/beacons/tests/BeaconsPublications.test.ts';
