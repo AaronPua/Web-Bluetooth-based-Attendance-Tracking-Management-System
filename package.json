@@ -6,6 +6,7 @@
     "start-cluster": "MONGO_URL='mongodb+srv://admin:root@comp8047.mh7cw.mongodb.net/comp8047?retryWrites=true&w=majority' meteor run",
     "test": "MOCHA_TIMEOUT=10000 meteor test --driver-package meteortesting:mocha",
     "test-app": "MOCHA_TIMEOUT=10000 TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "jest": "jest ./imports/api/courses/tests/CoursesPublications.test",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "cypress:gui": "cypress open --config watchForFileChanges=false",
     "cypress:headless": "cypress run"
@@ -34,7 +35,9 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.16.7",
     "@types/chai": "^4.3.0",
+    "@types/jest": "^27.4.1",
     "@types/meteor": "^1.4.87",
     "@types/meteor-collection-hooks": "^0.8.6",
     "@types/meteor-dburles-collection-helpers": "^1.1.2",
@@ -49,9 +52,12 @@
     "chai": "^4.3.6",
     "cypress": "^9.5.4",
     "cypress-localstorage-commands": "^1.7.0",
+    "jest": "^27.5.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "typescript": "^4.5.5"
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   },
   "meteor": {
     "mainModule": {
