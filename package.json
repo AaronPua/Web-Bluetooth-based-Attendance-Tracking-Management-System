@@ -4,7 +4,7 @@
   "scripts": {
     "start": "meteor run",
     "start-cluster": "MONGO_URL='mongodb+srv://admin:root@comp8047.mh7cw.mongodb.net/comp8047?retryWrites=true&w=majority' meteor run",
-    "test": "MOCHA_TIMEOUT=10000 meteor test --driver-package meteortesting:mocha --require global-jsdom/register",
+    "test": "MOCHA_TIMEOUT=10000 meteor test --driver-package meteortesting:mocha",
     "test-app": "MOCHA_TIMEOUT=10000 TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "cypress:gui": "cypress open --config watchForFileChanges=false",
@@ -34,7 +34,6 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@testing-library/react": "^12.1.5",
     "@types/chai": "^4.3.0",
     "@types/meteor": "^1.4.87",
     "@types/meteor-collection-hooks": "^0.8.6",
@@ -50,8 +49,6 @@
     "chai": "^4.3.6",
     "cypress": "^9.5.4",
     "cypress-localstorage-commands": "^1.7.0",
-    "global-jsdom": "^8.4.0",
-    "jsdom": "^19.0.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "typescript": "^4.5.5"
