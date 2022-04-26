@@ -49,7 +49,7 @@ export const Login = () => {
     }
 
     useEffect(() => {
-        if(Meteor.userId() && !Meteor.loggingOut()) {
+        if(!Meteor.isServer && Meteor.userId() && !Meteor.loggingOut()) {
             navigate('/home');
         }
 
