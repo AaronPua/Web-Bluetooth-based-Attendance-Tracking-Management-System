@@ -1,4 +1,4 @@
-import 'jsdom-global/register';
+// import 'jsdom-global/register';
 
 import '../imports/api/users/tests/UsersMethods.test.ts';
 import '../imports/api/users/tests/UsersPublications.test.ts';
