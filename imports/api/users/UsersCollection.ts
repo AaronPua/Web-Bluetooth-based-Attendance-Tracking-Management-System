@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import SimpleSchema from 'simpl-schema';
-import { createCollection } from 'meteor/quave:collections';
+// import { createCollection } from 'meteor/quave:collections';
 
 export const userSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
@@ -19,6 +19,8 @@ export const userSchema = new SimpleSchema({
     'courses.$._id': { type: String },
 });
 
+Meteor.users.attachSchema(userSchema);
+
 export const userRegistrationSchema = new SimpleSchema({
     email: { type: String, regEx: SimpleSchema.RegEx.Email },
     password: { type: String, min: 4 },
@@ -29,7 +31,7 @@ export const userRegistrationSchema = new SimpleSchema({
 
 export const userLoginSchema = userRegistrationSchema.pick('email', 'password');
 
-export const UsersCollection = createCollection({
-    instance: Meteor.users,
-    schema: userSchema
-})
+// export const UsersCollection = createCollection({
+//     instance: Meteor.users,
+//     schema: userSchema
+// })

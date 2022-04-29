@@ -1,5 +1,8 @@
-import { createCollection } from 'meteor/quave:collections';
+// import { createCollection } from 'meteor/quave:collections';
 import SimpleSchema from 'simpl-schema';
+import { Mongo } from 'meteor/mongo';
+
+export const LessonsCollection = new Mongo.Collection('lessons');
 
 const lessonSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
@@ -14,9 +17,11 @@ const lessonSchema = new SimpleSchema({
     "studentAttendance.$._id": { type: String },
 });
 
+LessonsCollection.attachSchema(lessonSchema);
+
 export const lessonCreateSchema = lessonSchema.pick('courseId', 'name', 'startTime', 'endTime', 'date', 'studentAttendance');
 
-export const LessonsCollection = createCollection({
-    name: 'lessons',
-    schema: lessonSchema
-});
+// export const LessonsCollection = createCollection({
+//     name: 'lessons',
+//     schema: lessonSchema
+// });
