@@ -12,6 +12,6 @@ import '../imports/api/lessons/tests/LessonsPublications.test.ts';
 import '../imports/api/beacons/tests/BeaconsMethods.test.ts';
 import '../imports/api/beacons/tests/BeaconsPublications.test.ts';
 
-import '../imports/ui/tests/Login.spec';
-import '../imports/ui/tests/UnknownRoute.spec';
-import '../imports/ui/tests/Registration.spec';
+// import '../imports/ui/tests/Login.spec';
+// import '../imports/ui/tests/UnknownRoute.spec';
+// import '../imports/ui/tests/Registration.spec';

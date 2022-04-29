@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Router } from 'react-router-dom';
-import chai from 'chai';
-chai.use(require('chai-dom'));
+// import chai from 'chai';
+// chai.use(require('chai-dom'));
 import { createMemoryHistory } from 'history';
 
 // export const renderWithRouter = (ui: any, {route = '/'} = {}) => {
