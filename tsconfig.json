@@ -30,6 +30,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "types": ["node", "mocha", "cypress", "jest",
+        "@testing-library/jest-dom",
+        "@types/testing-library__jest-dom",
         "cypress-localstorage-commands",
         "@types/meteor-collection-hooks",
         "@types/meteor-dburles-collection-helpers",
