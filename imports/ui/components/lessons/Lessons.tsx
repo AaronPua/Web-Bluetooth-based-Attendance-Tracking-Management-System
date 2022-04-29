@@ -10,7 +10,7 @@ import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiCallOut, EuiForm,
 import _ from 'underscore';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { Meteor } from 'meteor/meteor';
 import { VictoryBar, VictoryChart, VictoryGroup, VictoryLabel, VictoryPie, VictoryLegend } from 'victory';
 

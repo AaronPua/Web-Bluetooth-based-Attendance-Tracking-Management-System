@@ -7,7 +7,7 @@ import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
-import { removeUser } from '/imports/api/users/UsersMethods';
+import { removeUser } from '../../../api/users/UsersMethods';
 
 export const UsersStudents = () => {
 

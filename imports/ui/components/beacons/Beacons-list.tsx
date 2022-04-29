@@ -6,9 +6,9 @@ import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
-import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
-import { removeBeacon } from '/imports/api/beacons/BeaconsMethods';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { BeaconsCollection } from '../../../api/beacons/BeaconsCollection';
+import { removeBeacon } from '../../../api/beacons/BeaconsMethods';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 
 export const BeaconsList = () => {
 

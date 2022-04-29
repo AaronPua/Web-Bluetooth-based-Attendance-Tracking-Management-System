@@ -6,9 +6,9 @@ import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiButton, EuiCallOut } from '@elastic/eui';
 import _ from 'underscore';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { Meteor } from 'meteor/meteor';
-import { updateAttendance } from '/imports/api/lessons/LessonsMethods';
+import { updateAttendance } from '../../../api/lessons/LessonsMethods';
 
 export const Attendance = () => {
 

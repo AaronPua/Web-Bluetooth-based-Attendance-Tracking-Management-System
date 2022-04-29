@@ -5,7 +5,7 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Meteor } from 'meteor/meteor';
-import { updateUserAccount } from '/imports/api/users/UsersMethods';
+import { updateUserAccount } from '../../../api/users/UsersMethods';
 import _ from 'underscore';
 
 export const Account = () => {

@@ -6,9 +6,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Meteor } from 'meteor/meteor';
-import { updateUser } from '/imports/api/users/UsersMethods';
+import { updateUser } from '../../../api/users/UsersMethods';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { Roles } from 'meteor/alanning:roles';
 import _ from 'underscore';
 

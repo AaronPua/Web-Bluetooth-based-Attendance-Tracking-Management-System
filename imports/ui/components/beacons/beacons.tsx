@@ -7,10 +7,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import uuid from 'uuid-random';
-import { createBeacon, removeBeacon } from '/imports/api/beacons/BeaconsMethods';
-import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
+import { createBeacon, removeBeacon } from '../../../api/beacons/BeaconsMethods';
+import { BeaconsCollection } from '../../../api/beacons/BeaconsCollection';
 import { Meteor } from 'meteor/meteor';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 
 export const Beacons = () => {
     const { courseId } = useParams();

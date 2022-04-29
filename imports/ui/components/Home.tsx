@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { EuiPageHeader, EuiPageContent, EuiPageContentBody, EuiFlexGroup, EuiFlexItem,
     EuiPanel, EuiTitle, EuiSpacer, EuiStat, EuiSplitPanel, EuiButton } from '@elastic/eui';
-import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
-import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
+import { BeaconsCollection } from '../../api/beacons/BeaconsCollection';
+import { CoursesCollection } from '../../api/courses/CoursesCollection';
+import { LessonsCollection } from '../../api/lessons/LessonsCollection';
 import { useNavigate } from 'react-router-dom';
 import _ from 'underscore';
 

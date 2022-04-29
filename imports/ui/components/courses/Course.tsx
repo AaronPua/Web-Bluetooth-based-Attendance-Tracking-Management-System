@@ -10,7 +10,7 @@ import { updateCourse } from '../../../api/courses/CoursesMethods';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
+import { BeaconsCollection } from '../../../api/beacons/BeaconsCollection';
 
 export const Course = () => {
     const [courseName, setCourseName] = useState('');

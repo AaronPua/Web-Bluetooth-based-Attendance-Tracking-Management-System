@@ -5,9 +5,9 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { updateBeacon } from '/imports/api/beacons/BeaconsMethods';
+import { updateBeacon } from '../../../api/beacons/BeaconsMethods';
 import { Meteor } from 'meteor/meteor';
-import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
+import { BeaconsCollection } from '../../../api/beacons/BeaconsCollection';
 
 export const Beacon = () => {
     const { courseId, beaconId } = useParams();

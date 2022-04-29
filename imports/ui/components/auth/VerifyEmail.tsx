@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { EuiButton, EuiEmptyPrompt, EuiFieldText, EuiFlexGroup, EuiForm, EuiFormRow, EuiLink, EuiFlexItem, EuiCallOut } from '@elastic/eui';
-import { resendVerificationEmail } from '/imports/api/users/UsersMethods';
+import { resendVerificationEmail } from '../../../api/users/UsersMethods';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 

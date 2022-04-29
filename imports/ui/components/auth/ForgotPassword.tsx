@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { sendPasswordResetEmail } from '/imports/api/users/UsersMethods';
+import { sendPasswordResetEmail } from '../../../api/users/UsersMethods';
 import { EuiEmptyPrompt, EuiCallOut, EuiLink, EuiButton, EuiFieldText, EuiSpacer, EuiForm, EuiFormRow } from '@elastic/eui';
 import { useFormik } from 'formik';
 import * as yup from 'yup';

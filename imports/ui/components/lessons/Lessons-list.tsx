@@ -7,9 +7,9 @@ import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import _ from 'underscore';
-import { CoursesCollection } from '/imports/api/courses/CoursesCollection';
-import { LessonsCollection } from '/imports/api/lessons/LessonsCollection';
-import { removeLesson } from '/imports/api/lessons/LessonsMethods';
+import { CoursesCollection } from '../../../api/courses/CoursesCollection';
+import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
+import { removeLesson } from '../../../api/lessons/LessonsMethods';
 
 export const LessonsList = () => {
 
