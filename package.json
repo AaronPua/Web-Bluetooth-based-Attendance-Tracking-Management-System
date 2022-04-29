@@ -8,7 +8,7 @@
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "cypress:gui": "cypress open --config watchForFileChanges=false",
     "cypress:headless": "cypress run",
-    "jest": "jest ./imports/ui/tests/Hello.spec"
+    "jest": "jest ./imports/ui/tests/Dummy.spec"
   },
   "dependencies": {
     "@babel/runtime": "^7.15.4",
@@ -37,6 +37,7 @@
     "@faker-js/faker": "^6.2.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^14.1.1",
     "@types/jest": "^27.4.1",
     "@types/meteor": "^1.4.87",
     "@types/meteor-collection-hooks": "^0.8.6",
@@ -55,7 +56,7 @@
     "cypress-localstorage-commands": "^1.7.0",
     "jest": "^27.4.1",
     "ts-jest": "^27.1.4",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.3"
   },
   "meteor": {
     "mainModule": {
