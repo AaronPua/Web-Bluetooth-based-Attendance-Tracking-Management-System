@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, EuiFlexGroup, EuiFlexItem,
     EuiForm, EuiFormRow, EuiLink, EuiSelect, EuiSpacer } from '@elastic/eui';
 import { registerUser } from '../../../api/users/UsersMethods';
-import { } from '@elastic/eui';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 

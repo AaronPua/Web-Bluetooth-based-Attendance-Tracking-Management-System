@@ -6,6 +6,8 @@
 // import { renderWithRouter } from './setupTests';
 import React from 'react';
 import { render, screen  } from '@testing-library/react';
+import { UnknownRoute } from '../components/index';
+import { renderWithRouter } from './utils/test-setup';
 
 it("Dummy unit test", () => {
     const actual = 1 + 1;
@@ -20,4 +22,8 @@ it("Dummy unit test 2", () => {
 it("Dummy unit test 3", () => {
     render(<button>Click Me</button>);
     expect(screen.getByText('Click Me')).toBeInTheDocument();
+});
+
+it("Dummy unit test 4", () => {
+    renderWithRouter(<UnknownRoute />);
 });
