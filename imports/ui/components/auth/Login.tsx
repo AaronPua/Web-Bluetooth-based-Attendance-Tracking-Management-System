@@ -93,7 +93,7 @@ export const Login = () => {
 
                         <EuiSpacer />
 
-                        <EuiButton fullWidth fill color="primary" type="submit">Sign In</EuiButton>
+                        <EuiButton fullWidth fill color="primary" type="submit" isLoading={userLoginForm.isSubmitting}>Sign In</EuiButton>
                     </EuiForm>
                 </>
             }

@@ -106,7 +106,7 @@ export const Registration = () => {
 
                         <EuiSpacer />
 
-                        <EuiButton fullWidth fill color="primary" type="submit">Register</EuiButton>
+                        <EuiButton fullWidth fill color="primary" type="submit" isLoading={createUserForm.isSubmitting}>Register</EuiButton>
                     </EuiForm>
                 </>
             }

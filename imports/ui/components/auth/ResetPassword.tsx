@@ -68,7 +68,7 @@ export const ResetPassword = () => {
 
                         <EuiSpacer />
 
-                        <EuiButton fullWidth fill color="primary" type="submit">Reset</EuiButton>
+                        <EuiButton fullWidth fill color="primary" type="submit" isLoading={resetPasswordForm.isSubmitting}>Reset</EuiButton>
                     </EuiForm>
                 </>
             }

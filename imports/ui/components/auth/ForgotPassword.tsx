@@ -70,7 +70,7 @@ export const ForgotPassword = () => {
                                 isInvalid={!!forgotPasswordForm.errors.email} />
                         </EuiFormRow>
                         <EuiFormRow>
-                            <EuiButton fullWidth fill color="primary" type="submit">Resend</EuiButton>
+                            <EuiButton fullWidth fill color="primary" type="submit" isLoading={forgotPasswordForm.isSubmitting}>Resend</EuiButton>
                         </EuiFormRow>
                     </EuiForm>
                 </>

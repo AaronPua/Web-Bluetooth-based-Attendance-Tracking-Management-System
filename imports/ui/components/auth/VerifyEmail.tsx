@@ -80,7 +80,7 @@ export const VerifyEmail = () => {
                                 </EuiFlexItem>
                                 <EuiFlexItem grow={false}>
                                     <EuiFormRow hasEmptyLabelSpace>
-                                        <EuiButton fill color="primary" type="submit">Resend</EuiButton>
+                                        <EuiButton fill color="primary" type="submit" isLoading={resendEmailVerificationForm.isSubmitting}>Resend</EuiButton>
                                     </EuiFormRow>
                                 </EuiFlexItem>
                             </EuiFlexGroup>

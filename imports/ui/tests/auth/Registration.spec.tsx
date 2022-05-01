@@ -1,11 +1,8 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Registration } from '../components/index';
-import { createMemoryHistory } from 'history';
-import { renderWithRouter } from './utils/test-setup';
-import { Accounts } from 'meteor/accounts-base';
-import { registerUser } from '../../../imports/api/users/UsersMethods';
+import { Registration } from '../../components/index';
+import { renderWithRouter } from '../utils/test-setup';
 
 describe('<Registration />', () => {
     beforeEach(() => {
@@ -40,6 +37,8 @@ describe('<Registration />', () => {
 
         const registerButton = screen.getByRole('button', { name: 'Register' });
         await user.click(registerButton);
+
+        await waitFor(() => { expect(registerButton).toBeDisabled });
     });
 
     it('test redirect back to login', async () => {

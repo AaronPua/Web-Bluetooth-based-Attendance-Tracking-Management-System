@@ -2,7 +2,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Mongo } from 'meteor/mongo';
 
-export const BeaconsCollection = new Mongo.Collection('lessons');
+export const BeaconsCollection = new Mongo.Collection('beacons');
 
 export const beaconSchema = new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },

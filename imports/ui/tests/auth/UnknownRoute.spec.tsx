@@ -1,9 +1,9 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { UnknownRoute } from '../components/index';
+import { UnknownRoute } from '../../components/index';
 import { createMemoryHistory } from 'history';
-import { renderWithRouter } from './utils/test-setup';
+import { renderWithRouter } from '../utils/test-setup';
 
 describe('<UnknownRoute />', () => {
     beforeEach(() => {

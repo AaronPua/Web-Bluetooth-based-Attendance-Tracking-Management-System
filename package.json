@@ -8,7 +8,7 @@
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "cypress:gui": "cypress open --config watchForFileChanges=false",
     "cypress:headless": "cypress run",
-    "jest": "jest ./imports/ui/tests/Registration.spec"
+    "jest": "jest ./imports/ui/tests/auth"
   },
   "dependencies": {
     "@babel/runtime": "^7.15.4",

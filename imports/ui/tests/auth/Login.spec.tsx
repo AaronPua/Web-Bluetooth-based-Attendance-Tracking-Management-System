@@ -1,9 +1,8 @@
 import React from 'react';
-import { Meteor } from 'meteor/meteor';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Login } from '../components/index';
-import { renderWithRouter } from './utils/test-setup';
+import { Login } from '../../components/index';
+import { renderWithRouter } from '../utils/test-setup';
 
 describe('<Login />', () => {
     beforeEach(() => {
@@ -39,7 +38,6 @@ describe('<Login />', () => {
 
     it('login correctly', async () => {
         const user = userEvent.setup();
-        const loginSpy = jest.spyOn(Meteor, 'loginWithPassword');
 
         const email = screen.getByLabelText('Email');
         const password = screen.getByLabelText('Password');
@@ -49,9 +47,6 @@ describe('<Login />', () => {
         await user.type(password, 'test');
         await user.click(submit);
 
-        expect(loginSpy).toHaveBeenCalled();
-
-        loginSpy.mockReset();
-        loginSpy.mockRestore();
+        await waitFor(() => expect(submit).toBeDisabled);
     });
 });
