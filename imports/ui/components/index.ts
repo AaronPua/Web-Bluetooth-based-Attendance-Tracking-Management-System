@@ -29,4 +29,4 @@ export * from './users/Users-students';
 export * from './users/Users-admins';
 export * from './users/Account';
 
-export * from './Home';
+export * from './home/Home';

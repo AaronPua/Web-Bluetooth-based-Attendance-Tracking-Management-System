@@ -60,30 +60,31 @@ export const Students = () => {
         });
     };
 
-    const { course, isLoadingCourse, addStudentSelectMap, isLoadingStudentsInCourse, studentsInCourse, 
-        removeStudentSelectMap, isLoadingStudentsNotInCourse, studentsNotInCourse } = useTracker(() => {
-        const courseHandler = Meteor.subscribe('courses.specific', courseId);
-        const isLoadingCourse = !courseHandler.ready();
+    const { course, addStudentSelectMap, studentsInCourse, removeStudentSelectMap, studentsNotInCourse } = useTracker(() => {
+        Meteor.subscribe('courses.specific', courseId);
         const course = CoursesCollection.findOne(courseId);
 
-        const studentsInCourseHandler = Meteor.subscribe('users.students.inSpecificCourse', courseId);
-        const isLoadingStudentsInCourse = !studentsInCourseHandler.ready();
-        const studentsInCourse = Meteor.users.find(studentsInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.students.inSpecificCourse', courseId);
+        const studentsInCourse = Meteor.users.find({ "courses._id": { $eq: courseId }, "role.role._id": 'student' }).fetch();
 
-        const studentsNotInCourseHandler = Meteor.subscribe('users.students.notInSpecificCourse', courseId);
-        const isLoadingStudentsNotInCourse = !studentsNotInCourseHandler.ready();
-        const studentsNotInCourse = Meteor.users.find(studentsNotInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.students.notInSpecificCourse', courseId);
+        const studentsNotInCourse = Meteor.users.find({ "courses._id": { $ne: courseId }, "role.role._id": 'student' }).fetch();
 
-        const addStudentSelectMap = studentsNotInCourse.map((student) => {
-            return { value: student._id, inputDisplay: `${student.profile.firstName} ${student.profile.lastName}`, disabled: false }
-        });
+        let addStudentSelectMap: { value: string; inputDisplay: string; disabled: boolean; }[] = [];
+        if(studentsNotInCourse) {
+            addStudentSelectMap = studentsNotInCourse.map((student) => {
+                return { value: student._id, inputDisplay: `${student.profile.firstName} ${student.profile.lastName}`, disabled: false }
+            });
+        }
+        
+        let removeStudentSelectMap: { value: string; inputDisplay: string; disabled: boolean; }[] = [];
+        if(studentsInCourse) {
+            removeStudentSelectMap = studentsInCourse.map((student) => {
+                return { value: student._id, inputDisplay: `${student.profile.firstName} ${student.profile.lastName}`, disabled: false }
+            });
+        }
 
-        const removeStudentSelectMap = studentsInCourse.map((student) => {
-            return { value: student._id, inputDisplay: `${student.profile.firstName} ${student.profile.lastName}`, disabled: false }
-        });
-
-        return { course, isLoadingCourse, addStudentSelectMap, isLoadingStudentsInCourse, studentsInCourse,
-            removeStudentSelectMap, isLoadingStudentsNotInCourse, studentsNotInCourse };
+        return { course, addStudentSelectMap, studentsInCourse, removeStudentSelectMap, studentsNotInCourse };
     }, []);
 
     const goToStudentCourseAttendance = (userId: string) => {
@@ -109,7 +110,7 @@ export const Students = () => {
     ];
 
     useEffect(() => {
-        if(course && !isLoadingCourse) {
+        if(course) {
             setCourseName(course.name);
         }
         
@@ -140,7 +141,7 @@ export const Students = () => {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { Roles.userIsInRole(Meteor.userId(), 'admin') && !isLoadingStudentsInCourse && !isLoadingStudentsNotInCourse &&
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') &&
                         <EuiFlexGroup >
                             <EuiFlexItem>
                                 <EuiPanel>
@@ -218,24 +219,21 @@ export const Students = () => {
                         </EuiFlexGroup>
                     }
 
-                    { !isLoadingStudentsInCourse && 
-                        <EuiFlexGroup gutterSize="l">
-                            <EuiFlexItem>
-                                <EuiPanel>
-                                    <DataTable
-                                        title="Enrolled Students"
-                                        columns={studentColumns}
-                                        data={studentsInCourse}
-                                        progressPending={isLoadingStudentsInCourse}
-                                        pagination
-                                        striped
-                                        responsive
-                                        defaultSortFieldId={1}
-                                    />
-                                </EuiPanel>
-                            </EuiFlexItem>
-                        </EuiFlexGroup>
-                    }
+                    <EuiFlexGroup gutterSize="l">
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <DataTable
+                                    title="Enrolled Students"
+                                    columns={studentColumns}
+                                    data={studentsInCourse}
+                                    pagination
+                                    striped
+                                    responsive
+                                    defaultSortFieldId={1}
+                                />
+                            </EuiPanel>
+                        </EuiFlexItem>
+                    </EuiFlexGroup>
                 </EuiPageContentBody>
             </EuiPageContent>
         </>

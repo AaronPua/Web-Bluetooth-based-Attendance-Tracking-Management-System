@@ -10,6 +10,7 @@ import _ from 'underscore';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { LessonsCollection } from '../../../api/lessons/LessonsCollection';
 import { removeLesson } from '../../../api/lessons/LessonsMethods';
+import { Roles } from 'meteor/alanning:roles';
 
 export const LessonsList = () => {
 
@@ -25,12 +26,23 @@ export const LessonsList = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allLessons, instructorLessons } = useTracker(() => {
-        const lessonsSub = Meteor.subscribe('lessons.all.withCourse');
-        const isLoading = !lessonsSub.ready()
-        const lessons = LessonsCollection.find(lessonsSub.scopeQuery()).fetch();
+    const { allLessons, instructorLessons } = useTracker(() => {
+        Meteor.subscribe('lessons.all.withCourse');
+        const lessons = LessonsCollection.find().fetch();
 
         const allLessons = _.map(lessons, (lesson) => {
+            if(lesson.course) {
+                return { 
+                    lessonId: lesson._id,
+                    lessonName: lesson.name,
+                    lessonStartTime: lesson.startTime,
+                    lessonEndTime: lesson.endTime,
+                    lessonDate: lesson.date,
+                    courseId: lesson.courseId,
+                    courseName: lesson.course[0].name
+                };
+            }
+
             return { 
                 lessonId: lesson._id,
                 lessonName: lesson.name,
@@ -38,19 +50,18 @@ export const LessonsList = () => {
                 lessonEndTime: lesson.endTime,
                 lessonDate: lesson.date,
                 courseId: lesson.courseId,
-                courseName: lesson.course[0].name
             };
         });
 
-        const userCoursesSub = Meteor.subscribe('courses.currentUser');
-        const userCourses = CoursesCollection.find(userCoursesSub.scopeQuery()).fetch();
+        Meteor.subscribe('courses.currentUser');
+        const userCourses = CoursesCollection.find().fetch();
         const userCourseIds = _.pluck(userCourses, '_id');
 
-        const userCoursesLessonsSub = Meteor.subscribe('lessons.forMultipleCourses', userCourseIds);
-        const userCoursesLessons = LessonsCollection.find(userCoursesLessonsSub.scopeQuery()).fetch();
+        Meteor.subscribe('lessons.forMultipleCourses', userCourseIds);
+        const userCoursesLessons = LessonsCollection.find({ courseId: { $in: userCourseIds } }).fetch();
 
         const instructorLessons = _.map(userCoursesLessons, (lesson) => {
-            return { 
+            return {
                 lessonId: lesson._id,
                 lessonName: lesson.name,
                 lessonStartTime: lesson.startTime,
@@ -61,7 +72,7 @@ export const LessonsList = () => {
             };
         });
 
-        return { isLoading, allLessons, instructorLessons };
+        return { allLessons, instructorLessons };
     });
 
     let navigate = useNavigate();
@@ -175,10 +186,14 @@ export const LessonsList = () => {
     const lessons = Roles.userIsInRole(Meteor.userId(), 'admin') ? allLessons : instructorLessons;
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = lessons.filter(
-        (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
-                    .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
-    );
+    let filteredItems: any[] = [];
+    
+    if(lessons) {
+        filteredItems = lessons.filter(
+            (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
+                        .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
+        );
+    }
 
     const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
@@ -232,7 +247,6 @@ export const LessonsList = () => {
                                     title="Lessons"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

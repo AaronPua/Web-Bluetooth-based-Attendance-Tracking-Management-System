@@ -29,17 +29,15 @@ export const User = () => {
         { value: 'female', text: 'Female'}
     ];
 
-    const { user, userRoles, isLoadingUser, courses, isLoadingCourses } = useTracker(() => { 
-        const userSub = Meteor.subscribe('users.specific', userId);
-        const isLoadingUser = !userSub.ready();
+    const { user, userRoles, courses } = useTracker(() => { 
+        Meteor.subscribe('users.specific', userId);
         const user = Meteor.users.findOne(userId);
         const userRoles = Roles.getRolesForUser(user);
 
-        const coursesSub = Meteor.subscribe('courses.specificUser', userId);
-        const isLoadingCourses = !coursesSub.ready();
-        const courses = CoursesCollection.find(coursesSub.scopeQuery(), userId).fetch();
+        Meteor.subscribe('courses.specificUser', userId);
+        const courses = CoursesCollection.find().fetch();
 
-        return { user, userRoles, isLoadingUser, courses, isLoadingCourses };
+        return { user, userRoles, courses };
     }, []);
 
     const roleOptions = [
@@ -185,66 +183,64 @@ export const User = () => {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { !isLoadingUser &&
-                        <EuiPanel>
-                            <EuiTitle size="s">
-                                <h4>Edit User</h4>
-                            </EuiTitle>
-                            <EuiSpacer />
-                            { showError &&
-                                <EuiCallOut title="Error" color="danger" iconType="alert">
-                                    <p>{error}</p>
-                                </EuiCallOut>
-                            }
-                            { showSuccess &&
-                                <EuiCallOut title="Success!" color="success" iconType="user">
-                                    <p>User updated sucessfully.</p>
-                                </EuiCallOut>
-                            }
-                            <EuiForm component="form" onSubmit={updateUserForm.handleSubmit}>
-                                <EuiFlexGroup>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="Email" error={updateUserForm.errors.email} isInvalid={!!updateUserForm.errors.email}>
-                                            <EuiFieldText {...updateUserForm.getFieldProps('email')} isInvalid={!!updateUserForm.errors.email}/>
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="First Name" error={updateUserForm.errors.firstName} isInvalid={!!updateUserForm.errors.firstName}>
-                                            <EuiFieldText {...updateUserForm.getFieldProps('firstName')} isInvalid={!!updateUserForm.errors.firstName} />
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="Last Name" error={updateUserForm.errors.lastName} isInvalid={!!updateUserForm.errors.lastName}>
-                                            <EuiFieldText {...updateUserForm.getFieldProps('lastName')} isInvalid={!!updateUserForm.errors.lastName}/>
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="Gender" error={updateUserForm.errors.gender} isInvalid={!!updateUserForm.errors.gender}>
-                                            <EuiSelect options={genderOptions} {...updateUserForm.getFieldProps('gender')}
-                                                isInvalid={!!updateUserForm.errors.gender} />
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="Roles" error={updateUserForm.errors.roles} isInvalid={!!updateUserForm.errors.roles}>
-                                            <EuiComboBox
-                                                aria-label="Select roles for user"
-                                                placeholder="Select one or more options"
-                                                options={roleOptions}
-                                                selectedOptions={selectedOptions}
-                                                onChange={onChange}
-                                                isInvalid={!!updateUserForm.errors.roles}
-                                            />
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow hasEmptyLabelSpace>
-                                            <EuiButton fill color="primary" type="submit">Update</EuiButton>
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                </EuiFlexGroup>
-                            </EuiForm>
-                        </EuiPanel>
-                    }
+                    <EuiPanel>
+                        <EuiTitle size="s">
+                            <h4>Edit User</h4>
+                        </EuiTitle>
+                        <EuiSpacer />
+                        { showError &&
+                            <EuiCallOut title="Error" color="danger" iconType="alert">
+                                <p>{error}</p>
+                            </EuiCallOut>
+                        }
+                        { showSuccess &&
+                            <EuiCallOut title="Success!" color="success" iconType="user">
+                                <p>User updated sucessfully.</p>
+                            </EuiCallOut>
+                        }
+                        <EuiForm component="form" onSubmit={updateUserForm.handleSubmit}>
+                            <EuiFlexGroup>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Email" error={updateUserForm.errors.email} isInvalid={!!updateUserForm.errors.email}>
+                                        <EuiFieldText {...updateUserForm.getFieldProps('email')} isInvalid={!!updateUserForm.errors.email}/>
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="First Name" error={updateUserForm.errors.firstName} isInvalid={!!updateUserForm.errors.firstName}>
+                                        <EuiFieldText {...updateUserForm.getFieldProps('firstName')} isInvalid={!!updateUserForm.errors.firstName} />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Last Name" error={updateUserForm.errors.lastName} isInvalid={!!updateUserForm.errors.lastName}>
+                                        <EuiFieldText {...updateUserForm.getFieldProps('lastName')} isInvalid={!!updateUserForm.errors.lastName}/>
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Gender" error={updateUserForm.errors.gender} isInvalid={!!updateUserForm.errors.gender}>
+                                        <EuiSelect options={genderOptions} {...updateUserForm.getFieldProps('gender')}
+                                            isInvalid={!!updateUserForm.errors.gender} />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Roles" error={updateUserForm.errors.roles} isInvalid={!!updateUserForm.errors.roles}>
+                                        <EuiComboBox
+                                            aria-label="Select roles for user"
+                                            placeholder="Select one or more options"
+                                            options={roleOptions}
+                                            selectedOptions={selectedOptions}
+                                            onChange={onChange}
+                                            isInvalid={!!updateUserForm.errors.roles}
+                                        />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow hasEmptyLabelSpace>
+                                        <EuiButton fill color="primary" type="submit">Update</EuiButton>
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                            </EuiFlexGroup>
+                        </EuiForm>
+                    </EuiPanel>
 
                     <EuiSpacer />
                     
@@ -253,7 +249,6 @@ export const User = () => {
                             title="Courses"
                             columns={columns}
                             data={courses}
-                            progressPending={isLoadingCourses}
                             pagination
                             striped
                             responsive

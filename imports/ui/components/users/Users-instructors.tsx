@@ -23,12 +23,11 @@ export const UsersInstructors = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allInstructors } = useTracker(() => {
-        const instructorsSub = Meteor.subscribe('users.instructors');
-        const isLoading = !instructorsSub.ready()
-        const allInstructors = Meteor.users.find(instructorsSub.scopeQuery()).fetch();
+    const { allInstructors } = useTracker(() => {
+        Meteor.subscribe('users.instructors');
+        const allInstructors = Meteor.users.find().fetch();
 
-        return { isLoading, allInstructors }
+        return { allInstructors };
     });
 
     let navigate = useNavigate();
@@ -131,10 +130,14 @@ export const UsersInstructors = () => {
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allInstructors.filter(
-        (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
-                    .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
-    );
+    let filteredItems: any[] = [];
+    
+    if(allInstructors) {
+        filteredItems = allInstructors.filter(
+            (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
+                        .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
+        );
+    }
 
     const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
@@ -188,7 +191,6 @@ export const UsersInstructors = () => {
                                     title="Instructors"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

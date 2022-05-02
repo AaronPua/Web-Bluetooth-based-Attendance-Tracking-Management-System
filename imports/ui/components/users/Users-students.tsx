@@ -23,12 +23,11 @@ export const UsersStudents = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allStudents } = useTracker(() => {
-        const studentsSub = Meteor.subscribe('users.students');
-        const isLoading = !studentsSub.ready()
-        const allStudents = Meteor.users.find(studentsSub.scopeQuery()).fetch();
+    const { allStudents } = useTracker(() => {
+        Meteor.subscribe('users.students');
+        const allStudents = Meteor.users.find().fetch();
 
-        return { isLoading, allStudents }
+        return { allStudents };
     });
 
     let navigate = useNavigate();
@@ -131,10 +130,14 @@ export const UsersStudents = () => {
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allStudents.filter(
-        (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
-                    .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
-    );
+    let filteredItems: any[] = [];
+    
+    if(allStudents) {
+        filteredItems = allStudents.filter(
+            (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
+                        .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
+        );
+    }
 
     const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
@@ -188,7 +191,6 @@ export const UsersStudents = () => {
                                     title="Students"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

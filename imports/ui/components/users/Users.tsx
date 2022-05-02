@@ -1,7 +1,7 @@
 import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiPageContent, 
     EuiPageContentBody, EuiPageHeader, EuiPanel, EuiConfirmModal, EuiFormRow, EuiCallOut } from '@elastic/eui';
 import { Meteor } from 'meteor/meteor';
-import { useSubscribe, useFind } from 'meteor/react-meteor-data';
+import { useTracker } from 'meteor/react-meteor-data';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -23,8 +23,12 @@ export const Users = () => {
         setValue(e.target.value);
     };
 
-    const isLoading = useSubscribe('users.all');
-    const allUsers = useFind(() => Meteor.users.find());
+    const { allUsers } = useTracker(() => {
+        Meteor.subscribe('users.all');
+        const allUsers = Meteor.users.find().fetch();
+
+        return { allUsers };
+    });
 
     let navigate = useNavigate();
 
@@ -126,10 +130,14 @@ export const Users = () => {
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allUsers.filter(
-        (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
-                    .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
-    );
+    let filteredItems: any[] = [];
+    
+    if(allUsers) {
+        filteredItems = allUsers.filter(
+            (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
+                        .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
+        );
+    }
 
     const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
@@ -183,7 +191,6 @@ export const Users = () => {
                                     title="Users"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading()}
                                     pagination
                                     striped
                                     responsive

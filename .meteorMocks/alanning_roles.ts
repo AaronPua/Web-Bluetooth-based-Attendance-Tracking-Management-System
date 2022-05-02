@@ -12,4 +12,5 @@ export const Roles = {
     removeUsersFromRoles: jest.fn(),
     setUserRoles: jest.fn(),
     createRole: jest.fn(),
+    getRolesForUser: jest.fn()
 }

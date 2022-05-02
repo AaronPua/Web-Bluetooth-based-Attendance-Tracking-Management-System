@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import _ from 'underscore';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
 import { addInstructorToCourse, removeInstructorFromCourse } from '../../../api/courses/CoursesMethods';
+import { Roles } from 'meteor/alanning:roles';
 
 export const Instructors = () => {
     const [addInstructorId, setAddInstructorId] = useState('');
@@ -58,30 +59,31 @@ export const Instructors = () => {
         });
     };
 
-    const { course, isLoadingCourse, addInstructorSelectMap, isLoadingInstructorsInCourse, instructorsInCourse, 
-        removeInstructorSelectMap, isLoadingInstructorsNotInCourse, instructorsNotInCourse } = useTracker(() => {
-        const courseHandler = Meteor.subscribe('courses.specific', courseId);
-        const isLoadingCourse = !courseHandler.ready();
+    const { course, addInstructorSelectMap, instructorsInCourse, removeInstructorSelectMap, instructorsNotInCourse } = useTracker(() => {
+        Meteor.subscribe('courses.specific', courseId);
         const course = CoursesCollection.findOne(courseId);
 
-        const instructorsInCourseHandler = Meteor.subscribe('users.instructors.inSpecificCourse', courseId);
-        const isLoadingInstructorsInCourse = !instructorsInCourseHandler.ready();
-        const instructorsInCourse = Meteor.users.find(instructorsInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.instructors.inSpecificCourse', courseId);
+        const instructorsInCourse = Meteor.users.find({ "courses._id": { $eq: courseId }, "role.role._id": 'instructor' }).fetch();
 
-        const instructorsNotInCourseHandler = Meteor.subscribe('users.instructors.notInSpecificCourse', courseId);
-        const isLoadingInstructorsNotInCourse = !instructorsNotInCourseHandler.ready();
-        const instructorsNotInCourse = Meteor.users.find(instructorsNotInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.instructors.notInSpecificCourse', courseId);
+        const instructorsNotInCourse = Meteor.users.find({ "courses._id": { $ne: courseId }, "role.role._id": 'instructor' }).fetch();
 
-        const addInstructorSelectMap = instructorsNotInCourse.map((instructor) => {
-            return { value: instructor._id, inputDisplay: `${instructor.profile.firstName} ${instructor.profile.lastName}`, disabled: false }
-        });
+        let addInstructorSelectMap: { value: string; inputDisplay: string; disabled: boolean; }[] = [];
+        if(instructorsNotInCourse) {
+            addInstructorSelectMap = instructorsNotInCourse.map((instructor) => {
+                return { value: instructor._id, inputDisplay: `${instructor.profile.firstName} ${instructor.profile.lastName}`, disabled: false }
+            });
+        }
+        
+        let removeInstructorSelectMap: { value: string; inputDisplay: string; disabled: boolean; }[] = [];
+        if(instructorsNotInCourse) {
+            removeInstructorSelectMap = instructorsInCourse.map((instructor) => {
+                return { value: instructor._id, inputDisplay: `${instructor.profile.firstName} ${instructor.profile.lastName}`, disabled: false }
+            });
+        }
 
-        const removeInstructorSelectMap = instructorsInCourse.map((instructor) => {
-            return { value: instructor._id, inputDisplay: `${instructor.profile.firstName} ${instructor.profile.lastName}`, disabled: false }
-        });
-
-        return { course, isLoadingCourse, addInstructorSelectMap, isLoadingInstructorsInCourse, instructorsInCourse,
-            removeInstructorSelectMap, isLoadingInstructorsNotInCourse, instructorsNotInCourse };
+        return { course, addInstructorSelectMap, instructorsInCourse, removeInstructorSelectMap, instructorsNotInCourse };
     }, []);
 
     const studentColumns: TableColumn<Meteor.User>[] = [
@@ -98,7 +100,7 @@ export const Instructors = () => {
     ];
 
     useEffect(() => {
-        if(course && !isLoadingCourse) {
+        if(course) {
             setCourseName(course.name);
         }
         
@@ -129,7 +131,7 @@ export const Instructors = () => {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { Roles.userIsInRole(Meteor.userId(), 'admin') && !isLoadingInstructorsInCourse && !isLoadingInstructorsNotInCourse &&
+                    { Roles.userIsInRole(Meteor.userId(), 'admin') &&
                         <EuiFlexGroup >
                             <EuiFlexItem>
                                 <EuiPanel>
@@ -207,24 +209,21 @@ export const Instructors = () => {
                         </EuiFlexGroup>
                     }
 
-                    { !isLoadingInstructorsInCourse && 
-                        <EuiFlexGroup gutterSize="l">
-                            <EuiFlexItem>
-                                <EuiPanel>
-                                    <DataTable
-                                        title="Instructors"
-                                        columns={studentColumns}
-                                        data={instructorsInCourse}
-                                        progressPending={isLoadingInstructorsInCourse}
-                                        pagination
-                                        striped
-                                        responsive
-                                        defaultSortFieldId={1}
-                                    />
-                                </EuiPanel>
-                            </EuiFlexItem>
-                        </EuiFlexGroup>
-                    }
+                    <EuiFlexGroup gutterSize="l">
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <DataTable
+                                    title="Instructors"
+                                    columns={studentColumns}
+                                    data={instructorsInCourse}
+                                    pagination
+                                    striped
+                                    responsive
+                                    defaultSortFieldId={1}
+                                />
+                            </EuiPanel>
+                        </EuiFlexItem>
+                    </EuiFlexGroup>
                 </EuiPageContentBody>
             </EuiPageContent>
         </>

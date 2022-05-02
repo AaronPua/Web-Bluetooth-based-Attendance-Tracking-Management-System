@@ -23,12 +23,11 @@ export const UsersAdmins = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allAdmins } = useTracker(() => {
-        const adminsSub = Meteor.subscribe('users.admins');
-        const isLoading = !adminsSub.ready()
-        const allAdmins = Meteor.users.find(adminsSub.scopeQuery()).fetch();
+    const { allAdmins } = useTracker(() => {
+        Meteor.subscribe('users.admins');
+        const allAdmins = Meteor.users.find().fetch();
 
-        return { isLoading, allAdmins }
+        return { allAdmins };
     });
 
     let navigate = useNavigate();
@@ -131,11 +130,15 @@ export const UsersAdmins = () => {
     ];
 
     const [filterText, setFilterText] = useState('');
-    const filteredItems = allAdmins.filter(
-        (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
-                    .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
-    );
-
+    let filteredItems: any[] = [];
+    
+    if(allAdmins) {
+        filteredItems = allAdmins.filter(
+            (user) => JSON.stringify(_.omit(user, '_id', 'services', 'courses'))
+                        .replace(/("\w+":)/g, '').toLowerCase().indexOf(filterText.toLowerCase()) !== -1
+        );
+    }
+    
     const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
 			if (filterText) {
@@ -188,7 +191,6 @@ export const UsersAdmins = () => {
                                     title="Admins"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

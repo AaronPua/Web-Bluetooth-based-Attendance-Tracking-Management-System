@@ -5,6 +5,7 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { updateUserAccount } from '../../../api/users/UsersMethods';
 import _ from 'underscore';
 
@@ -48,8 +49,9 @@ export const Account = () => {
             gender: yup.string().oneOf(['male', 'female']).required('Gender is required'),
             email: yup.string().email('Email must be valid').required('Email is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             updateThisUser(user?._id, values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 
@@ -92,9 +94,10 @@ export const Account = () => {
             oldPassword: yup.string().required('Old Password is required'),
             newPassword: yup.string().required('New Password is required'),
         }),
-        onSubmit: (values, actions) => {
+        onSubmit: (values, { setSubmitting, resetForm }) => {
             updateUserPassword(values);
-            actions.resetForm();
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
+            resetForm();
         }
     });
 
@@ -174,7 +177,7 @@ export const Account = () => {
                                 </EuiFlexItem>
                                 <EuiFlexItem>
                                     <EuiFormRow hasEmptyLabelSpace>
-                                        <EuiButton fill color="primary" type="submit">Update</EuiButton>
+                                        <EuiButton fill color="primary" type="submit" isLoading={updateUserForm.isSubmitting}>Update</EuiButton>
                                     </EuiFormRow>
                                 </EuiFlexItem>
                             </EuiFlexGroup>
@@ -220,7 +223,7 @@ export const Account = () => {
                                 </EuiFlexItem>
                                 <EuiFlexItem>
                                     <EuiFormRow hasEmptyLabelSpace>
-                                        <EuiButton fill color="primary" type="submit">Change</EuiButton>
+                                        <EuiButton fill color="primary" type="submit" isLoading={updatePasswordForm.isSubmitting}>Change</EuiButton>
                                     </EuiFormRow>
                                 </EuiFlexItem>
                             </EuiFlexGroup>
