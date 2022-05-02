@@ -9,6 +9,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
+import _ from 'underscore';
 
 export const Courses = () => {
     const [showSuccess, setShowSuccess] = useState(false);
@@ -36,8 +37,10 @@ export const Courses = () => {
             name: yup.string().required('Course Name is required'),
             credits: yup.number().integer('Credits must be an integer').positive('Credits must be a positive number').required('Credits is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting, resetForm }) => {
             createNewCourse(values.name, values.credits);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
+            resetForm({ values: { name: '', credits: 1 } });
         }
     });
 
@@ -74,16 +77,14 @@ export const Courses = () => {
         });
     }
 
-    const { isLoadingCourses, allCourses, isLoadingUserCourses, userCourses } = useTracker(() => {
-        const allCoursesSub = Meteor.subscribe('courses.all');
-        const isLoadingCourses = !allCoursesSub.ready();
-        const allCourses = CoursesCollection.find(allCoursesSub.scopeQuery()).fetch();
+    const { allCourses, userCourses } = useTracker(() => {
+        Meteor.subscribe('courses.all');
+        const allCourses = CoursesCollection.find().fetch();
+        
+        Meteor.subscribe('courses.currentUser');
+        const userCourses = CoursesCollection.find().fetch();
 
-        const currentUserCoursesSub = Meteor.subscribe('courses.currentUser');
-        const isLoadingUserCourses = !currentUserCoursesSub.ready();
-        const userCourses = CoursesCollection.find(currentUserCoursesSub.scopeQuery()).fetch();
-
-        return { isLoadingCourses, allCourses, isLoadingUserCourses, userCourses };
+        return { allCourses, userCourses };
     });
 
     const showRemoveCourseModal = (courseId: string, courseName: string) => {
@@ -222,7 +223,6 @@ export const Courses = () => {
                                     title="Courses"
                                     columns={columns}
                                     data={allCourses}
-                                    progressPending={isLoadingCourses}
                                     pagination
                                     striped
                                     responsive
@@ -235,7 +235,6 @@ export const Courses = () => {
                                     title="Courses"
                                     columns={columns}
                                     data={userCourses}
-                                    progressPending={isLoadingUserCourses}
                                     pagination
                                     striped
                                     responsive

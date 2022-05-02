@@ -20,8 +20,9 @@ export const VerifyEmail = () => {
         validationSchema: yup.object().shape({
             email: yup.string().email('Must be a valid email address').required('Email is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             resendEmailVerification(values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 

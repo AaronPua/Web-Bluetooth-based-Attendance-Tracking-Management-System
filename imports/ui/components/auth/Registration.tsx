@@ -32,8 +32,9 @@ export const Registration = () => {
             email: yup.string().email('Must be a valid email address').required('Email is required'),
             password: yup.string().required('Password is required')
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             createUser(values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 

@@ -21,8 +21,9 @@ export const ResetPassword = () => {
         validationSchema: yup.object().shape({
             password: yup.string().required('Password is required')
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             resetPassword(token, values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 

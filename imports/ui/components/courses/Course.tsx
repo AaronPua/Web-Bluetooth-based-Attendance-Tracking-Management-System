@@ -54,8 +54,9 @@ export const Course = () => {
             name: yup.string().required('Course Name is required'),
             credits: yup.number().integer('Credits must be an integer').positive('Credits must be a positive number').required('Credits is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             updateThisCourse(courseId, values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 
@@ -75,24 +76,23 @@ export const Course = () => {
         });
     };
 
-    const { course, isLoadingCourse, allLessons, studentsInCourse, instructorsInCourse, beaconsInCourse } = useTracker(() => {
-        const courseHandler = Meteor.subscribe('courses.specific', courseId);
-        const isLoadingCourse = !courseHandler.ready();
+    const { course, allLessons, studentsInCourse, instructorsInCourse, beaconsInCourse } = useTracker(() => {
+        Meteor.subscribe('courses.specific', courseId);
         const course = CoursesCollection.findOne(courseId);
 
-        const lessonHandler = Meteor.subscribe('lessons.forOneCourse', courseId);
-        const allLessons = LessonsCollection.find(lessonHandler.scopeQuery()).fetch();
+        Meteor.subscribe('lessons.forOneCourse', courseId);
+        const allLessons = LessonsCollection.find().fetch();
 
-        const studentsInCourseHandler = Meteor.subscribe('users.students.inSpecificCourse', courseId);
-        const studentsInCourse = Meteor.users.find(studentsInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.students.inSpecificCourse', courseId);
+        const studentsInCourse = Meteor.users.find({ "role.role._id": 'student' }).fetch();
 
-        const instructorsInCourseHandler = Meteor.subscribe('users.instructors.inSpecificCourse', courseId);
-        const instructorsInCourse = Meteor.users.find(instructorsInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.instructors.inSpecificCourse', courseId);
+        const instructorsInCourse = Meteor.users.find({ "role.role._id": 'instructor' }).fetch();
 
-        const beaconsInCourseHandler = Meteor.subscribe('beacons.forOneCourse', courseId);
-        const beaconsInCourse = BeaconsCollection.find(beaconsInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('beacons.forOneCourse', courseId);
+        const beaconsInCourse = BeaconsCollection.find().fetch();
 
-        return { course, isLoadingCourse, allLessons, studentsInCourse, instructorsInCourse, beaconsInCourse };
+        return { course, allLessons, studentsInCourse, instructorsInCourse, beaconsInCourse };
     }, []);
 
     useEffect(() => {
@@ -114,47 +114,45 @@ export const Course = () => {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { !isLoadingCourse &&
-                        <EuiFlexGroup>
-                            <EuiFlexItem>
-                                <EuiPanel>
-                                    <EuiTitle size="s">
-                                        <h4>Edit Course</h4>
-                                    </EuiTitle>
-                                    <EuiSpacer />
-                                    { showCourseError && 
-                                        <EuiCallOut title="An error has occured" color="danger" iconType="alert">
-                                            <p>{courseError}</p>
-                                        </EuiCallOut> 
-                                    }
-                                    { showCourseSuccess && 
-                                        <EuiCallOut title="Success!" color="success" iconType="user">
-                                            <p>Course updated sucessfully.</p>
-                                        </EuiCallOut> 
-                                    }
-                                    <EuiForm component="form" onSubmit={updateCourseForm.handleSubmit}>
-                                        <EuiFlexGroup style={{ maxWidth: 1000 }}>
-                                            <EuiFlexItem>
-                                                <EuiFormRow label="Course Name" error={updateCourseForm.errors.name} isInvalid={!!updateCourseForm.errors.name}>
-                                                    <EuiFieldText {...updateCourseForm.getFieldProps('name')} isInvalid={!!updateCourseForm.errors.name} />
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
-                                            <EuiFlexItem>
-                                                <EuiFormRow label="Credits" error={updateCourseForm.errors.credits} isInvalid={!!updateCourseForm.errors.credits}>
-                                                    <EuiFieldNumber {...updateCourseForm.getFieldProps('credits')} isInvalid={!!updateCourseForm.errors.credits}/>
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
-                                            <EuiFlexItem grow={false}>
-                                                <EuiFormRow hasEmptyLabelSpace>
-                                                    <EuiButton fill color="primary" type="submit">Update</EuiButton>
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                    </EuiForm>
-                                </EuiPanel>
-                            </EuiFlexItem>
-                        </EuiFlexGroup>
-                    }
+                    <EuiFlexGroup>
+                        <EuiFlexItem>
+                            <EuiPanel>
+                                <EuiTitle size="s">
+                                    <h4>Edit Course</h4>
+                                </EuiTitle>
+                                <EuiSpacer />
+                                { showCourseError && 
+                                    <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                                        <p>{courseError}</p>
+                                    </EuiCallOut> 
+                                }
+                                { showCourseSuccess && 
+                                    <EuiCallOut title="Success!" color="success" iconType="user">
+                                        <p>Course updated sucessfully.</p>
+                                    </EuiCallOut> 
+                                }
+                                <EuiForm component="form" onSubmit={updateCourseForm.handleSubmit}>
+                                    <EuiFlexGroup style={{ maxWidth: 1000 }}>
+                                        <EuiFlexItem>
+                                            <EuiFormRow label="Course Name" error={updateCourseForm.errors.name} isInvalid={!!updateCourseForm.errors.name}>
+                                                <EuiFieldText {...updateCourseForm.getFieldProps('name')} isInvalid={!!updateCourseForm.errors.name} />
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
+                                        <EuiFlexItem>
+                                            <EuiFormRow label="Credits" error={updateCourseForm.errors.credits} isInvalid={!!updateCourseForm.errors.credits}>
+                                                <EuiFieldNumber {...updateCourseForm.getFieldProps('credits')} isInvalid={!!updateCourseForm.errors.credits}/>
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
+                                        <EuiFlexItem grow={false}>
+                                            <EuiFormRow hasEmptyLabelSpace>
+                                                <EuiButton fill color="primary" type="submit" isLoading={updateCourseForm.isSubmitting}>Update</EuiButton>
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
+                                    </EuiFlexGroup>
+                                </EuiForm>
+                            </EuiPanel>
+                        </EuiFlexItem>
+                    </EuiFlexGroup>
 
                     <EuiSpacer />
 
@@ -168,7 +166,7 @@ export const Course = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="primary">
                                         <EuiStat
-                                            title={allLessons.length}
+                                            title={allLessons ? allLessons.length : 0}
                                             description=""
                                             textAlign="center"
                                         />
@@ -193,7 +191,7 @@ export const Course = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="success">
                                         <EuiStat
-                                            title={studentsInCourse.length}
+                                            title={studentsInCourse ? studentsInCourse.length : 0}
                                             description=""
                                             textAlign="center"
                                         />
@@ -218,7 +216,7 @@ export const Course = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="warning">
                                         <EuiStat
-                                            title={instructorsInCourse.length}
+                                            title={instructorsInCourse ? instructorsInCourse.length : 0}
                                             description=""
                                             textAlign="center"
                                         />
@@ -243,7 +241,7 @@ export const Course = () => {
                                 <EuiSplitPanel.Outer hasShadow={false}>
                                     <EuiSplitPanel.Inner color="accent">
                                         <EuiStat
-                                            title={beaconsInCourse.length}
+                                            title={beaconsInCourse ? beaconsInCourse.length : 0}
                                             description=""
                                             textAlign="center"
                                         />

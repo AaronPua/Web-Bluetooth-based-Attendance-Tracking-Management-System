@@ -2,6 +2,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { Roles } from 'meteor/alanning:roles';
+import { ReactiveAggregate } from 'meteor/tunguska:reactive-aggregate';
 
 // Publish the role assignment collection as required by alanning:roles package
 Meteor.publish(null, function () {
@@ -98,10 +99,35 @@ Meteor.publish('users.students.inSpecificCourse', function(courseId) {
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
 
-    return Meteor.users.find({
-        _id: { $in: studentIds },
-        "courses._id": { $eq: courseId }
-    });
+    // return Meteor.users.find({
+    //     _id: { $in: studentIds },
+    //     "courses._id": { $eq: courseId }
+    // });
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: studentIds }, 
+                "courses._id": { $eq: courseId } 
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('users.students.notInSpecificCourse', function(courseId) {
@@ -116,10 +142,35 @@ Meteor.publish('users.students.notInSpecificCourse', function(courseId) {
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
 
-     return Meteor.users.find({
-        _id: { $in: studentIds },
-        "courses._id": { $ne: courseId }
-    });
+    // return Meteor.users.find({
+    //     _id: { $in: studentIds },
+    //     "courses._id": { $ne: courseId }
+    // });
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: studentIds }, 
+                "courses._id": { $ne: courseId } 
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('users.instructors.inSpecificCourse', function(courseId) {
@@ -134,10 +185,35 @@ Meteor.publish('users.instructors.inSpecificCourse', function(courseId) {
     const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
 
-    return Meteor.users.find({
-        _id: { $in: instructorIds },
-        "courses._id": { $eq: courseId }
-    });
+    // return Meteor.users.find({
+    //     _id: { $in: instructorIds },
+    //     "courses._id": { $eq: courseId }
+    // });
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: instructorIds }, 
+                "courses._id": { $eq: courseId } 
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('users.instructors.notInSpecificCourse', function(courseId) {
@@ -152,8 +228,33 @@ Meteor.publish('users.instructors.notInSpecificCourse', function(courseId) {
     const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
 
-     return Meteor.users.find({
-        _id: { $in: instructorIds },
-        "courses._id": { $ne: courseId }
-    });
+    // return Meteor.users.find({
+    //     _id: { $in: instructorIds },
+    //     "courses._id": { $ne: courseId }
+    // });
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: instructorIds }, 
+                "courses._id": { $ne: courseId } 
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });

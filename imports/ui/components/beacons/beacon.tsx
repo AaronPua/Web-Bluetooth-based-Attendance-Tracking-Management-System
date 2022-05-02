@@ -29,8 +29,9 @@ export const Beacon = () => {
             name: yup.string().required('Course Name is required'),
             uuidString: yup.string().uuid('Must be a valid uuid').required('Uuid is required')
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             updateThisBeacon(beaconId, courseId, values.name, values.uuidString);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 

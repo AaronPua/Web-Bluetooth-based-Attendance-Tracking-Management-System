@@ -19,8 +19,9 @@ export const ForgotPassword = () => {
         validationSchema: yup.object().shape({
             email: yup.string().email('Must be a valid email address').required('Email is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             forgotPassword(values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 
