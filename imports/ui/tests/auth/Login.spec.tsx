@@ -3,19 +3,18 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Login } from '../../components/index';
 import { renderWithRouter } from '../utils/test-setup';
+import { Meteor } from 'meteor/meteor';
 
 describe('<Login />', () => {
-    beforeEach(() => {
-        renderWithRouter(<Login />);
-    });
-
     it('renders component', () => {
+        renderWithRouter(<Login />);
         expect(screen.getByText('Email')).toBeInTheDocument();
         expect(screen.getByText('Password')).toBeInTheDocument();
         expect(screen.getByText('Register Now')).toBeInTheDocument();
     });
 
     it('login without valid email', async () => {
+        renderWithRouter(<Login />);
         const user = userEvent.setup();
         const email = screen.getByLabelText('Email');
         await user.type(email, 'not_exist');
@@ -23,6 +22,7 @@ describe('<Login />', () => {
     });
 
     it('login without email', async () => {
+        renderWithRouter(<Login />);
         const user = userEvent.setup();
         const password = screen.getByLabelText('Password');
         await user.type(password, 'test');
@@ -30,6 +30,7 @@ describe('<Login />', () => {
     });
 
     it('login without password', async () => {
+        renderWithRouter(<Login />);
         const user = userEvent.setup();
         const email = screen.getByLabelText('Email');
         await user.type(email, 'not_exist@test.com');
@@ -37,8 +38,10 @@ describe('<Login />', () => {
     });
 
     it('login correctly', async () => {
-        const user = userEvent.setup();
+        const loginMock = jest.spyOn(Meteor, 'loginWithPassword');
+        renderWithRouter(<Login />);
 
+        const user = userEvent.setup();
         const email = screen.getByLabelText('Email');
         const password = screen.getByLabelText('Password');
         const submit = screen.getByRole('button', { name: 'Sign In' });
@@ -48,5 +51,7 @@ describe('<Login />', () => {
         await user.click(submit);
 
         await waitFor(() => expect(submit).toBeDisabled);
+
+        expect(loginMock).toHaveBeenCalledTimes(1);
     });
 });

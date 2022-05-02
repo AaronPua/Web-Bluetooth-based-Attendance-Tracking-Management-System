@@ -9,7 +9,7 @@ import { userRegistrationSchema } from './UsersCollection';
 import { removeStudentFromCourse } from '../courses/CoursesMethods';
 import _ from 'underscore';
 
-SimpleSchema.defineValidationErrorTransform(error => {
+SimpleSchema.defineValidationErrorTransform((error: any) => {
     const ddpError = new Meteor.Error(error.message);
     ddpError.error = 'validation-error';
     ddpError.details = error.details;

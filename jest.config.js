@@ -26,6 +26,7 @@ module.exports = {
         "^meteor/accounts-base$": "<rootDir>/.meteorMocks/accounts_base.ts",
         "^meteor/alanning:roles$": "<rootDir>/.meteorMocks/alanning_roles.ts",
         "^meteor/xolvio:cleaner$": "<rootDir>/.meteorMocks/xolvio_cleaner.ts",
+        "^meteor/quave:collections$": "<rootDir>/.meteorMocks/quave_collections.ts",
         // '^(.*):(.*)$': '$1_$2'
     },
 };

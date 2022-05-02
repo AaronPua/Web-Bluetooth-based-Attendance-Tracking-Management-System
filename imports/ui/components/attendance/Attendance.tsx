@@ -25,40 +25,37 @@ export const Attendance = () => {
     const [showRemoveAttendanceError, setShowRemoveAttendanceError] = useState(false);
     const [removeAttendanceError, setRemoveAttendanceError] = useState('');
 
-    const { course, isLoadingStudent, student, isLoadingAttended, lessonsAttended, isLoadingMissed, lessonsMissed }  = useTracker(() => { 
+    const { course, student, lessonsAttended, lessonsMissed }  = useTracker(() => { 
         Meteor.subscribe('courses.specific', courseId);
         const course = CoursesCollection.findOne(courseId);
 
-        const studentSubHandler = Meteor.subscribe('users.specific', userId);
-        const isLoadingStudent = !studentSubHandler.ready();
+        Meteor.subscribe('users.specific', userId);
         const student = Meteor.users.findOne(userId);
 
-        const lessonsSub = Meteor.subscribe('lessons.forOneCourse', courseId);
-        const lessons = LessonsCollection.find(lessonsSub.scopeQuery(), courseId).fetch();
+        Meteor.subscribe('lessons.forOneCourse', courseId);
+        const lessons = LessonsCollection.find({ courseId: courseId }).fetch();
 
         const lessonIds = _.pluck(lessons, '_id');
         const lessonsAttendedIds = _.chain(lessons)
                                     .filter((lesson) => {
-                                        return _.findWhere(_.get(lesson, 'studentAttendance'), { _id: userId });
+                                        return _.chain(lesson).get('studentAttendance').findWhere({ _id: userId }).value();
                                     }).pluck('_id').value();
         const lessonsMissedIds = _.difference(lessonIds, lessonsAttendedIds);          
 
-        const attendedLessonsSub = Meteor.subscribe('courses.student.attendedLessons', userId, courseId);
-        const isLoadingAttended = !attendedLessonsSub.ready();
+        Meteor.subscribe('courses.student.attendedLessons', userId, courseId);
         const lessonsAttended = LessonsCollection.find({ _id: { $in: lessonsAttendedIds } }).fetch()
 
-        const missedLessonsSub = Meteor.subscribe('courses.student.missedLessons', userId, courseId);
-        const isLoadingMissed = !missedLessonsSub.ready();
+        Meteor.subscribe('courses.student.missedLessons', userId, courseId);
         const lessonsMissed = LessonsCollection.find({ _id: { $in: lessonsMissedIds } }).fetch();
 
-        return { course, isLoadingStudent, student, isLoadingAttended, lessonsAttended, isLoadingMissed, lessonsMissed };
+        return { course, student, lessonsAttended, lessonsMissed };
     }, []);
 
     useEffect(() => {
         if(course) {
             setCourseName(course.name);
         }
-        if(!isLoadingStudent && student) {
+        if(student) {
             setStudentName(`${student.profile.firstName} ${student.profile.lastName}`)
         }
     }, [course, student]);
@@ -178,7 +175,6 @@ export const Attendance = () => {
                                     title="Attended Lessons"
                                     columns={attendedColumns}
                                     data={lessonsAttended}
-                                    progressPending={isLoadingAttended}
                                     pagination
                                     striped
                                     responsive
@@ -203,7 +199,6 @@ export const Attendance = () => {
                                     title="Missed Lessons"
                                     columns={missedColumns}
                                     data={lessonsMissed}
-                                    progressPending={isLoadingMissed}
                                     pagination
                                     striped
                                     responsive
