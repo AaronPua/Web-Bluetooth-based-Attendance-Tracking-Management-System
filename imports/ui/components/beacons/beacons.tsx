@@ -38,7 +38,7 @@ export const Beacons = () => {
             uuidString: uuid()
         },
         validationSchema: yup.object().shape({
-            name: yup.string().required('Course Name is required'),
+            name: yup.string().required('Beacon Name is required'),
             uuidString: yup.string().uuid('Must be a valid uuid').required('Uuid is required')
         }),
         onSubmit: (values) => {
@@ -65,15 +65,14 @@ export const Beacons = () => {
         navigate(`/courses/${courseId}/beacons/${beaconId}`);
     }
 
-    const { course, isLoadingBeacons, courseBeacons } = useTracker(() => { 
+    const { course, courseBeacons } = useTracker(() => { 
         Meteor.subscribe('courses.specific', courseId);
         const course = CoursesCollection.findOne(courseId);
 
-        const courseBeaconsSub = Meteor.subscribe('beacons.forOneCourse', courseId);
-        const isLoadingBeacons = !courseBeaconsSub.ready();
-        const courseBeacons = BeaconsCollection.find(courseBeaconsSub.scopeQuery(), courseId).fetch();
+        Meteor.subscribe('beacons.forOneCourse', courseId);
+        const courseBeacons = BeaconsCollection.find({ courseId: courseId }).fetch();
 
-        return { course, isLoadingBeacons, courseBeacons };
+        return { course, courseBeacons };
     }, []);
 
     const showRemoveBeaconModal = (beaconId: string, beaconName: string) => {
@@ -202,7 +201,7 @@ export const Beacons = () => {
                                 </EuiFlexItem>
                                 <EuiFlexItem>
                                     <EuiFormRow hasEmptyLabelSpace>
-                                        <EuiButton fill color="primary" type="submit">Create</EuiButton>
+                                        <EuiButton fill color="primary" type="submit" isLoading={createBeaconForm.isSubmitting}>Create</EuiButton>
                                     </EuiFormRow>
                                 </EuiFlexItem>
                             </EuiFlexGroup>
@@ -226,7 +225,6 @@ export const Beacons = () => {
                             title="Beacons"
                             columns={columns}
                             data={courseBeacons}
-                            progressPending={isLoadingBeacons}
                             pagination
                             striped
                             responsive

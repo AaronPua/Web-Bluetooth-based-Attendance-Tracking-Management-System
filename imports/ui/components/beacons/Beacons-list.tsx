@@ -9,6 +9,7 @@ import _ from 'underscore';
 import { BeaconsCollection } from '../../../api/beacons/BeaconsCollection';
 import { removeBeacon } from '../../../api/beacons/BeaconsMethods';
 import { CoursesCollection } from '../../../api/courses/CoursesCollection';
+import { Roles } from 'meteor/alanning:roles';
 
 export const BeaconsList = () => {
 
@@ -24,27 +25,39 @@ export const BeaconsList = () => {
         setValue(e.target.value);
     };
 
-    const { isLoading, allBeacons, instructorBeacons } = useTracker(() => {
-        const beaconsSub = Meteor.subscribe('beacons.all.withCourse');
-        const isLoading = !beaconsSub.ready()
-        const beacons = BeaconsCollection.find(beaconsSub.scopeQuery()).fetch();
+    type BeaconType = {
+        _id: string,
+        name: string,
+        courseId: string,
+        course: Array<any>
+    }
 
-        const allBeacons = _.map(beacons, (beacon) => {
-            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
+    const { allBeacons, instructorBeacons } = useTracker(() => {
+        Meteor.subscribe('beacons.all.withCourse');
+        const beacons = BeaconsCollection.find().fetch();
+
+        const allBeacons = _.map(beacons, (beacon: BeaconType) => {
+            if(beacon.course) {
+                return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
+            }
+            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId };
         });
 
-        const userCoursesSub = Meteor.subscribe('courses.currentUser');
-        const userCourses = CoursesCollection.find(userCoursesSub.scopeQuery()).fetch();
+        Meteor.subscribe('courses.currentUser');
+        const userCourses = CoursesCollection.find().fetch();
         const userCourseIds = _.pluck(userCourses, '_id');
 
-        const userCoursesBeaconsSub = Meteor.subscribe('beacons.forMultipleCourses', userCourseIds);
-        const userCoursesBeacons = BeaconsCollection.find(userCoursesBeaconsSub.scopeQuery()).fetch();
+        Meteor.subscribe('beacons.forMultipleCourses', userCourseIds);
+        const userCoursesBeacons = BeaconsCollection.find({ courseId: { $in: userCourseIds } }).fetch();
 
-        const instructorBeacons = _.map(userCoursesBeacons, (beacon) => {
-            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
+        const instructorBeacons = _.map(userCoursesBeacons, (beacon: BeaconType) => {
+            if(beacon.course) {
+                return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId, courseName: beacon.course[0].name };
+            }
+            return { beaconId: beacon._id, beaconName: beacon.name, courseId: beacon.courseId };
         });
 
-        return { isLoading, allBeacons, instructorBeacons };
+        return { allBeacons, instructorBeacons };
     });
 
     let navigate = useNavigate();
@@ -194,7 +207,6 @@ export const BeaconsList = () => {
                                     title="Beacons"
                                     columns={columns}
                                     data={filteredItems}
-                                    progressPending={isLoading}
                                     pagination
                                     striped
                                     responsive

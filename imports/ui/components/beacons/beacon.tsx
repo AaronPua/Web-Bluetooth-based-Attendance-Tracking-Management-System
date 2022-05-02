@@ -51,12 +51,11 @@ export const Beacon = () => {
         });
     };
 
-    const { beacon, isLoadingBeacon } = useTracker(() => { 
-        const beaconSub = Meteor.subscribe('beacons.specific', beaconId);
-        const isLoadingBeacon = !beaconSub.ready();
+    const { beacon } = useTracker(() => { 
+        Meteor.subscribe('beacons.specific', beaconId);
         const beacon = BeaconsCollection.findOne(beaconId);
 
-        return { beacon, isLoadingBeacon };
+        return { beacon };
     }, []);
 
     useEffect(() => {
@@ -78,43 +77,41 @@ export const Beacon = () => {
                 grow={true}
             >
                 <EuiPageContentBody>
-                    { !isLoadingBeacon &&
-                        <EuiPanel>
-                            <EuiTitle size="s">
-                                <h4>Edit Beacon</h4>
-                            </EuiTitle>
-                            <EuiSpacer />
-                            { showError &&
-                                <EuiCallOut title="An error has occured" color="danger" iconType="alert">
-                                    <p>{error}</p>
-                                </EuiCallOut>
-                            }
-                            { showSuccess &&
-                                <EuiCallOut title="Success!" color="success" iconType="user">
-                                    <p>Beacon updated sucessfully.</p>
-                                </EuiCallOut>
-                            }
-                            <EuiForm component="form" onSubmit={updateBeaconForm.handleSubmit}>
-                                <EuiFlexGroup style={{ maxWidth: 1000 }}>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="Name" error={updateBeaconForm.errors.name} isInvalid={!!updateBeaconForm.errors.name}>
-                                            <EuiFieldText {...updateBeaconForm.getFieldProps('name')} isInvalid={!!updateBeaconForm.errors.name} />
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow label="Uuid" error={updateBeaconForm.errors.uuidString} isInvalid={!!updateBeaconForm.errors.uuidString}>
-                                            <EuiFieldText {...updateBeaconForm.getFieldProps('uuidString')} isInvalid={!!updateBeaconForm.errors.uuidString}/>
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                    <EuiFlexItem>
-                                        <EuiFormRow hasEmptyLabelSpace>
-                                            <EuiButton fill color="primary" type="submit">Update</EuiButton>
-                                        </EuiFormRow>
-                                    </EuiFlexItem>
-                                </EuiFlexGroup>
-                            </EuiForm>
-                        </EuiPanel>
-                    }
+                    <EuiPanel>
+                        <EuiTitle size="s">
+                            <h4>Edit Beacon</h4>
+                        </EuiTitle>
+                        <EuiSpacer />
+                        { showError &&
+                            <EuiCallOut title="An error has occured" color="danger" iconType="alert">
+                                <p>{error}</p>
+                            </EuiCallOut>
+                        }
+                        { showSuccess &&
+                            <EuiCallOut title="Success!" color="success" iconType="user">
+                                <p>Beacon updated sucessfully.</p>
+                            </EuiCallOut>
+                        }
+                        <EuiForm component="form" onSubmit={updateBeaconForm.handleSubmit}>
+                            <EuiFlexGroup style={{ maxWidth: 1000 }}>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Name" error={updateBeaconForm.errors.name} isInvalid={!!updateBeaconForm.errors.name}>
+                                        <EuiFieldText {...updateBeaconForm.getFieldProps('name')} isInvalid={!!updateBeaconForm.errors.name} />
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow label="Uuid" error={updateBeaconForm.errors.uuidString} isInvalid={!!updateBeaconForm.errors.uuidString}>
+                                        <EuiFieldText {...updateBeaconForm.getFieldProps('uuidString')} isInvalid={!!updateBeaconForm.errors.uuidString}/>
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                                <EuiFlexItem>
+                                    <EuiFormRow hasEmptyLabelSpace>
+                                        <EuiButton fill color="primary" type="submit" isLoading={updateBeaconForm.isSubmitting}>Update</EuiButton>
+                                    </EuiFormRow>
+                                </EuiFlexItem>
+                            </EuiFlexGroup>
+                        </EuiForm>
+                    </EuiPanel>
                 </EuiPageContentBody>
             </EuiPageContent>
         </>

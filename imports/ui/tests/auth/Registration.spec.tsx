@@ -2,6 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Registration } from '../../components/index';
+import { createMemoryHistory } from 'history';
 import { renderWithRouter } from '../utils/test-setup';
 
 describe('<Registration />', () => {
