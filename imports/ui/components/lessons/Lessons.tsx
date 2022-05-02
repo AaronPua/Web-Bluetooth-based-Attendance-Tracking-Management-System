@@ -36,23 +36,22 @@ export const Lessons = () => {
         setValue(e.target.value);
     };
 
-    const { course, isLoadinglessons, lessons, studentAttendance, studentsInCourse }  = useTracker(() => { 
+    const { course, lessons, studentAttendance, studentsInCourse }  = useTracker(() => { 
         Meteor.subscribe('courses.specific', courseId);
         const course = CoursesCollection.findOne(courseId);
 
-        const lessonsSub = Meteor.subscribe('lessons.forOneCourse', courseId);
-        const isLoadinglessons = !lessonsSub.ready();
-        const lessons = LessonsCollection.find(lessonsSub.scopeQuery(), courseId).fetch();
+        Meteor.subscribe('lessons.forOneCourse', courseId);
+        const lessons = LessonsCollection.find().fetch();
 
         const studentAttendance = _.chain(lessons).pluck('studentAttendance').flatten(true).value();
 
-        const studentsInCourseHandler = Meteor.subscribe('users.students.inSpecificCourse', courseId);
-        const studentsInCourse = Meteor.users.find(studentsInCourseHandler.scopeQuery()).fetch();
+        Meteor.subscribe('users.students.inSpecificCourse', courseId);
+        const studentsInCourse = Meteor.users.find({ "role.role._id": 'student' }).fetch();
 
-        return { course, isLoadinglessons, lessons, studentAttendance, studentsInCourse };
+        return { course, lessons, studentAttendance, studentsInCourse };
     }, []);
 
-    const totalAttendance = lessons.length * studentsInCourse.length;
+    const totalAttendance = (lessons ? lessons.length : 0) * (studentsInCourse ? studentsInCourse.length : 0);
     const present = _.first(studentAttendance) != null ? studentAttendance.length : 0;
     const absent = totalAttendance - present;
 
@@ -63,7 +62,8 @@ export const Lessons = () => {
 
     const barChartData = _.chain(lessons)
                             .map((lesson) => {
-                                const absentNum = studentsInCourse.length - lesson.studentAttendance.length;
+                                const absentNum = (studentsInCourse ? studentsInCourse.length : 0) 
+                                                    - (lesson.studentAttendance ? lesson.studentAttendance.length: 0);
                                 const absent = absentNum >= 0 ? absentNum: 0;
                                 return { name: lesson.name, present: lesson.studentAttendance.length, absent: absent };
                             }).sortBy('name').value();
@@ -93,8 +93,10 @@ export const Lessons = () => {
             endTime: yup.date().required('End Time is required'),
             date: yup.date().required('Date is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting, resetForm }) => {
             createNewLesson(courseId, values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
+            resetForm({ values: { name: '', startTime: moment(), endTime: moment(), date: moment() } });
         }
     });
 
@@ -294,7 +296,7 @@ export const Lessons = () => {
 
                                          <EuiFlexItem>
                                             <EuiFormRow hasEmptyLabelSpace>
-                                                <EuiButton fill color="primary" type="submit">Create</EuiButton>
+                                                <EuiButton fill color="primary" type="submit" isLoading={createLessonForm.isSubmitting}>Create</EuiButton>
                                             </EuiFormRow>
                                         </EuiFlexItem>
                                     </EuiFlexGroup>
@@ -321,7 +323,6 @@ export const Lessons = () => {
                                     title="Current Lessons"
                                     columns={columns}
                                     data={lessons}
-                                    progressPending={isLoadinglessons}
                                     pagination
                                     striped
                                     responsive

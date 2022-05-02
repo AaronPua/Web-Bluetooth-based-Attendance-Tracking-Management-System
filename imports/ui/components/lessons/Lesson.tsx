@@ -33,28 +33,21 @@ export const Lesson = () => {
     const [showRemoveAttendanceError, setShowRemoveAttendanceError] = useState(false);
     const [removeAttendanceError, setRemoveAttendanceError] = useState('');
 
-    const { lesson,  isLoadingLesson, presentStudents, isLoadingPresentStudents, absentStudents, isLoadingAbsentStudents } = useTracker(() => {
-        const lessonSub = Meteor.subscribe('lessons.specific', lessonId);
-        const isLoadingLesson = !lessonSub.ready();
+    const { lesson, presentStudents, absentStudents } = useTracker(() => {
+        Meteor.subscribe('lessons.specific', lessonId);
         const lesson = LessonsCollection.findOne(lessonId);
 
-        const presentStudentsSub = Meteor.subscribe('lesson.attendance.present', courseId, lessonId);
-        const isLoadingPresentStudents = !presentStudentsSub.ready();
-
-        const absentStudentsSub = Meteor.subscribe('lesson.attendance.absent', courseId, lessonId);
-        const isLoadingAbsentStudents = !absentStudentsSub.ready();
-
-        const courseStudentsSub = Meteor.subscribe('users.students.inSpecificCourse', courseId);
-        const courseStudents = Meteor.users.find(courseStudentsSub.scopeQuery()).fetch();
+        Meteor.subscribe('users.students.inSpecificCourse', courseId);
+        const courseStudents = Meteor.users.find({ "role.role._id": 'student' }).fetch();
         const courseStudentIds = _.pluck(courseStudents, '_id');
 
-        const attendedIds = _.pluck(_.get(lesson, 'studentAttendance'), '_id');
+        const attendedIds = _.chain(lesson).get('studentAttendance').pluck('_id').value();
         const absentIds = _.difference(courseStudentIds, attendedIds);
 
         const presentStudents = Meteor.users.find({ _id: { $in: attendedIds }, "courses._id": { $eq: courseId } }).fetch();
         const absentStudents = Meteor.users.find({ _id: { $in: absentIds }, "courses._id": { $eq: courseId } }).fetch();
 
-        return { lesson, isLoadingLesson, presentStudents, isLoadingPresentStudents, absentStudents, isLoadingAbsentStudents };
+        return { lesson, presentStudents, absentStudents };
     }, []);
 
     useEffect(() => {
@@ -87,8 +80,9 @@ export const Lesson = () => {
             endTime: yup.date().required('End Time is required'),
             date: yup.date().required('Date is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
             updateThisLesson(lessonId, values);
+            Meteor.setTimeout(() => { setSubmitting(false) }, 500);
         }
     });
 
@@ -191,64 +185,62 @@ export const Lesson = () => {
                                         <p>Lesson updated sucessfully.</p>
                                     </EuiCallOut> 
                                 }
-                                { !isLoadingLesson &&
-                                    <EuiForm component="form" onSubmit={updateLessonForm.handleSubmit}>
-                                        <EuiFlexGroup>
-                                            <EuiFlexItem>
-                                                <EuiFormRow label="Lesson Name" error={updateLessonForm.errors.name} isInvalid={!!updateLessonForm.errors.name}>
-                                                    <EuiFieldText {...updateLessonForm.getFieldProps('name')} isInvalid={!!updateLessonForm.errors.name}/>
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
+                                <EuiForm component="form" onSubmit={updateLessonForm.handleSubmit}>
+                                    <EuiFlexGroup>
+                                        <EuiFlexItem>
+                                            <EuiFormRow label="Lesson Name" error={updateLessonForm.errors.name} isInvalid={!!updateLessonForm.errors.name}>
+                                                <EuiFieldText {...updateLessonForm.getFieldProps('name')} isInvalid={!!updateLessonForm.errors.name}/>
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
 
-                                            <EuiFlexItem>
-                                                <EuiFormRow label="Start Time" error={updateLessonForm.errors.startTime} 
-                                                    isInvalid={!!updateLessonForm.errors.startTime}>
-                                                    <EuiDatePicker
-                                                        showTimeSelect
-                                                        selected={updateLessonForm.values.startTime}
-                                                        onChange={(date: Moment) => updateLessonForm.setFieldValue('startTime', date)}
-                                                        dateFormat="DD-MM-YYYY hh:mm a"
-                                                        isInvalid={!!updateLessonForm.errors.startTime}
-                                                        name="startTime"
-                                                    />
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
+                                        <EuiFlexItem>
+                                            <EuiFormRow label="Start Time" error={updateLessonForm.errors.startTime} 
+                                                isInvalid={!!updateLessonForm.errors.startTime}>
+                                                <EuiDatePicker
+                                                    showTimeSelect
+                                                    selected={updateLessonForm.values.startTime}
+                                                    onChange={(date: Moment) => updateLessonForm.setFieldValue('startTime', date)}
+                                                    dateFormat="DD-MM-YYYY hh:mm a"
+                                                    isInvalid={!!updateLessonForm.errors.startTime}
+                                                    name="startTime"
+                                                />
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
 
-                                            <EuiFlexItem>
-                                                <EuiFormRow label="End Time" error={updateLessonForm.errors.endTime} 
-                                                    isInvalid={!!updateLessonForm.errors.endTime}>
-                                                    <EuiDatePicker
-                                                        showTimeSelect
-                                                        selected={updateLessonForm.values.endTime}
-                                                        onChange={(date: Moment) => updateLessonForm.setFieldValue('endTime', date)}
-                                                        dateFormat="DD-MM-YYYY hh:mm a"
-                                                        isInvalid={!!updateLessonForm.errors.endTime}
-                                                        name="endTime"
-                                                    />
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
+                                        <EuiFlexItem>
+                                            <EuiFormRow label="End Time" error={updateLessonForm.errors.endTime} 
+                                                isInvalid={!!updateLessonForm.errors.endTime}>
+                                                <EuiDatePicker
+                                                    showTimeSelect
+                                                    selected={updateLessonForm.values.endTime}
+                                                    onChange={(date: Moment) => updateLessonForm.setFieldValue('endTime', date)}
+                                                    dateFormat="DD-MM-YYYY hh:mm a"
+                                                    isInvalid={!!updateLessonForm.errors.endTime}
+                                                    name="endTime"
+                                                />
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
 
-                                            <EuiFlexItem>
-                                                <EuiFormRow label="Date" error={updateLessonForm.errors.date} 
-                                                    isInvalid={!!updateLessonForm.errors.date}>
-                                                    <EuiDatePicker
-                                                        dateFormat="DD-MM-YYYY"
-                                                        selected={updateLessonForm.values.date}
-                                                        onChange={(date: Moment) => updateLessonForm.setFieldValue('date', date)}
-                                                        isInvalid={!!updateLessonForm.errors.date}
-                                                        name="date"
-                                                    />
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
+                                        <EuiFlexItem>
+                                            <EuiFormRow label="Date" error={updateLessonForm.errors.date} 
+                                                isInvalid={!!updateLessonForm.errors.date}>
+                                                <EuiDatePicker
+                                                    dateFormat="DD-MM-YYYY"
+                                                    selected={updateLessonForm.values.date}
+                                                    onChange={(date: Moment) => updateLessonForm.setFieldValue('date', date)}
+                                                    isInvalid={!!updateLessonForm.errors.date}
+                                                    name="date"
+                                                />
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
 
-                                            <EuiFlexItem>
-                                                <EuiFormRow hasEmptyLabelSpace>
-                                                    <EuiButton fill color="primary" type="submit">Update</EuiButton>
-                                                </EuiFormRow>
-                                            </EuiFlexItem>
-                                        </EuiFlexGroup>
-                                    </EuiForm>
-                                }
+                                        <EuiFlexItem>
+                                            <EuiFormRow hasEmptyLabelSpace>
+                                                <EuiButton fill color="primary" type="submit" isLoading={updateLessonForm.isSubmitting}>Update</EuiButton>
+                                            </EuiFormRow>
+                                        </EuiFlexItem>
+                                    </EuiFlexGroup>
+                                </EuiForm>
                             </EuiPanel>
                         </EuiFlexItem>
                     </EuiFlexGroup>
@@ -270,7 +262,6 @@ export const Lesson = () => {
                                     title="Present Students"
                                     columns={presentStudentColumns}
                                     data={presentStudents}
-                                    progressPending={isLoadingPresentStudents}
                                     pagination
                                     striped
                                     responsive
@@ -294,7 +285,6 @@ export const Lesson = () => {
                                     title="Absent Students"
                                     columns={absentStudentColumns}
                                     data={absentStudents}
-                                    progressPending={isLoadingAbsentStudents}
                                     pagination
                                     striped
                                     responsive
