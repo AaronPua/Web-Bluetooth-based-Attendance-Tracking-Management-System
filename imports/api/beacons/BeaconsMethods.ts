@@ -12,7 +12,7 @@ export const createBeacon = new ValidatedMethod({
         message: 'You need to be logged in before creating a beacon.',
     },
     validate: beaconCreateSchema.validator(),
-    run({ courseId, name, uuid }: { courseId: string, name: number, uuid: string }) {
+    run({ courseId, name, uuid }: { courseId: string, name: string, uuid: string }) {
         BeaconsCollection.insert({
             courseId: courseId,
             name: name,

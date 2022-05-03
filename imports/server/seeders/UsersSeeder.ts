@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 import { faker } from '@faker-js/faker';
+import _ from 'underscore';
 
 export const InstructorSeeder = (resetCollection: boolean, seedIfExistingData: boolean, count: number) => seeder(Meteor.users, {
     resetCollection: resetCollection,
@@ -57,6 +58,10 @@ export const StudentSeeder = (resetCollection: boolean, seedIfExistingData: bool
 export const AdminsSeeder = (iteration: any) => {
     let adminIds: Array<String> = [];
 
+    if(!_.contains(Roles.getAllRoles(), 'admin')) {
+        Roles.createRole('admin');
+    }
+
     for(let i = 0; i < iteration; i++) {
         const userId = Accounts.createUser({
             email: faker.internet.email(), 
@@ -78,6 +83,10 @@ export const AdminsSeeder = (iteration: any) => {
 export const InstructorsSeeder = (iteration: any) => {
     let instructorIds: Array<String> = [];
 
+    if(!_.contains(Roles.getAllRoles(), 'instructor')) {
+        Roles.createRole('instructor');
+    }
+
     for(let i = 0; i < iteration; i++) {
         const userId = Accounts.createUser({
             email: faker.internet.email(), 
@@ -98,6 +107,10 @@ export const InstructorsSeeder = (iteration: any) => {
 
 export const StudentsSeeder = (iteration: any) => {
     let studentIds: Array<String> = [];
+
+    if(!_.contains(Roles.getAllRoles(), 'student')) {
+        Roles.createRole('student');
+    }
 
     for(let i = 0; i < iteration; i++) {
         const userId = Accounts.createUser({

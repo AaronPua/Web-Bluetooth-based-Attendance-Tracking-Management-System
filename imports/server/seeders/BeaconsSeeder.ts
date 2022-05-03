@@ -1,5 +1,4 @@
 import seeder from '@cleverbeagle/seeder';
-import { Meteor } from 'meteor/meteor';
 import ObjectID from 'bson-objectid';
 import { BeaconsCollection } from '/imports/api/beacons/BeaconsCollection';
 import { faker } from '@faker-js/faker';
@@ -34,13 +33,19 @@ export const BeaconSeeder = (resetCollection: boolean, seedIfExistingData: boole
     }
 });
 
-export const BeaconsSeeder = (iteration: any, courseId: string) => {
+export const BeaconsSeeder = (iteration: any, courseId: String) => {
+    let beaconIds: Array<String> = [];
+
     for(let i = 0; i < iteration; i++) {
-        BeaconsCollection.insert({
+        const beaconId = BeaconsCollection.insert({
             courseId: courseId,
-            name: `Beacon ${iteration + 1}`,
+            name: `Beacon ${i}`,
             uuid: uuid(),
             createdAt: faker.date.recent(),
         });
+
+        beaconIds.push(beaconId);
     }
+
+    return beaconIds;
 }

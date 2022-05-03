@@ -74,8 +74,10 @@ export const resendVerificationEmail = new ValidatedMethod({
         if(Meteor.isServer) {
             const user = Accounts.findUserByEmail(email);
 
-            if(user)
+            if(user) {
                 Accounts.sendVerificationEmail(user._id);
+                return true;
+            }
             else
                 throw new Meteor.Error("user-not-found", "User not found according to this email address.");
         }
@@ -92,8 +94,10 @@ export const sendPasswordResetEmail = new ValidatedMethod({
         if(Meteor.isServer) {
             const user = Accounts.findUserByEmail(email);
 
-            if(user)
+            if(user) {
                 Accounts.sendResetPasswordEmail(user._id);
+                return true;
+            }
             else
                 throw new Meteor.Error("user-not-found", "User not found according to this email address.");
         }

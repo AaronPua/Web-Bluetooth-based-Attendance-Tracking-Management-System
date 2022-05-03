@@ -26,15 +26,21 @@ export const LessonSeeder = (resetCollection: boolean, seedIfExistingData: boole
     }
 });
 
-export const LessonsSeeder = (iteration: any, courseId: string) => {
+export const LessonsSeeder = (iteration: any, courseId: String) => {
+    let lessonIds: Array<String> = [];
+
     for(let i = 0; i < iteration; i++) {
-        LessonsCollection.insert({
+        const lessonId = LessonsCollection.insert({
             courseId: courseId,
-            name: `Lesson ${iteration + 1}`,
+            name: `Lesson ${i}`,
             startTime: moment().hours(1).minutes(0).toDate(),
             endTime: moment().hours(3).minutes(0).toDate(),
             date: new Date().setDate(new Date().getDate() + 1),
             createdAt: new Date(),
         });
+
+        lessonIds.push(lessonId);
     }
+
+    return lessonIds;
 }

@@ -24,11 +24,17 @@ export const CourseSeeder = (resetCollection: boolean, seedIfExistingData: boole
 });
 
 export const CoursesSeeder = (iteration: any) => {
+    let coursesIds: Array<String> = [];
+
     for(let i = 0; i < iteration; i++) {
-        CoursesCollection.insert({
-            name: `Course ${iteration + 1}`,
+        const courseId = CoursesCollection.insert({
+            name: `Course ${i}`,
             credits: faker.datatype.number({ min: 1, max: 6 }),
             createdAt: faker.date.recent(),
         });
+
+        coursesIds.push(courseId);
     }
+
+    return coursesIds;
 }

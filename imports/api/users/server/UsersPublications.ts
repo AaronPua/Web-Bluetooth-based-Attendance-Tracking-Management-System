@@ -28,8 +28,6 @@ Meteor.publish(null, function () {
 });
 
 Meteor.publish('users.all', function() {
-    this.enableScope();
-
     if(!Roles.userIsInRole(this.userId, 'admin')) {
         this.ready();
         return;
@@ -39,15 +37,12 @@ Meteor.publish('users.all', function() {
 });
 
 Meteor.publish('users.specific', function(userId) {
-    this.enableScope();
     check(userId, String);
 
     return Meteor.users.find({ _id: userId });
 });
 
 Meteor.publish('users.admins', function() {
-    this.enableScope();
-
     if(!Roles.userIsInRole(this.userId, 'admin')) {
         this.ready();
         return;
@@ -55,8 +50,6 @@ Meteor.publish('users.admins', function() {
 
     const admins = Meteor.roleAssignment.find({ "role._id": 'admin' }).fetch();
     const adminIds = _.pluck(_.flatten(_.pluck(admins, 'user')), '_id');
-
-    // return Meteor.users.find({ _id: { $in: adminIds }});
 
     ReactiveAggregate(this, Meteor.users, [
         {
@@ -84,8 +77,6 @@ Meteor.publish('users.admins', function() {
 });
 
 Meteor.publish('users.instructors', function() {
-    this.enableScope();
-
     if(!Roles.userIsInRole(this.userId, 'admin')) {
         this.ready();
         return;
@@ -93,8 +84,6 @@ Meteor.publish('users.instructors', function() {
 
     const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
-
-    // return Meteor.users.find({ _id: { $in: instructorIds }});
 
     ReactiveAggregate(this, Meteor.users, [
         {
@@ -122,8 +111,6 @@ Meteor.publish('users.instructors', function() {
 });
 
 Meteor.publish('users.students', function() {
-    this.enableScope();
-
     if(!Roles.userIsInRole(this.userId, 'admin')) {
         this.ready();
         return;
@@ -131,8 +118,6 @@ Meteor.publish('users.students', function() {
     
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
-
-    // return Meteor.users.find({ _id: { $in: studentIds }});
 
     ReactiveAggregate(this, Meteor.users, [
         {
@@ -160,7 +145,6 @@ Meteor.publish('users.students', function() {
 });
 
 Meteor.publish('users.students.inSpecificCourse', function(courseId) {
-    this.enableScope();
     check(courseId, String);
 
     if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
@@ -170,11 +154,6 @@ Meteor.publish('users.students.inSpecificCourse', function(courseId) {
 
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
-
-    // return Meteor.users.find({
-    //     _id: { $in: studentIds },
-    //     "courses._id": { $eq: courseId }
-    // });
 
     ReactiveAggregate(this, Meteor.users, [
         {
@@ -203,7 +182,6 @@ Meteor.publish('users.students.inSpecificCourse', function(courseId) {
 });
 
 Meteor.publish('users.students.notInSpecificCourse', function(courseId) {
-    this.enableScope();
     check(courseId, String);
 
     if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
@@ -213,11 +191,6 @@ Meteor.publish('users.students.notInSpecificCourse', function(courseId) {
 
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
-
-    // return Meteor.users.find({
-    //     _id: { $in: studentIds },
-    //     "courses._id": { $ne: courseId }
-    // });
 
     ReactiveAggregate(this, Meteor.users, [
         {
@@ -246,7 +219,6 @@ Meteor.publish('users.students.notInSpecificCourse', function(courseId) {
 });
 
 Meteor.publish('users.instructors.inSpecificCourse', function(courseId) {
-    this.enableScope();
     check(courseId, String);
 
     if(!Roles.userIsInRole(this.userId, ['admin', 'instructor'])) {
@@ -256,11 +228,6 @@ Meteor.publish('users.instructors.inSpecificCourse', function(courseId) {
 
     const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
-
-    // return Meteor.users.find({
-    //     _id: { $in: instructorIds },
-    //     "courses._id": { $eq: courseId }
-    // });
 
     ReactiveAggregate(this, Meteor.users, [
         {
@@ -289,7 +256,6 @@ Meteor.publish('users.instructors.inSpecificCourse', function(courseId) {
 });
 
 Meteor.publish('users.instructors.notInSpecificCourse', function(courseId) {
-    this.enableScope();
     check(courseId, String);
 
     if(!Roles.userIsInRole(this.userId, 'admin')) {
@@ -299,11 +265,6 @@ Meteor.publish('users.instructors.notInSpecificCourse', function(courseId) {
 
     const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
-
-    // return Meteor.users.find({
-    //     _id: { $in: instructorIds },
-    //     "courses._id": { $ne: courseId }
-    // });
 
     ReactiveAggregate(this, Meteor.users, [
         {

@@ -1,57 +1,87 @@
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
-import { assert } from 'chai';
-import '../server/BeaconsPublications';
 import { CoursesCollection } from '../../courses/CoursesCollection';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { BeaconsSeeder } from '/imports/server/seeders/BeaconsSeeder';
-import _ from 'underscore';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
-import { BeaconsCollection } from '../BeaconsCollection';
 import { AdminsSeeder } from '/imports/server/seeders/UsersSeeder';
+import '../server/BeaconsPublications';
+import _ from 'underscore';
+import { assert } from 'chai';
 
 describe('BeaconsPublications', function() {
-
-    let adminId: string, courseId: string, beaconId: string;
-
-    before(function() {
+    beforeEach(function() {
         resetDatabase();
-        if(Meteor.roles.find().count() === 0) {
-            Roles.createRole('admin');
-            Roles.createRole('instructor');
-            Roles.createRole('student');
-        }
-
-        AdminsSeeder(1);
-        adminId = Meteor.users.find().fetch()[0]._id;
-        CoursesSeeder(1);
-        courseId = CoursesCollection.find().fetch()[0]._id;
-        BeaconsSeeder(5, courseId);
-        beaconId = BeaconsCollection.find().fetch()[0]._id;
     });
 
-    it('publish all beacons', async function() {
-        const collector = new PublicationCollector({ userId: adminId });
+    after(function() {
+        resetDatabase();
+    });
+
+    it('publish all beacons - beacons.all', async function() {
+        const adminIds = AdminsSeeder(1);
+        const collector = new PublicationCollector({ userId: adminIds[0] });
+        
+        const courseIds = CoursesSeeder(1);
+        BeaconsSeeder(5, courseIds[0]);
         
         const collections = await collector.collect('beacons.all');
         assert.equal(collections.beacons.length, 5);
     });
 
-    it('publish specific beacon', async function() {
-        const collector = new PublicationCollector({ userId: adminId });
+    it('publish all beacons with course - beacons.all.withCourse', async function() {
+        const adminIds = AdminsSeeder(1);
+        const collector = new PublicationCollector({ userId: adminIds[0] });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        BeaconsSeeder(5, courseId);
+        
+        const collections = await collector.collect('beacons.all.withCourse');
+        assert.equal(collections.beacons.length, 5);
+
+        const courseName = CoursesCollection.findOne(courseId)?.name;
+        assert.equal(collections.beacons[0].course[0].name, courseName);
+    });
+
+    it('publish specific beacon - beacons.specific', async function() {
+        const adminIds = AdminsSeeder(1);
+        const collector = new PublicationCollector({ userId: adminIds[0] });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        const beaconIds = BeaconsSeeder(5, courseId);
+        const beaconId = beaconIds[0];
         
         const collections = await collector.collect('beacons.specific', beaconId);
         assert.equal(collections.beacons.length, 1);
         assert.equal(collections.beacons[0]._id, beaconId);
     });
 
-    it('publish beacons for a course', async function() {
+    it('publish beacons for a course - beacons.forOneCourse', async function() {
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        BeaconsSeeder(5, courseId);
+
         const collector = new PublicationCollector();
         
         const collections = await collector.collect('beacons.forOneCourse', courseId);
         assert.equal(collections.beacons.length, 5);
     });
 
-    after(function() {
-        resetDatabase();
+    it('publish beacons for multiple courses - beacons.forMultipleCourses', async function() {
+        const courseIds = CoursesSeeder(2);
+        BeaconsSeeder(2, courseIds[0]);
+        BeaconsSeeder(2, courseIds[1]);
+
+        const collector = new PublicationCollector();
+        
+        const collections = await collector.collect('beacons.forMultipleCourses', courseIds);
+        assert.equal(collections.beacons.length, 4);
+
+        const course1Name = CoursesCollection.findOne(courseIds[0])?.name;
+        assert.equal(collections.beacons[0].course[0].name, course1Name);
+
+        const course2Name = CoursesCollection.findOne(courseIds[1])?.name;
+        assert.equal(collections.beacons[2].course[0].name, course2Name);
     });
 });

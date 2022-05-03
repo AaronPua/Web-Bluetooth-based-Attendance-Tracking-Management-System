@@ -1,42 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { assert } from 'chai';
-import _ from 'underscore';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Random } from 'meteor/random';
 import { StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
-import { Roles } from 'meteor/alanning:roles';
 import { CoursesCollection } from '../../courses/CoursesCollection';
 import { createCourse } from '../../courses/CoursesMethods';
 import { createLesson, removeLesson, updateAttendance, updateLesson } from '../LessonsMethods';
-import moment from 'moment';
 import { LessonsCollection } from '../LessonsCollection';
+import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
+import { LessonsSeeder } from '/imports/server/seeders/LessonsSeeder';
+import moment from 'moment';
+import _ from 'underscore';
 
 describe('LessonMethods', function() {
-
-    let courseId: string, course: any, student: Meteor.User, studentId: string, lesson: any;
-
-    before(function() {
+    beforeEach(function() {
         resetDatabase();
+    });
 
-        if(Meteor.roles.find().count() === 0) {
-            Roles.createRole('admin');
-            Roles.createRole('instructor');
-            Roles.createRole('student');
-        }
-
-        createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
-        course = CoursesCollection.find().fetch()[0];
-        courseId = course._id;
-
-        StudentsSeeder(1);
-        student = Meteor.users.find().fetch()[0];
-        studentId = student._id;
+    after(function() {
+        resetDatabase();
     });
 
     describe('Create Lesson', function() {
         it('success - create a lesson', function() {
+            createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
+            const course = CoursesCollection.find().fetch()[0];
+
             createLesson._execute({ userId: Random.id() }, { 
-                courseId: courseId,
+                courseId: course._id,
                 name: `Lesson 1`,
                 startTime: moment().hours(1).minutes(0).toDate(),
                 endTime: moment().hours(3).minutes(0).toDate(),
@@ -46,9 +37,12 @@ describe('LessonMethods', function() {
         });
 
         it('fail - create a lesson without logging in', function() {
+            createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
+            const course = CoursesCollection.find().fetch()[0];
+
             assert.throws(() => {
                 createLesson._execute({}, { 
-                    courseId: courseId,
+                    courseId: course._id,
                     name: `Lesson 1`,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     endTime: moment().hours(3).minutes(0).toDate(),
@@ -69,9 +63,12 @@ describe('LessonMethods', function() {
         });
 
         it('fail - create a lesson without name', function() {
+            createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
+            const course = CoursesCollection.find().fetch()[0];
+
             assert.throws(() => {
                 createLesson._execute({}, { 
-                    courseId: courseId,
+                    courseId: course._id,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     endTime: moment().hours(3).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
@@ -80,9 +77,12 @@ describe('LessonMethods', function() {
         });
 
         it('fail - create a lesson without start time', function() {
+            createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
+            const course = CoursesCollection.find().fetch()[0];
+
             assert.throws(() => {
                 createLesson._execute({}, { 
-                    courseId: courseId,
+                    courseId: course._id,
                     name: `Lesson 1`,
                     endTime: moment().hours(3).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
@@ -91,9 +91,12 @@ describe('LessonMethods', function() {
         });
 
         it('fail - create a lesson without end time', function() {
+            createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
+            const course = CoursesCollection.find().fetch()[0];
+
             assert.throws(() => {
                 createLesson._execute({}, { 
-                    courseId: courseId,
+                    courseId: course._id,
                     name: `Lesson 1`,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
@@ -102,9 +105,12 @@ describe('LessonMethods', function() {
         });
 
         it('fail - create a lesson without date', function() {
+            createCourse._execute({ userId: Random.id() }, { name: 'Course 1', credits: 3 });
+            const course = CoursesCollection.find().fetch()[0];
+
             assert.throws(() => {
                 createLesson._execute({}, { 
-                    courseId: courseId,
+                    courseId: course._id,
                     name: `Lesson 1`,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     endTime: moment().hours(3).minutes(0).toDate(),
@@ -115,26 +121,27 @@ describe('LessonMethods', function() {
 
     describe('Remove Lesson', function() {
         it('success - remove a lesson', function() {
-            createLesson._execute({ userId: Random.id() }, { 
-                courseId: courseId,
-                name: `Lesson 2`,
-                startTime: moment().hours(1).minutes(0).toDate(),
-                endTime: moment().hours(3).minutes(0).toDate(),
-                date: moment().day(1).toDate(),
-            });
-            lesson = LessonsCollection.find().fetch()[1];
-            removeLesson._execute({ userId: Random.id() }, { lessonId: lesson._id });
-            assert.equal(LessonsCollection.find().count(), 1);
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
+            removeLesson._execute({ userId: Random.id() }, { lessonId: lessonId });
+            assert.equal(LessonsCollection.find().count(), 0);
         });
 
         it('fail - remove a lesson without logging in', function() {
-            lesson = LessonsCollection.find().fetch()[0];
-            assert.throws(() => { removeLesson._execute({}, { lessonId: lesson._id });
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
+            assert.throws(() => { removeLesson._execute({}, { lessonId: lessonId });
             }, Meteor.Error, 'You need to be logged in before removing a lesson');
         });
 
         it('fail - remove a lesson without lesson ID', function() {
-            lesson = LessonsCollection.find().fetch()[0];
+            const courseIds = CoursesSeeder(1);
+            LessonsSeeder(1, courseIds[0]);
+
             assert.throws(() => { removeLesson._execute({}, {});
             }, 'Lesson ID is required');
         });
@@ -142,23 +149,31 @@ describe('LessonMethods', function() {
 
     describe('Update Lesson', function() {
         it('success - update a lesson', function() {
-            lesson = LessonsCollection.find().fetch()[0];
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             updateLesson._execute({ userId: Random.id() }, { 
-                lessonId: lesson._id, 
-                name: 'Lesson 3',
+                lessonId: lessonId, 
+                name: 'Lesson 2',
                 startTime: moment().hours(1).minutes(0).toDate(),
                 endTime: moment().hours(3).minutes(0).toDate(),
                 date: moment().day(1).toDate(),
             });
-            lesson = LessonsCollection.find().fetch()[0];
-            assert.equal(lesson.name, 'Lesson 3');
+
+            const updatedLesson = LessonsCollection.find().fetch()[0];
+            assert.equal(updatedLesson.name, 'Lesson 2');
         });
 
         it('fail - update a lesson without logging in', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             assert.throws(() => {
                updateLesson._execute({}, { 
-                    lessonId: lesson._id,
-                    name: 'Lesson 3',
+                    lessonId: lessonId,
+                    name: 'Lesson 2',
                     startTime: moment().hours(1).minutes(0).toDate(),
                     endTime: moment().hours(3).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
@@ -167,9 +182,12 @@ describe('LessonMethods', function() {
         });
 
         it('fail - update a lesson without lesson ID', function() {
+            const courseIds = CoursesSeeder(1);
+            LessonsSeeder(1, courseIds[0]);
+
             assert.throws(() => {
                 updateLesson._execute({}, { 
-                    name: `Lesson 1`,
+                    name: `Lesson 2`,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     endTime: moment().hours(3).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
@@ -178,9 +196,13 @@ describe('LessonMethods', function() {
         });
 
         it('fail - update a lesson without name', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             assert.throws(() => {
                 updateLesson._execute({}, { 
-                    lessonId: lesson._id,
+                    lessonId: lessonId,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     endTime: moment().hours(3).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
@@ -189,10 +211,14 @@ describe('LessonMethods', function() {
         });
 
         it('fail - update a lesson without start time', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             assert.throws(() => {
                 updateLesson._execute({}, { 
-                    lessonId: lesson._id,
-                    name: `Lesson 1`,
+                    lessonId: lessonId,
+                    name: `Lesson 2`,
                     endTime: moment().hours(3).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
                 });
@@ -200,10 +226,14 @@ describe('LessonMethods', function() {
         });
 
         it('fail - update a lesson without end time', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             assert.throws(() => {
                 updateLesson._execute({}, { 
-                    lessonId: lesson._id,
-                    name: `Lesson 1`,
+                    lessonId: lessonId,
+                    name: `Lesson 2`,
                     startTime: moment().hours(1).minutes(0).toDate(),
                     date: moment().day(1).toDate(),
                 });
@@ -213,81 +243,125 @@ describe('LessonMethods', function() {
 
     describe('Add Student Attendance', function() {
         it('success - add student attendance', function() {
-            lesson = LessonsCollection.find().fetch()[0];
-            updateAttendance._execute({ userId: Random.id() }, { lessonId: lesson._id, studentId: studentId, action: 'add' });
-            lesson = LessonsCollection.find().fetch()[0];
-            assert.isNotNull(lesson.studentAttendance);
-            const studentAttendedIds = _.pluck(_.values(lesson.studentAttendance), '_id');
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
+            updateAttendance._execute({ userId: Random.id() }, { lessonId: lessonId, studentId: studentId, action: 'add' });
+
+            const updatedLesson = LessonsCollection.find().fetch()[0];
+            assert.isNotNull(updatedLesson.studentAttendance);
+            const studentAttendedIds = _.pluck(_.values(updatedLesson.studentAttendance), '_id');
             assert.include(studentAttendedIds, studentId);
         });
 
         it('fail - add student attendance without logging in', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
-                updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId, action: 'add' });
+                updateAttendance._execute({}, { lessonId: lessonId, studentId: studentId, action: 'add' });
             }, Meteor.Error, "You need to be logged in before updating a student's attendance");
         });
 
         it('fail - add student attendance without lesson ID', function() {
+            const courseIds = CoursesSeeder(1);
+            LessonsSeeder(1, courseIds[0]);
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
                 updateAttendance._execute({}, { studentId: studentId, action: 'add' });
             }, "Lesson ID is required");
         });
 
         it('fail - add student attendance without student ID', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
-                updateAttendance._execute({}, { lessonId: lesson._id, action: 'add' });
+                updateAttendance._execute({}, { lessonId: lessonId, action: 'add' });
             }, "Student ID is required");
         });
 
         it('fail - add student attendance without action', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
             assert.throws(() => {
                 lesson = LessonsCollection.find().fetch()[0];
-                updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId });
+                updateAttendance._execute({}, { lessonId: lessonId, studentId: studentId });
             }, "Action is required");
         });
     });
 
     describe('Remove Student Attendance', function() {
         it('success - remove student attendance', function() {
-            lesson = LessonsCollection.find().fetch()[0];
-            updateAttendance._execute({ userId: Random.id() }, { lessonId: lesson._id, studentId: studentId, action: 'remove' });
-            lesson = LessonsCollection.find().fetch()[0];
-            assert.isEmpty(lesson.studentAttendance);
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
+            updateAttendance._execute({ userId: Random.id() }, { lessonId: lessonId, studentId: studentId, action: 'add' });
+            updateAttendance._execute({ userId: Random.id() }, { lessonId: lessonId, studentId: studentId, action: 'remove' });
+
+            const updated2Lesson = LessonsCollection.find().fetch()[0];
+            assert.isEmpty(updated2Lesson.studentAttendance);
         });
 
         it('fail - remove student attendance without logging in', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
-                updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId, action: 'remove' });
+                updateAttendance._execute({}, { lessonId: lessonId, studentId: studentId, action: 'remove' });
             }, Meteor.Error, "You need to be logged in before updating a student's attendance");
         });
 
         it('fail - remove student attendance without lesson ID', function() {
+            const courseIds = CoursesSeeder(1);
+            LessonsSeeder(1, courseIds[0]);
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
                 updateAttendance._execute({}, { studentId: studentId, action: 'remove' });
             }, "Lesson ID is required");
         });
 
         it('fail - remove student attendance without student ID', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
-                updateAttendance._execute({}, { lessonId: lesson._id, action: 'remove' });
+                updateAttendance._execute({}, { lessonId: lessonId, action: 'remove' });
             }, "Student ID is required");
         });
 
         it('fail - remove student attendance without action', function() {
+            const courseIds = CoursesSeeder(1);
+            const lessonIds = LessonsSeeder(1, courseIds[0]);
+            const lessonId = lessonIds[0];
+            const studentIds = StudentsSeeder(1);
+            const studentId = studentIds[0];
+
             assert.throws(() => {
-                lesson = LessonsCollection.find().fetch()[0];
-                updateAttendance._execute({}, { lessonId: lesson._id, studentId: studentId });
+                updateAttendance._execute({}, { lessonId: lessonId, studentId: studentId });
             }, "Action is required");
         });
-    });
-    
-    after(function() {
-        resetDatabase();
     });
 });
