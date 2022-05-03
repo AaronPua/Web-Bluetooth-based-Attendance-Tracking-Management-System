@@ -16,4 +16,6 @@ export const Meteor = {
     bindEnvironment: jest.fn(),
     wrapAsync: jest.fn(function(f) { return f; }),
     Error: jest.fn(Error),
+    logout: jest.fn(),
+    setTimeout: jest.fn()
 };

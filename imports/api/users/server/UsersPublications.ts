@@ -56,7 +56,31 @@ Meteor.publish('users.admins', function() {
     const admins = Meteor.roleAssignment.find({ "role._id": 'admin' }).fetch();
     const adminIds = _.pluck(_.flatten(_.pluck(admins, 'user')), '_id');
 
-    return Meteor.users.find({ _id: { $in: adminIds }});
+    // return Meteor.users.find({ _id: { $in: adminIds }});
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: adminIds },
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('users.instructors', function() {
@@ -70,7 +94,31 @@ Meteor.publish('users.instructors', function() {
     const instructors = Meteor.roleAssignment.find({ "role._id": 'instructor' }).fetch();
     const instructorIds = _.pluck(_.flatten(_.pluck(instructors, 'user')), '_id');
 
-    return Meteor.users.find({ _id: { $in: instructorIds }});
+    // return Meteor.users.find({ _id: { $in: instructorIds }});
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: instructorIds },
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('users.students', function() {
@@ -84,7 +132,31 @@ Meteor.publish('users.students', function() {
     const students = Meteor.roleAssignment.find({ "role._id": 'student' }).fetch();
     const studentIds = _.pluck(_.flatten(_.pluck(students, 'user')), '_id');
 
-    return Meteor.users.find({ _id: { $in: studentIds }});
+    // return Meteor.users.find({ _id: { $in: studentIds }});
+
+    ReactiveAggregate(this, Meteor.users, [
+        {
+            $match: { 
+                _id: { $in: studentIds },
+            }
+        },
+        {
+            $lookup: {
+                from: 'role-assignment',
+                localField: '_id',
+                foreignField: 'user._id',
+                as: 'role'
+            }
+        },
+        {
+            $project: {
+                emails: 1,
+                profile: 1,
+                courses: 1,
+                "role.role._id": 1,
+            }
+        }
+    ]);
 });
 
 Meteor.publish('users.students.inSpecificCourse', function(courseId) {

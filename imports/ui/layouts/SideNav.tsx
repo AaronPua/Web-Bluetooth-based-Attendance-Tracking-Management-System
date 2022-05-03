@@ -1,6 +1,8 @@
 import { EuiIcon, EuiSideNav, htmlIdGenerator } from '@elastic/eui';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/alanning:roles';
 
 export const SideNav = () => {
 
