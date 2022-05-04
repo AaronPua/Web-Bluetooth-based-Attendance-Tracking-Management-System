@@ -26,7 +26,6 @@ describe('/account', function() {
 
         cy.contains('Success!');
         cy.contains('Account updated sucessfully.');
-        cy.contains('Fake 2');
     });
 
     it('success - edit current user password', () => {
