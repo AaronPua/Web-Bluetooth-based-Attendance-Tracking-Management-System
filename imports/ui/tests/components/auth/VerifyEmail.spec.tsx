@@ -26,6 +26,9 @@ describe('<VerifyEmail />', () => {
         const resendButton = screen.getByRole('button', { name: 'Resend' });
         await user.click(resendButton);
 
-        await waitFor(() => expect(resendButton).toBeDisabled);
+        await waitFor(() => { 
+            expect(resendButton).toBeDisabled();
+            expect(emailInput).toHaveValue('not_exist@test.com');
+        });
     });
 });

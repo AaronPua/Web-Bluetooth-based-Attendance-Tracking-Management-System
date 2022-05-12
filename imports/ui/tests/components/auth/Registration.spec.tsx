@@ -2,8 +2,14 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Registration } from '../../../components/index';
-import { createMemoryHistory } from 'history';
 import { renderWithRouter } from '../../utils/test-setup';
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockNavigate
+}));
 
 describe('<Registration />', () => {
     beforeEach(() => {
@@ -39,16 +45,24 @@ describe('<Registration />', () => {
         const registerButton = screen.getByRole('button', { name: 'Register' });
         await user.click(registerButton);
 
-        await waitFor(() => { expect(registerButton).toBeDisabled });
+        await waitFor(() => { 
+            expect(registerButton).toBeDisabled();
+            expect(email).toHaveValue('test_user@fake.com');
+            expect(password).toHaveValue('test');
+        });
     });
 
-    it('test redirect back to login', async () => {
-        const history = createMemoryHistory();
+    it('redirect to login page', async () => {
         const user = userEvent.setup();
+        const goToLogin = screen.getByText('Log In To Your Account');
 
-        const backToLogin = screen.getByText('Log In To Your Account');
-        await user.click(backToLogin);
+        await user.click(goToLogin);
 
-        expect(history.location.pathname).toEqual('/');
+        await waitFor(() => { 
+            expect(mockNavigate).toHaveBeenCalledTimes(1);
+            expect(mockNavigate).toHaveBeenCalledWith('/');
+        });
+
+        jest.clearAllMocks();
     });
 });

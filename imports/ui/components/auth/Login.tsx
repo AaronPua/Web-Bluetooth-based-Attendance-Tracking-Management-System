@@ -54,14 +54,14 @@ export const Login = () => {
             navigate('/home');
         }
 
-        if(location.state != null && location.state.loginFirst != null) {
-            setLoginError(location.state.loginFirst);
+        if(location.state != null && (location as any).state.loginFirst != null) {
+            setLoginError((location as any).state.loginFirst);
             setShowLoginError(true);
             setShowError(false);
         }
 
-        if(location.state != null && location.state.accessDenied != null) {
-            setLoginError(location.state.accessDenied);
+        if(location.state != null && (location as any).state.accessDenied != null) {
+            setLoginError((location as any).state.accessDenied);
             setShowLoginError(true);
             setShowError(false);
         }

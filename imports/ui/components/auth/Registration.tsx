@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiFieldText, EuiFlexGroup, EuiFlexItem,
     EuiForm, EuiFormRow, EuiLink, EuiSelect, EuiSpacer } from '@elastic/eui';
 import { registerUser } from '../../../api/users/UsersMethods';

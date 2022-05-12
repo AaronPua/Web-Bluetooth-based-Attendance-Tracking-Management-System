@@ -18,7 +18,7 @@ describe('<Beacons />', () => {
         const user = userEvent.setup();
 
         const beaconName = screen.getByLabelText('Name');
-        await user.type(beaconName, 'test beacon');
+        await user.type(beaconName, 'Test Beacon');
 
         const beaconUuid = screen.getByLabelText('Uuid');
         await user.type(beaconUuid, 'caf2c03e-2d86-4468-82ae-baa63c2d5980');
@@ -30,6 +30,10 @@ describe('<Beacons />', () => {
         const create = screen.getByRole('button', { name: 'Create' });
         await user.click(create);
 
-        await waitFor(() => expect(create).toBeDisabled);
+        await waitFor(() => { 
+            expect(create).toBeDisabled();
+            expect(beaconName).toHaveValue('Test Beacon');
+            expect(beaconUuid).toHaveValue('caf2c03e-2d86-4468-82ae-baa63c2d5980');
+        });
     });
 });

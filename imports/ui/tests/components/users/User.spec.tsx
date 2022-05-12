@@ -39,7 +39,7 @@ describe('<User />', () => {
         const update = screen.getByRole('button', { name: 'Update' });
         await user.click(update);
 
-        expect(screen.getByText('Must have at least 1 role')).toBeInTheDocument;
+        expect(screen.getByText('Must have at least 1 role')).toBeInTheDocument();
         // Can't continue as this relies on data from database
     });
 });

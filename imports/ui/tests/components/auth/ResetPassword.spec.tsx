@@ -2,8 +2,14 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ResetPassword } from '../../../components/index';
-import { createMemoryHistory } from 'history';
 import { renderWithRouter } from '../../utils/test-setup';
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockNavigate
+}));
 
 describe('<ResetPassword />', () => {
     beforeEach(() => {
@@ -24,16 +30,23 @@ describe('<ResetPassword />', () => {
         const resetButton = screen.getByRole('button', { name: 'Reset' });
         await user.click(resetButton);
 
-        await waitFor(() => expect(resetButton).toBeDisabled);
+        await waitFor(() => { 
+            expect(resetButton).toBeDisabled();
+            expect(passwordInput).toHaveValue('test');
+        });
     });
 
-    it('redirect user to login page', async () => {
-        const history = createMemoryHistory();
+    it('redirect to login page', async () => {
         const user = userEvent.setup();
 
         const homeButton = screen.getByText('Sign In');
         await user.click(homeButton);
-        
-        expect(history.location.pathname).toEqual('/');
+
+        await waitFor(() => { 
+            expect(mockNavigate).toHaveBeenCalledTimes(1);
+            expect(mockNavigate).toHaveBeenCalledWith('/');
+        });
+
+        jest.clearAllMocks();
     });
 });

@@ -41,7 +41,7 @@ describe('<Account />', () => {
         const update = screen.getByRole('button', { name: 'Update' });
         await user.click(update);
 
-        await waitFor(() => expect(update).toBeDisabled);
+        // can't continue as it relies on data from database
     });
 
     it('change password', async () => {
@@ -56,6 +56,10 @@ describe('<Account />', () => {
         const change = screen.getByRole('button', { name: 'Change' });
         await user.click(change);
 
-        await waitFor(() => expect(change).toBeDisabled);
+        await waitFor(() => { 
+            expect(change).toBeDisabled();
+            expect(oldPassword).toHaveValue('test');
+            expect(newPassword).toHaveValue('test1');
+        });
     });
 });

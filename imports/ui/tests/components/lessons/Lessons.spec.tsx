@@ -30,6 +30,9 @@ describe('<Lessons />', () => {
         const create = screen.getByRole('button', { name: 'Create' });
         await user.click(create);
 
-        await waitFor(() => expect(create).toBeDisabled);
+        await waitFor(() => { 
+            expect(create).toBeDisabled();
+            expect(lessonName).toHaveValue('Test Lesson');
+        });
     });
 });

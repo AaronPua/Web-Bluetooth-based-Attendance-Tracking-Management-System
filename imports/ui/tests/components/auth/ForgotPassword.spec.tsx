@@ -2,10 +2,16 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ForgotPassword } from '../../../components/index';
-import { createMemoryHistory } from 'history';
 import { renderWithRouter } from '../../utils/test-setup';
 
-describe('<ResetPassword />', () => {
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockNavigate
+}));
+
+describe('<ForgotPassword />', () => {
     beforeEach(() => {
         renderWithRouter(<ForgotPassword />);
     });
@@ -24,16 +30,23 @@ describe('<ResetPassword />', () => {
         const resendButton = screen.getByRole('button', { name: 'Resend' });
         await user.click(resendButton);
 
-        await waitFor(() => expect(resendButton).toBeDisabled);
+        await waitFor(() => { 
+            expect(resendButton).toBeDisabled();
+            expect(emailInput).toHaveValue('not_exist@test.com');
+        });
     });
 
-    it('redirect user to login page', async () => {
-        const history = createMemoryHistory();
+    it('redirect to login page', async () => {
         const user = userEvent.setup();
 
         const homeButton = screen.getByText('Sign In');
         await user.click(homeButton);
-        
-        expect(history.location.pathname).toEqual('/');
+
+        await waitFor(() => { 
+            expect(mockNavigate).toHaveBeenCalledTimes(1);
+            expect(mockNavigate).toHaveBeenCalledWith('/');
+        });
+
+        jest.clearAllMocks();
     });
 });

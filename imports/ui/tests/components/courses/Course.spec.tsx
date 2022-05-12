@@ -31,6 +31,10 @@ describe('<Course />', () => {
         const update = screen.getByRole('button', { name: 'Update' });
         await user.click(update);
 
-        await waitFor(() => expect(update).toBeDisabled);
+        await waitFor(() => { 
+            expect(update).toBeDisabled();
+            expect(courseName).toHaveValue('Test Course');
+            expect(courseCredits).toHaveValue(2);
+        });
     });
 });

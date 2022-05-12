@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { sendPasswordResetEmail } from '../../../api/users/UsersMethods';
 import { EuiEmptyPrompt, EuiCallOut, EuiLink, EuiButton, EuiFieldText, EuiSpacer, EuiForm, EuiFormRow } from '@elastic/eui';
 import { useFormik } from 'formik';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Accounts } from 'meteor/accounts-base';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { EuiButton, EuiCallOut, EuiEmptyPrompt, EuiFieldPassword, EuiForm, EuiFormRow, EuiLink, EuiSpacer } from '@elastic/eui';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
