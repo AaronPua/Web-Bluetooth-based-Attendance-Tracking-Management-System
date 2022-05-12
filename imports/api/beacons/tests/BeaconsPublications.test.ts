@@ -3,7 +3,7 @@ import { CoursesCollection } from '../../courses/CoursesCollection';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { BeaconsSeeder } from '/imports/server/seeders/BeaconsSeeder';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
-import { AdminsSeeder } from '/imports/server/seeders/UsersSeeder';
+import { AdminsSeeder, InstructorsSeeder } from '/imports/server/seeders/UsersSeeder';
 import '../server/BeaconsPublications';
 import _ from 'underscore';
 import { assert } from 'chai';
@@ -17,7 +17,7 @@ describe('BeaconsPublications', function() {
         resetDatabase();
     });
 
-    it('publish all beacons - beacons.all', async function() {
+    it('success - publish all beacons for admins', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
         
@@ -28,7 +28,18 @@ describe('BeaconsPublications', function() {
         assert.equal(collections.beacons.length, 5);
     });
 
-    it('publish all beacons with course - beacons.all.withCourse', async function() {
+    it('fail - publish all beacons for non-admins', async function() {
+        const instructorIds = InstructorsSeeder(1);
+        const collector = new PublicationCollector({ userId: instructorIds[0] });
+        
+        const courseIds = CoursesSeeder(1);
+        BeaconsSeeder(5, courseIds[0]);
+        
+        const collections = await collector.collect('beacons.all');
+        assert.equal(collections.beacons, null);
+    });
+
+    it('success - publish all beacons with course for admins', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -43,7 +54,19 @@ describe('BeaconsPublications', function() {
         assert.equal(collections.beacons[0].course[0].name, courseName);
     });
 
-    it('publish specific beacon - beacons.specific', async function() {
+    it('fail - publish all beacons with course for non-admins', async function() {
+        const instructorIds = InstructorsSeeder(1);
+        const collector = new PublicationCollector({ userId: instructorIds[0] });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        BeaconsSeeder(5, courseId);
+        
+        const collections = await collector.collect('beacons.all.withCourse');
+        assert.equal(collections.beacons, null);
+    });
+
+    it('success - publish specific beacon for admins/instructors', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -57,7 +80,21 @@ describe('BeaconsPublications', function() {
         assert.equal(collections.beacons[0]._id, beaconId);
     });
 
-    it('publish beacons for a course - beacons.forOneCourse', async function() {
+    it('fail - publish specific beacon for non-admins/instructors', async function() {
+        const instructorIds = InstructorsSeeder(1);
+        const collector = new PublicationCollector({ userId: instructorIds[0] });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        const beaconIds = BeaconsSeeder(5, courseId);
+        const beaconId = beaconIds[0];
+        
+        const collections = await collector.collect('beacons.specific', beaconId);
+        assert.equal(collections.beacons.length, 1);
+        assert.equal(collections.beacons[0]._id, beaconId);
+    });
+
+    it('success - publish beacons for a course', async function() {
         const courseIds = CoursesSeeder(1);
         const courseId = courseIds[0];
         BeaconsSeeder(5, courseId);
@@ -68,7 +105,7 @@ describe('BeaconsPublications', function() {
         assert.equal(collections.beacons.length, 5);
     });
 
-    it('publish beacons for multiple courses - beacons.forMultipleCourses', async function() {
+    it('success - publish beacons for multiple courses', async function() {
         const courseIds = CoursesSeeder(2);
         BeaconsSeeder(2, courseIds[0]);
         BeaconsSeeder(2, courseIds[1]);

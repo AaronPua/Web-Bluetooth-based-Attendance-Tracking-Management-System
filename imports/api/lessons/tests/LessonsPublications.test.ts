@@ -1,5 +1,5 @@
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
-import { StudentsSeeder, AdminsSeeder } from '/imports/server/seeders/UsersSeeder';
+import { StudentsSeeder, AdminsSeeder, InstructorsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
 import { LessonsSeeder } from '/imports/server/seeders/LessonsSeeder';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
@@ -20,7 +20,7 @@ describe('LessonsPublications', function() {
         resetDatabase();
     });
 
-    it('publish all lessons - lessons.all', async function() {
+    it('success - publish all lessons for admins', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -31,7 +31,18 @@ describe('LessonsPublications', function() {
         assert.equal(collections.lessons.length, 2);
     });
 
-    it('publish all lessons with course they belong to - lessons.all.withCourse', async function() {
+    it('fail - publish all lessons for non-admins', async function() {
+        const instructorIds = InstructorsSeeder(1);
+        const collector = new PublicationCollector({ userId: instructorIds[0] });
+
+        const courseIds = CoursesSeeder(1);
+        LessonsSeeder(2, courseIds[0]);
+        
+        const collections = await collector.collect('lessons.all');
+        assert.equal(collections.lessons, null);
+    });
+
+    it('success - publish all lessons with course they belong to for admins', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -47,7 +58,19 @@ describe('LessonsPublications', function() {
         assert.equal(collections.lessons[1].course[0].name, courseName);
     });
 
-    it('publish specific lessons - lessons.specific', async function() {
+    it('fail - publish all lessons with course they belong to for non-admins', async function() {
+        const instructorIds = InstructorsSeeder(1);
+        const collector = new PublicationCollector({ userId: instructorIds[0] });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        LessonsSeeder(2, courseId);
+        
+        const collections = await collector.collect('lessons.all.withCourse');
+        assert.equal(collections.lessons, null);
+    });
+
+    it('success - publish specific lessons', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(1);
@@ -59,7 +82,7 @@ describe('LessonsPublications', function() {
         assert.equal(collections.lessons[0]._id, lessonId);
     });
 
-    it('publish specific lessons for a specific course - lessons.forOneCourse', async function() {
+    it('success - publish all lessons for a specific course', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(1);
@@ -72,7 +95,7 @@ describe('LessonsPublications', function() {
         assert.equal(collections.lessons[1].courseId, courseId);
     });
 
-    it('publish lessons for a multiple courses - lessons.forMultipleCourses', async function() {
+    it('success - publish lessons for multiple courses', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(2);
@@ -87,7 +110,7 @@ describe('LessonsPublications', function() {
         assert.equal(collections.lessons[1].courseId, course2Id);
     });
 
-    it('publish students who have attended a lesson - lesson.attendance.present', async function() {
+    it('success - publish students who have attended a lesson for admins/instructors', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -109,7 +132,26 @@ describe('LessonsPublications', function() {
         assert.equal(collections.users[0]._id, studentId);
     });
 
-    it('publish students who are absent for a lesson - lesson.attendance.absent', async function() {
+    it('fail - publish students who have attended a lesson non-admins/instructors', async function() {
+        const studentIds = StudentsSeeder(2);
+        const studentId = studentIds[0];
+        const collector = new PublicationCollector({ userId: studentId });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        const lessonIds = LessonsSeeder(2, courseIds[0]);
+        const lessonId = lessonIds[0];
+
+        _.each(studentIds, (studentId) => {
+            addStudentToCourse._execute({ userId: Random.id() }, { courseId: courseId, studentId: studentId })
+        });
+        updateAttendance._execute({ userId: Random.id() }, { lessonId: lessonId, studentId: studentId, action: 'add' });
+        
+        const collections = await collector.collect('lesson.attendance.present', courseId, lessonId);
+        assert.equal(collections.users, null);
+    });
+
+    it('success - publish students who are absent for a lesson for admins/instructors', async function() {
         const adminIds = AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -130,5 +172,24 @@ describe('LessonsPublications', function() {
         const result = _.chain(collections.users).pluck('_id').contains(studentId).value();
         assert.equal(collections.users.length, 2);
         assert.equal(result, false);
+    });
+
+    it('fail - publish students who are absent for a lesson for non-admins/instructors', async function() {
+        const studentIds = StudentsSeeder(3);
+        const studentId = studentIds[0];
+        const collector = new PublicationCollector({ userId: studentId });
+
+        const courseIds = CoursesSeeder(1);
+        const courseId = courseIds[0];
+        const lessonIds = LessonsSeeder(2, courseIds[0]);
+        const lessonId = lessonIds[0];
+
+        _.each(studentIds, (studentId) => {
+            addStudentToCourse._execute({ userId: Random.id() }, { courseId: courseId, studentId: studentId })
+        });
+        updateAttendance._execute({ userId: Random.id() }, { lessonId: lessonId, studentId: studentId, action: 'add' });
+        
+        const collections = await collector.collect('lesson.attendance.absent', courseId, lessonId);
+        assert.equal(collections.users, null);
     });
 });

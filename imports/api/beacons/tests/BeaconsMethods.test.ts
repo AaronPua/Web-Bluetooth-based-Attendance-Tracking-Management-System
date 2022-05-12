@@ -87,15 +87,15 @@ describe('BeaconsMethods', function() {
             }, Meteor.Error, 'You need to be logged in before removing a beacon');
         });
 
-        it('fail - remove a beacon without proper beacon id', function() {
+        it('fail - remove a beacon without beacon ID', function() {
             const courseIds = CoursesSeeder(1);
             const courseId = courseIds[0];
             
             createBeacon._execute({ userId: Random.id() }, { courseId: courseId, name: 'Beacon 1', uuid: uuid() });
 
             assert.throws(() => {
-                removeBeacon._execute({ userId: Random.id() }, { beaconId: 'ZxCv1234' });
-            }, 'Beacon ID must be a valid alphanumeric ID');
+                removeBeacon._execute({ userId: Random.id() }, {});
+            }, 'Beacon ID is required');
         });
     });
 
@@ -123,6 +123,54 @@ describe('BeaconsMethods', function() {
             assert.throws(() => {
                 updateBeacon._execute({}, { beaconId: beacon._id, courseId: courseId, name: 'Beacon 3', uuid: uuid() });
             }, Meteor.Error, 'You need to be logged in before updating a beacon');
+        });
+
+        it('fail - update a beacon without beacon ID', function() {
+            const courseIds = CoursesSeeder(1);
+            const courseId = courseIds[0];
+            
+            createBeacon._execute({ userId: Random.id() }, { courseId: courseId, name: 'Beacon 1', uuid: uuid() });
+            const beacon = BeaconsCollection.find().fetch()[0];
+
+            assert.throws(() => {
+                updateBeacon._execute({ userId: Random.id() }, { courseId: courseId, name: 'Beacon 3', uuid: uuid() });
+            }, 'Beacon ID is required');
+        });
+
+        it('fail - update a beacon without course ID', function() {
+            const courseIds = CoursesSeeder(1);
+            const courseId = courseIds[0];
+            
+            createBeacon._execute({ userId: Random.id() }, { courseId: courseId, name: 'Beacon 1', uuid: uuid() });
+            const beacon = BeaconsCollection.find().fetch()[0];
+
+            assert.throws(() => {
+                updateBeacon._execute({ userId: Random.id() }, { beaconId: beacon._id, name: 'Beacon 3', uuid: uuid() });
+            }, 'Course ID is required');
+        });
+
+        it('fail - update a beacon without name', function() {
+            const courseIds = CoursesSeeder(1);
+            const courseId = courseIds[0];
+            
+            createBeacon._execute({ userId: Random.id() }, { courseId: courseId, name: 'Beacon 1', uuid: uuid() });
+            const beacon = BeaconsCollection.find().fetch()[0];
+
+            assert.throws(() => {
+                updateBeacon._execute({ userId: Random.id() }, { beaconId: beacon._id, courseId: courseId, uuid: uuid() });
+            }, 'Name is required');
+        });
+
+        it('fail - update a beacon without uuid', function() {
+            const courseIds = CoursesSeeder(1);
+            const courseId = courseIds[0];
+            
+            createBeacon._execute({ userId: Random.id() }, { courseId: courseId, name: 'Beacon 1', uuid: uuid() });
+            const beacon = BeaconsCollection.find().fetch()[0];
+
+            assert.throws(() => {
+                updateBeacon._execute({ userId: Random.id() }, { beaconId: beacon._id, courseId: courseId, name: 'Beacon 3' });
+            }, 'Uuid is required');
         });
     });
 });

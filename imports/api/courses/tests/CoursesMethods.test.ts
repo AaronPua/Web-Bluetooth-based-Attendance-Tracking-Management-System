@@ -274,7 +274,7 @@ describe('CoursesMethods', function() {
             assert.equal(instructorCourseId, null);
         });
 
-        it('fail - remove student from course without logging in', function() {
+        it('fail - remove instructor from course without logging in', function() {
             const courseIds = CoursesSeeder(1);
             const courseId = courseIds[0];
 

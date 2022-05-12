@@ -1,6 +1,6 @@
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { CoursesSeeder } from '/imports/server/seeders/CoursesSeeder';
-import { AdminsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
+import { AdminsSeeder, InstructorsSeeder, StudentsSeeder } from '/imports/server/seeders/UsersSeeder';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { updateAttendance } from '../../lessons/LessonsMethods';
 import { addStudentToCourse } from '../CoursesMethods';
@@ -9,7 +9,7 @@ import { Random } from 'meteor/random';
 import { assert } from 'chai';
 import '../server/CoursesPublications';
 
-describe('CoursesPublication', function() {
+describe('CoursesPublications', function() {
     beforeEach(function() {
         resetDatabase();
     });
@@ -18,7 +18,7 @@ describe('CoursesPublication', function() {
         resetDatabase();
     });
 
-    it('publish all courses - courses.all', async function() {
+    it('success - publish all courses for admins', async function() {
         const adminIds =  AdminsSeeder(1);
         const collector = new PublicationCollector({ userId: adminIds[0] });
 
@@ -28,7 +28,17 @@ describe('CoursesPublication', function() {
         assert.equal(collections.courses.length, 5);
     });
 
-    it('publish specific course - courses.specific', async function() {
+    it('fail - publish all courses for non-admins', async function() {
+        const instructorIds =  InstructorsSeeder(1);
+        const collector = new PublicationCollector({ userId: instructorIds[0] });
+
+        CoursesSeeder(5);
+        
+        const collections = await collector.collect('courses.all');
+        assert.equal(collections.courses, null);
+    });
+
+    it('success - publish specific course', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(2);
@@ -39,7 +49,7 @@ describe('CoursesPublication', function() {
         assert.equal(collections.courses[0]._id, courseId);
     });
 
-    it('publish specific course with lessons - courses.specific.withLessons', async function() {
+    it('success - publish specific course with lessons', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(2);
@@ -52,7 +62,7 @@ describe('CoursesPublication', function() {
         assert.equal(collections.courses[0].lessons.length, 2);
     });
 
-    it('publish courses for specific user - courses.specificUser', async function() {
+    it('success - publish courses for specific user', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(2);
@@ -69,7 +79,7 @@ describe('CoursesPublication', function() {
         assert.equal(collections.courses.length, 2);
     });
 
-    it('publish specific course for specific user with attended lessons - courses.student.attendedLessons', async function() {
+    it('success - publish specific course for specific student with attended lessons', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(1);
@@ -88,7 +98,7 @@ describe('CoursesPublication', function() {
         assert.equal(collections.lessons[0]._id, lessonId);
     });
 
-    it('publish specific course for specific user with missed lessons - courses.student.missedLessons', async function() {
+    it('success - publish specific course for specific student with missed lessons', async function() {
         const collector = new PublicationCollector();
 
         const courseIds = CoursesSeeder(1);

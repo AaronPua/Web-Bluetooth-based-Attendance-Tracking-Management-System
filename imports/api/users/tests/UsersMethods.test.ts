@@ -96,7 +96,7 @@ describe('UsersMethods', function() {
         }, 'Last name is required');
     });
 
-    it('fail - register a user without email', function () {
+    it('fail - register a user without gender', function () {
         assert.throws(() => {
             registerUser._execute({}, {
                 email: faker.internet.email(),
@@ -141,8 +141,23 @@ describe('UsersMethods', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
 
-        const result = isUserInRole._execute({ userId: Random.id() }, { userId: instructorId, roleName: 'instructor'});
+        const result = isUserInRole._execute({ userId: Random.id() }, { userId: instructorId, roleName: 'instructor' });
         assert.equal(result, true);
+    });
+
+    it('fail - check if user is in role without user ID', function() {
+        assert.throws(() => {
+             isUserInRole._execute({ userId: Random.id() }, { roleName: 'instructor' });
+        }, 'User ID is required');
+    });
+
+    it('fail - check if user is in role without role name', function() {
+        const instructorIds = InstructorsSeeder(1);
+        const instructorId = instructorIds[0];
+
+        assert.throws(() => {
+             isUserInRole._execute({ userId: Random.id() }, { userId: instructorId });
+        }, 'Role name is required');
     });
 
     it('success - update user info', function() {
@@ -252,7 +267,7 @@ describe('UsersMethods', function() {
         }, 'Roles is required');
     });
 
-    it('success - resent verification email', function() {
+    it('success - resend verification email', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
         const instructor = Meteor.users.findOne(instructorId);
@@ -261,7 +276,7 @@ describe('UsersMethods', function() {
         assert.equal(result, true);
     });
 
-    it('fail - resent verification email', function() {
+    it('fail - resend verification email to fake email address', function() {
         InstructorsSeeder(1);
 
         assert.throws(() => {
@@ -269,7 +284,7 @@ describe('UsersMethods', function() {
         }, 'User not found according to this email address.');
     });
 
-    it('success - resent password reset email', function() {
+    it('success - resend password reset email', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
         const instructor = Meteor.users.findOne(instructorId);
@@ -278,7 +293,7 @@ describe('UsersMethods', function() {
         assert.equal(result, true);
     });
 
-    it('fail - resent password reset email', function() {
+    it('fail - resend password reset email to fake email address', function() {
         InstructorsSeeder(1);
 
         assert.throws(() => {
@@ -286,7 +301,7 @@ describe('UsersMethods', function() {
         }, 'User not found according to this email address.');
     });
 
-    it('success - update user account info', function() {
+    it('success - update user personal account info', function() {
         InstructorsSeeder(1);
 
         const user = Meteor.users.find().fetch()[0];
@@ -305,7 +320,7 @@ describe('UsersMethods', function() {
         assert.equal(updatedUser.profile.gender, 'female');
     });
 
-    it('fail - update user account info without user ID', function() {
+    it('fail - update user personal account info without user ID', function() {
         assert.throws(() => {
             updateUserAccount._execute({ userId: Random.id() }, {
                 email: 'test@test.com',
@@ -316,7 +331,7 @@ describe('UsersMethods', function() {
         }, 'User ID is required');
     });
 
-    it('fail - update user account info without email', function() {
+    it('fail - update user personal account without email', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
 
@@ -330,7 +345,7 @@ describe('UsersMethods', function() {
         }, 'Email is required');
     });
 
-    it('fail - update user account info without first name', function() {
+    it('fail - update user personal account info without first name', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
 
@@ -344,7 +359,7 @@ describe('UsersMethods', function() {
         }, 'First name is required');
     });
 
-    it('fail - update user account info without last name', function() {
+    it('fail - update user personal account info without last name', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
 
@@ -358,7 +373,7 @@ describe('UsersMethods', function() {
         }, 'Last name is required');
     });
 
-    it('fail - update user account info without gender', function() {
+    it('fail - update user personal account info without gender', function() {
         const instructorIds = InstructorsSeeder(1);
         const instructorId = instructorIds[0];
 
