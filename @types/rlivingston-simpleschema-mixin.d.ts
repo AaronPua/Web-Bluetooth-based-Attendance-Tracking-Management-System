@@ -1,0 +1,1 @@
+declare module "meteor/rlivingston-simpleschema-mixin";

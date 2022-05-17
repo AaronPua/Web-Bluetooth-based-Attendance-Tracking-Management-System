@@ -6,9 +6,9 @@ import '@elastic/eui/dist/eui_theme_light.css';
 import { EuiProvider } from '@elastic/eui';
 
 Meteor.startup(() => {
-  render(
-    <EuiProvider colorMode="light">
-      <App />
-    </EuiProvider>
-    , document.getElementById('react-target'));
+    render(
+        <EuiProvider colorMode="light">
+            <App />
+        </EuiProvider>
+      , document.getElementById('react-target'));
 });

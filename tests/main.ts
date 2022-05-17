@@ -1,21 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import assert from 'assert';
+import '../imports/api/users/tests/UsersMethods.test.ts';
+import '../imports/api/users/tests/UsersPublications.test.ts';
 
-describe('simple-todos-react', function () {
-  it('package.json has correct name', async function () {
-    const { name } = await import('../package.json');
-    assert.strictEqual(name, 'simple-todos-react');
-  });
+import '../imports/api/courses/tests/CoursesMethods.test.ts';
+import '../imports/api/courses/tests/CoursesPublications.test.ts';
 
-  if (Meteor.isClient) {
-    it('client is not server', function () {
-      assert.strictEqual(Meteor.isServer, false);
-    });
-  }
+import '../imports/api/lessons/tests/LessonsMethods.test.ts';
+import '../imports/api/lessons/tests/LessonsPublications.test.ts';
 
-  if (Meteor.isServer) {
-    it('server is not client', function () {
-      assert.strictEqual(Meteor.isClient, false);
-    });
-  }
-});
+import '../imports/api/beacons/tests/BeaconsMethods.test.ts';
+import '../imports/api/beacons/tests/BeaconsPublications.test.ts';

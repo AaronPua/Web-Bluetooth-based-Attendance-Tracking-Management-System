@@ -1,0 +1,1 @@
+export const createCollection = jest.fn();
