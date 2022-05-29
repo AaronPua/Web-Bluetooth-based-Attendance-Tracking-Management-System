@@ -2,4 +2,4 @@
 
 Major Graduation Project for BCIT's Bachelor of Technology
 
-Beginning in January 2022
+January 2022 - May 2022
